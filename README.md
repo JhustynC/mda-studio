@@ -18,19 +18,23 @@ El segundo comando permite indicar otro modelo y otro directorio de salida. Si e
 
 ## Trabajar con varios proyectos
 
+Usa **Oscuro** o **Claro** en la barra superior para cambiar el tema. El Studio sigue la preferencia del sistema hasta que elijas un tema y recuerda tu elección en el navegador. La vista previa y la pestaña nueva adoptan el tema del Studio.
+
 Desde **Proyectos**, abre **Recursos del Studio** para consultar la **Guía de inicio** o explorar el **Metamodelo base**. La guía acompaña la creación de un primer proceso. El explorador muestra las estructuras de CIM, PIM y PSM y permite descargar el metamodelo en JSON.
 
-La pantalla **Proyectos** reúne los ejemplos y los proyectos locales que crees. Abre uno para entrar al editor. Usa **← Proyectos** para volver a la biblioteca. **Nuevo proyecto** permite partir de un proceso básico, un CRUD básico, una copia del último proyecto abierto o un ejemplo. El título de la aplicación se define en `nombre` dentro del CIM.
+La pantalla **Proyectos** reúne los ejemplos y los proyectos locales que crees. El buscador encuentra proyectos por nombre, descripción o tipo. Las tarjetas identifican si se trata de un proceso, un catálogo CRUD o una integración de proceso e inventario. Abre uno para entrar al editor. Usa **Volver a proyectos** para regresar a la biblioteca. **Nuevo proyecto** permite partir de un proceso básico, un CRUD básico, una copia del último proyecto abierto o un ejemplo. El título de la aplicación se define en `nombre` dentro del CIM.
 
-El Studio guarda cada borrador, incluso mientras el JSON está incompleto, en el almacenamiento de este navegador. Al cambiar de proyecto, restaura su CIM y calcula sus propias salidas. Desde **Descargar** puedes guardar el CIM, PIM, PSM o HTML del proyecto activo. Para trasladar un proyecto, descarga su CIM, crea un proyecto en el otro navegador e importa ese archivo. Los HTML generados para proyectos distintos usan claves locales de casos independientes, incluso si sus CIM tienen el mismo identificador.
+El Studio guarda cada borrador, incluso mientras el JSON está incompleto, en el almacenamiento de este navegador. Al cambiar de proyecto, restaura su CIM y calcula sus propias salidas. Desde la barra **Entregables MDA de esta fase** puedes descargar los artefactos formales de cada etapa (`.cim.json`, `.cim.svg`, `.cim.mmd`, `.pim.ecore`, `.pim.ocl`, `.psm.sql`, `.psm.schema.json`, `.traza.csv` o `.html`).
 
-En el editor, **Proceso de negocio** y **Restricciones OCL** se despliegan al seleccionarlos. El proceso puede filtrarse por actor. La trazabilidad se puede buscar por texto y filtrar por campos, transiciones o reglas. La descarga JSON incluye todas las filas.
+En el editor, **Proceso de negocio** y **Restricciones OCL** permiten agregar y editar actores, estados, transiciones y reglas OCL (`inv`, `pre`, `post`) directamente desde la vista estructurada. Las tablas de **Campos y negocio** agrupan los datos por entidad cuando el proyecto vincula un catálogo a un proceso y permiten añadir o editar campos con un clic.
 
-**CIM → Editar JSON** usa CodeMirror 6 con colores de sintaxis, números de línea, bloques plegables, búsqueda y diagnósticos de sintaxis. Usa `Ctrl+Enter` para generar desde el editor. **PIM** y **PSM** ofrecen **Inspeccionar JSON**, un árbol de solo lectura con secciones plegables. Sus archivos se descargan con **Descargar**.
+**CIM → Editar JSON** usa CodeMirror 6 con colores de sintaxis, números de línea, bloques plegables, búsqueda y diagnósticos de sintaxis. Usa `Ctrl+Enter` para validar el CIM y ver el PIM desde el editor. **PIM** y **PSM** ofrecen sus propias vistas de arquitectura (clases UML/Ecore y wireframe + esquema SQL) además de **Inspeccionar JSON**.
 
-En **PSM** o **Aplicación**, usa **Presentación de la aplicación** para elegir entre la bandeja y el tablero agrupado por estado. El Studio recuerda la selección por proyecto. La elección entra al PSM como `presentacion` y se incluye en el HTML exportado. Compras abre en tablero y préstamos en bandeja. Cambiar la presentación vuelve a cargar la vista previa y reinicia sus casos de prueba.
+En **PSM**, elige cómo se mostrarán los casos entre **Lista de casos (bandeja)** y **Tablero Kanban por estado**, actualizando tanto el wireframe de arquitectura como la aplicación generada.
 
 ## Las ocho etapas del proyecto
+
+En el editor, sigue **Validar y ver PIM → Ver PSM → Generar aplicación**. Los botones para volver y la barra de etapas permiten revisar todo el recorrido MDA.
 
 MDA Studio implementa el recorrido **CIM → PIM → PSM → aplicación** con un DSL, un metamodelo y un compilador propios. La propuesta de clase orienta las etapas. Esta implementación usa JavaScript y genera una aplicación web autónoma.
 

@@ -4,11 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aplicación generada</title>
+<script>
+  if (!document.documentElement.dataset.theme) {
+    const preference = matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => { document.documentElement.dataset.theme = preference.matches ? 'dark' : 'light'; };
+    apply();
+    preference.addEventListener('change', apply);
+  }
+</script>
 <style>{{CSS}}</style>
 </head>
 <body>
 <main id="application">
   <header>
+    <svg class="app-decoration" viewBox="0 0 350 175" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true"><g stroke="#a4bcf4" stroke-width="1.2"><path d="M80 139h58q12 0 12-12V68q0-12 12-12h69m-81 54h109m-28-54h26q12 0 12 12v70h41"/><rect x="32" y="118" width="49" height="43" rx="9" fill="#38568c"/><rect x="230" y="33" width="53" height="45" rx="10" fill="#3d5587"/><rect x="255" y="94" width="48" height="34" rx="8" fill="#476397"/><rect x="305" y="121" width="43" height="35" rx="8" fill="#45678e"/></g><path d="M46 134h20m-20 10h13m196-99v22m-11-11h22m1 55h23m24 27h18" stroke="#c9dbff" stroke-linecap="round" stroke-width="2"/></svg>
     <div><p class="product">MDA STUDIO · APLICACIÓN EJECUTABLE (M2T)</p><h1 id="app-title"></h1><p id="app-description" class="muted"></p></div>
     <label class="role">Rol de demostración<select id="app-role" aria-describedby="app-role-help"></select><small class="muted" id="app-role-help">Simula quién realiza la tarea.</small></label>
   </header>
@@ -27,15 +36,15 @@
     </div>
   </section>
   <nav id="app-nav" aria-label="Módulos de la aplicación" hidden>
-    <button type="button" data-module="requests" aria-pressed="true">Solicitudes</button>
-    <button type="button" data-module="catalog" aria-pressed="false">Inventario</button>
-    <button type="button" data-module="ledger" aria-pressed="false">Movimientos</button>
+    <button type="button" data-module="requests" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19V5h14M5 12h8v6h6M16 3l3 2-3 2m0 9 3 2-3 2"/></svg>Solicitudes</button>
+    <button type="button" data-module="catalog" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v13H4zM3 4h18v3M9 11h6m-6 5h6"/></svg>Inventario</button>
+    <button type="button" data-module="ledger" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10m-9-12v4m0 1v4m0 1v4"/></svg>Movimientos</button>
   </nav>
   <p id="app-notice" role="status" aria-live="polite"></p>
   <div class="layout">
     <div class="column">
       <section id="app-create"><h2 id="app-form-title"></h2><form id="app-form"></form></section>
-      <section id="app-cases"><div class="section-head"><h2 id="app-cases-title">Casos</h2><span id="app-count" class="muted"></span></div><div id="app-inbox"></div></section>
+      <section id="app-cases"><div class="section-head"><h2 id="app-cases-title">Casos</h2><span id="app-count" class="muted"></span></div><p id="app-cases-help" class="muted"></p><div id="app-inbox"></div></section>
     </div>
     <section id="app-detail" tabindex="-1"></section>
   </div>
@@ -61,6 +70,14 @@
     <pre id="db-dialog-sql" class="db-code"></pre>
   </dialog>
 </main>
-<script>{{SCRIPT}}</script>
+<script>
+  if (window.parent !== window) window.addEventListener('message', event => {
+    const { type, theme } = event.data ?? {};
+    if (event.source === window.parent && type === 'mda-preview-theme' && (theme === 'dark' || theme === 'light')) {
+      document.documentElement.dataset.theme = theme;
+    }
+  });
+  {{SCRIPT}}
+</script>
 </body>
 </html>

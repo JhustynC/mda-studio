@@ -4,6 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MDA Studio</title>
+<script>
+  const studioTheme = (() => {
+    try {
+      const saved = localStorage.getItem('mda.studio.theme');
+      if (saved === 'dark' || saved === 'light') return saved;
+    } catch {}
+    return null;
+  })();
+  document.documentElement.dataset.theme = studioTheme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+</script>
 <style>:root{font-family:"Segoe UI",system-ui,sans-serif;color:#182c32;background:#f1f5f3;font-synthesis:none;--ink:#182c32;--sub:#526866;--line:#d8e3de;--teal:#185a4d;--mono:"Cascadia Code",Consolas,monospace}
 *{box-sizing:border-box}body{margin:0}button,.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #c8d9d2;border-radius:7px;background:#fff;color:#254840;padding:8px 12px;font:inherit;font-size:12px;font-weight:650;cursor:pointer;white-space:nowrap}button:hover,.button:hover{background:#e7f4ee}button:disabled{opacity:.55;cursor:default}button:focus-visible,.button:focus-within,textarea:focus-visible,pre:focus-visible{outline:2px solid #278571;outline-offset:2px}[hidden]{display:none!important}p{margin:0}
 .top{display:flex;align-items:center;gap:22px;padding:11px clamp(18px,4vw,56px);background:#132e2b;color:#f1faf6;min-height:60px}.brand{display:flex;gap:10px;align-items:center;font-weight:750;letter-spacing:-.02em;white-space:nowrap}.brand-icon{width:23px;height:23px;border-radius:6px;background:#bfe9d6;display:grid;gap:2px;align-content:center;justify-items:center}.brand-icon i{width:12px;height:2px;background:#205b49;transform:skew(-25deg)}.brand-icon i:nth-child(2){width:9px}.brand-icon i:nth-child(3){width:6px}.context{font-size:12px;color:#c2d7cf}.top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.generate{background:#caebdb;border-color:#caebdb;color:#173e34;font-size:13px}.generate:hover{background:#e4f8eb}.open-tab-btn{background:#214e46;border-color:#4b7f73;color:#e9faf2;font-size:12px}.open-tab-btn:hover{background:#2d665c}
@@ -61,6 +71,14 @@ details.side-card{padding:0}details.side-card>summary{display:flex;justify-conte
 .resource-arrow{font-size:18px;color:#306d5a}
 @media(max-width:650px){.resource-grid{grid-template-columns:minmax(0,1fr)}}
 
+.theme-toggle{gap:7px;min-height:38px;background:#1d403a;border-color:#52766a;color:#ebf8f1}.theme-toggle:hover{background:#285248}.theme-toggle svg,.back-link svg{width:17px;height:17px;flex:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}.theme-toggle .theme-sun{display:none}.theme-toggle[aria-pressed=true] .theme-sun{display:block}.theme-toggle[aria-pressed=true] .theme-moon{display:none}
+.back-link{min-height:42px;gap:9px;padding:9px 14px;background:#dcefe5;border-color:#8ab6a4;color:#133f34;font-size:13px}.back-link:hover{background:#cce8db;border-color:#598d79}.editor-nav{gap:14px}
+@media(max-width:400px){.top{gap:6px}.top .brand{font-size:14px}.theme-toggle{width:36px;padding:6px}.theme-toggle span{display:none}}
+.stage-navigation{display:flex;align-items:center;justify-content:space-between;gap:10px 18px;flex-wrap:wrap;margin:0 0 14px;padding:12px 15px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.stage-context{flex:1 1 235px}.stage-context p:first-child{font-weight:700;font-size:12px;color:var(--teal)}.stage-context p+p{margin-top:3px;font-size:12px;color:var(--sub)}
+.stage-actions{display:flex;flex-wrap:wrap;gap:7px}.stage-actions button{min-height:38px;gap:8px}.stage-actions .generate{margin-left:0}
+:root[data-theme="dark"] .stage-navigation{background:var(--dark-panel)}
+
 .diagram-panel{margin:0 12px 12px;border:1px solid #c9ddd4;border-radius:12px;overflow:hidden;color:#193c36}.diagram-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;background:#f3f8f5;border-bottom:1px solid #d6e5dd;flex-wrap:wrap}.diagram-bar h3,.diagram-list-head h3{font-size:14px;margin:0 0 3px}.diagram-bar p,.diagram-legend{font-size:11px;color:#466862}.diagram-tools{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.diagram-tools label{font-size:11px;display:flex;align-items:center;gap:5px;margin-right:7px}.diagram-tools output{font:11px var(--mono);min-width:42px;text-align:center}.diagram-tools button{padding:5px 8px;min-height:31px}
 .diagram-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;min-width:0}.diagram-viewport{height:clamp(330px,49vh,550px);overflow:auto;min-width:0;position:relative;background-color:#f6faf8;background-image:radial-gradient(#afc6bd 0.75px,transparent 0.75px);background-size:18px 18px;overscroll-behavior:contain;scrollbar-color:#9ab7ab #ecf4ee}.diagram-viewport:focus-visible{outline:2px solid #278571;outline-offset:-2px}
 #diagram-scroller{position:relative;min-width:100%;min-height:100%}#diagram-scene{position:absolute;left:50%;top:50%;transform-origin:center}.diagram-edges{position:absolute;inset:0;overflow:visible;pointer-events:none}.diagram-edge{fill:none;stroke:#426b63;stroke-width:1.55;stroke-linejoin:round;stroke-linecap:round}.diagram-edge.is-return{stroke:#937043;stroke-dasharray:5 4}
@@ -73,6 +91,135 @@ details.side-card{padding:0}details.side-card>summary{display:flex;justify-conte
 #diagram-scroller{overflow:clip}
 .diagram-tools select{background:#fff;border:1px solid #c8d9d2;border-radius:6px;padding:5px 6px;color:#254840;font:inherit;max-width:175px}.diagram-viewport{cursor:grab}.diagram-viewport.is-panning{cursor:grabbing;user-select:none}.diagram-legend .legend-return{height:0;width:13px;border:0;border-top:2px dashed #937043}.diagram-node.is-start:hover{background:#205f52}
 .diagram-crud{display:grid;place-items:start center;min-width:0;min-height:315px;padding:clamp(16px,4vw,42px);background:#f6faf8 radial-gradient(#afc6bd .75px,transparent .75px) 0 0/18px 18px}.diagram-entity{width:min(100%,450px);border:1px solid #a6c7b8;border-radius:13px;background:#fff;overflow:hidden;box-shadow:0 6px 22px #1c504015}.diagram-entity-head{background:#194d43;color:white;padding:15px 17px}.diagram-entity-head span{font:650 10px var(--mono);letter-spacing:.08em;color:#ceeadd}.diagram-entity-head h4{font-size:20px;margin:4px 0}.diagram-entity-head p{color:#ceeadd;font-size:12px}.diagram-entity-fields{padding:8px}.diagram-entity-fields button{width:100%;white-space:normal;justify-content:space-between;overflow-wrap:anywhere;margin-bottom:4px;text-align:left}.diagram-entity-fields button span{font-size:11px;color:#42675d}
+
+:root[data-theme="dark"]{--ink:#e5f0ea;--sub:#a9c0b6;--line:#345148;--teal:#94d8bb;--dark-bg:#101b19;--dark-panel:#172622;--dark-raised:#20332d;--dark-input:#121f1b;--dark-selected:#28473d;--dark-selected-border:#5c9b84;--dark-link:#a4dec6;--dark-danger:#ffc0b4;--dark-warning:#f2d098;color:var(--ink);background:var(--dark-bg);color-scheme:dark;}
+:root[data-theme="dark"] :is(.project-card,.work-card,.side-card,.trace-card,.guide-index,.guide-article,.diagram-inspector,dialog,.diagram-entity,.uml-class-card,.stage-box,.stage-item){background:var(--dark-panel);color:var(--ink);border-color:var(--line)}
+:root[data-theme="dark"] .top{background:#0c1816;border-bottom:1px solid var(--line)}
+:root[data-theme="dark"] :where(button,.button,.resource-card,.diagram-edge-label,.diagram-item,.diagram-node.is-state){background:var(--dark-raised);color:var(--ink);border-color:var(--line)}
+:root[data-theme="dark"] :is(button,.button,.resource-card):hover{background:var(--dark-selected);border-color:var(--dark-selected-border)}
+:root[data-theme="dark"] :is(.generate,.back-link,.deliverable-btn.is-primary){background:#9adbc0;color:#102d25;border-color:#9adbc0}
+:root[data-theme="dark"] :is(.generate,.back-link,.deliverable-btn.is-primary):hover{background:#b8ead4;color:#102d25;border-color:#b8ead4}
+:root[data-theme="dark"] :is(.pipeline button,.model-format button,.diagram-tabs button)[aria-pressed=true]{background:var(--dark-selected);color:var(--ink);border-color:var(--dark-selected-border)}
+:root[data-theme="dark"] :is(button,select,input,textarea,summary,pre,a):focus-visible{outline-color:#95e1c1}
+:root[data-theme="dark"] :is(dialog input,dialog select,#diagram-form-fields textarea,#diagram-actor,#flow-role,#presentation,.trace-controls input,.trace-controls select){background:var(--dark-input);color:var(--ink);border-color:var(--dark-selected-border)}
+:root[data-theme="dark"] dialog::backdrop{background:#060f0dcc}
+:root[data-theme="dark"] :is(.library-resources,.edge,li,th,td,.guide-article section+section,.diagram-panel,.diagram-tabs,.diagram-legend,.diagram-bar,#fields-panel,#output-hint,.json-inspector,.json-leaf,.json-children,.uml-compartment,.fields-toolbar,.deliverables-bar,.stage-explainer,.stage-artifact-details,.app-launch-bar,.ocl-assistant){border-color:var(--line)}
+:root[data-theme="dark"] :is(th,#fields-caption,.diagram-bar,.presentation-panel,.json-inspector .json-toolbar,.fields-toolbar,.deliverables-bar,.stage-explainer,.stage-artifact-details,.app-launch-bar,.ocl-assistant,.psm-wireframe){background:var(--dark-raised);color:var(--ink)}
+:root[data-theme="dark"] :is(.guide-index a,.guide-article a,.resource-arrow,.edge span,.arrow,.edge strong,#output-tree details>summary,#output-tree .json-key,.diagram-edge-label strong,.deliverables-label,.stage-box h3,.stage-item strong,.stage-item code,.stage-artifact-details summary,.artifact-code-head,.arch-dl dt,.app-launch-bar strong,.ocl-assistant strong){color:var(--dark-link)}
+:root[data-theme="dark"] :is(#output-tree details>summary:hover,.guide-index a:hover,.edge-btn:hover,.rule-edit-btn:hover){background:var(--dark-selected);border-color:var(--dark-selected-border)}
+:root[data-theme="dark"] :is(.resource-icon,.rule-type,.status,.json-inspector .json-mode,.muted-badge,.primary-subtle,.side-actions button){background:var(--dark-selected);color:var(--ink);border-color:var(--dark-selected-border)}
+:root[data-theme="dark"] :is(.status[data-kind=dirty],.diagram-issue){background:#3c3020;color:var(--dark-warning)}
+:root[data-theme="dark"] :is(.status[data-kind=error],.error,.json-error){background:#422822;color:var(--dark-danger)}
+:root[data-theme="dark"] :is(.save-status[data-error=true],#diagram-remove){color:var(--dark-danger)}
+:root[data-theme="dark"] :is(li code,#output-tree .json-size,.diagram-bar p,.diagram-legend,.diagram-node small,.diagram-edge-label small,.diagram-item small,.diagram-empty,#diagram-dialog-context,.diagram-entity-fields button span){color:var(--sub)}
+:root[data-theme="dark"] #output-tree{background:var(--dark-input);color:var(--ink)}
+:root[data-theme="dark"] .json-string{color:#b5dfa6}:root[data-theme="dark"] .json-number{color:#fcce93}:root[data-theme="dark"] :is(.json-boolean,.json-literal){color:#e2c3f3}
+:root[data-theme="dark"] .diagram-panel{color:var(--ink)}
+:root[data-theme="dark"] :is(.diagram-viewport,.diagram-crud){background-color:var(--dark-input);background-image:radial-gradient(#35574b .75px,transparent .75px);scrollbar-color:#527d6d var(--dark-input)}
+:root[data-theme="dark"] .diagram-node.is-end,.diagram-legend .legend-end{background:#244038;color:var(--ink);border-color:#73ae96}
+:root[data-theme="dark"] .diagram-node.is-start,.diagram-entity-head,.diagram-legend .legend-start{background:#285e4e;color:var(--ink);border-color:#83c5a9}
+:root[data-theme="dark"] .diagram-legend .legend-state{background:var(--dark-raised)}
+:root[data-theme="dark"] .diagram-edge{stroke:#83bea7}:root[data-theme="dark"] .diagram-edge.is-return{stroke:#dcb17a}
+:root[data-theme="dark"] #diagram-arrow path{fill:#83bea7}:root[data-theme="dark"] #diagram-return path{fill:#dcb17a}
+:root[data-theme="dark"] .diagram-legend .legend-link{border-color:#83bea7}:root[data-theme="dark"] .diagram-legend .legend-return{border-color:#dcb17a}
+:root[data-theme="dark"] :is(.wf-box,.wf-lane){background:var(--dark-panel);color:var(--ink);border-color:var(--line)}
+:root[data-theme="dark"] .wf-lane strong{color:var(--dark-link)}
+:root[data-theme="dark"] .wf-lane small{color:var(--sub)}
+:root[data-theme="dark"] .wf-db-bar{background:#1d3347;color:#b8dcf5;border-color:#3a5f80}
+:root {
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  --surface:#fff; --canvas:#f2f4f9; --stripe:#f6f8fc; --ink:#17213b; --sub:#526078; --line:#d9e0ec;
+  --primary:#3153a5; --primary-ink:#fff; --stage-accent:#3153a5; --stage-bg:#eef2ff;
+  background:var(--canvas);color:var(--ink);
+}
+:root[data-theme="dark"] {
+  --surface:#192235; --canvas:#101625; --stripe:#202b40; --ink:#edf1fc; --sub:#b5c0d8; --line:#35435e;
+  --primary:#a9bfff; --primary-ink:#16264a; --stage-bg:#243351; --stage-accent:#a9bfff;
+  --dark-bg:var(--canvas); --dark-panel:var(--surface); --dark-raised:#242f45; --dark-input:#141d2f;
+  --dark-selected:#2f4165; --dark-selected-border:#758ebd; --dark-link:#b6caff; --teal:#b4c9ff;
+}
+.top,:root[data-theme="dark"] .top{background:#151f3b;border-color:#334367}
+.theme-toggle,:root[data-theme="dark"] .theme-toggle{background:#24345a;border-color:#50648e}
+.brand-icon{background:#bfcefa}.brand-icon i{background:#324c91}.context{color:#d1d9f2}
+.library-head{position:relative;isolation:isolate;overflow:hidden;align-items:center;min-height:226px;margin:0;padding:clamp(21px,4vw,46px);border-radius:16px;background:linear-gradient(112deg,#19264a 26%,#233966);color:#f4f6ff}
+.library-intro{z-index:1;max-width:480px}.library-intro h1{font-size:clamp(34px,4vw,52px);margin:0 0 8px}.library-head .library-intro p{color:#dbe4fa;font-size:15px;line-height:1.5}.library-intro .generate{margin-top:20px;min-height:40px}
+.library-art{position:absolute;right:0;top:50%;transform:translateY(-50%);width:min(52%,660px);height:auto;pointer-events:none}
+.library-section-head{align-items:end}.library-section-head h2,.library-resources>h2{font-size:18px}.library-section-head .save-status{margin-top:4px}
+.project-search{display:grid;gap:5px;font-size:12px;font-weight:650;color:var(--sub);min-width:min(100%,270px)}
+.project-search input{background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:9px 11px;font:inherit;border-radius:7px;width:100%}
+.project-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,238px),1fr))}
+.project-card{border-top:3px solid var(--project-accent);gap:12px;box-shadow:0 3px 12px #17234109}
+.project-card[data-kind="flow"]{--project-accent:#4469bc;--project-tint:#e9efff;--project-text:#2d4e99}
+.project-card[data-kind="catalog"]{--project-accent:#947139;--project-tint:#fff1d8;--project-text:#745221}
+.project-card[data-kind="linked"]{--project-accent:#6c52a8;--project-tint:#f0eaff;--project-text:#57378f}
+:root[data-theme="dark"] .project-card[data-kind="flow"]{--project-accent:#9ab6fc;--project-tint:#283858;--project-text:#c2d2ff}
+:root[data-theme="dark"] .project-card[data-kind="catalog"]{--project-accent:#dbb376;--project-tint:#413525;--project-text:#f1cd94}
+:root[data-theme="dark"] .project-card[data-kind="linked"]{--project-accent:#c0a4fa;--project-tint:#392e55;--project-text:#ded0ff}
+:root[data-theme="dark"] .project-card{border-top-color:var(--project-accent)}
+.project-card-meta{display:flex;align-items:center;gap:9px}.project-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:9px;background:var(--project-tint);color:var(--project-text)}.project-icon svg{width:20px;height:20px}
+.project-kind{font-size:11px;font-weight:650;color:var(--project-text)}.project-card>p{flex:1}.project-card button{border-color:var(--line);color:var(--ink)}
+#editor[data-stage="pim"]{--stage-accent:#6740a2;--stage-bg:#f1ebfc}
+#editor[data-stage="psm"]{--stage-accent:#815620;--stage-bg:#fff2df}
+#editor[data-stage="app"]{--stage-accent:#176453;--stage-bg:#e6f7f1}
+:root[data-theme="dark"] #editor[data-stage="pim"]{--stage-accent:#d1b6ff;--stage-bg:#392d50}
+:root[data-theme="dark"] #editor[data-stage="psm"]{--stage-accent:#f6cd8b;--stage-bg:#3b3025}
+:root[data-theme="dark"] #editor[data-stage="app"]{--stage-accent:#9ce3cb;--stage-bg:#234139}
+.step-symbol{display:inline-grid;place-items:center;width:24px;height:24px;margin-right:8px;border-radius:6px;background:var(--stripe);font-size:15px}
+.pipeline button{border-color:var(--line);padding:10px 14px}.pipeline button small{padding-left:32px}
+.pipeline button[aria-current="step"],:root[data-theme="dark"] .pipeline button[aria-current="step"]{background:var(--stage-bg);color:var(--stage-accent);border-color:var(--stage-accent)}
+.pipeline button[aria-current="step"] .step-symbol{background:var(--surface)}
+.stage-navigation,:root[data-theme="dark"] .stage-navigation{border-left:3px solid var(--stage-accent);background:var(--surface)}
+#stage-progress{color:var(--stage-accent)}.work-card .section-head{padding-block:16px}.work-card .section-head h2{font-size:17px}
+:is(.generate,.back-link),:root[data-theme="dark"] :is(.generate,.back-link){background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+:is(.generate,.back-link):hover,:root[data-theme="dark"] :is(.generate,.back-link):hover{background:var(--primary);color:var(--primary-ink);filter:brightness(1.1)}
+#fields-panel{border:1px solid var(--line);border-radius:8px}.table-wrap table{font:13px/1.45 "Inter","Segoe UI",system-ui,sans-serif}
+#fields-table td:nth-child(2),#trace td{font:12px/1.5 var(--mono)}
+.table-wrap th,.table-wrap td{border-color:var(--line);text-align:left}
+.table-wrap th,:root[data-theme="dark"] .table-wrap th{background:var(--stage-bg);color:var(--stage-accent);font-size:11px;font-weight:750}
+.table-wrap tbody tr:nth-child(even){background:var(--stripe)}
+#fields-table .field-group td{background:var(--stripe);color:var(--ink);font-size:12px;font-weight:750;border-top:2px solid var(--line)}
+.field-type{display:inline-block;padding:2px 7px;border-radius:5px;background:var(--stage-bg);color:var(--stage-accent);font:11px/1.5 var(--mono)}
+.trace-card .table-wrap th,:root[data-theme="dark"] .trace-card .table-wrap th{background:var(--stripe);color:var(--ink)}
+#trace td:first-child{font-weight:650;color:var(--stage-accent)}
+.illustration-signal{transform-box:fill-box;transform-origin:center}
+@media(prefers-reduced-motion:no-preference){.illustration-signal{animation:signal-in .8s ease-out both}.project-card,.resource-card{transition:box-shadow .18s,transform .18s}.project-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px #17234119}}
+@keyframes signal-in{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@media(max-width:780px){.library-art{opacity:.44;width:62%}}
+@media(max-width:560px){.library-head{min-height:200px}.library-art{width:66%;opacity:.27;right:-18%}.library-section-head{align-items:stretch}.project-search{width:100%}.pipeline button small{padding-left:0}}
+.project-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1120px){.project-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:830px){.project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.project-grid{grid-template-columns:minmax(0,1fr)}}
+:root[data-theme="dark"] :is(#fields-table,#metamodel-dialog) th{background:var(--stage-bg);color:var(--stage-accent)}
+#fields-table tr:not(.field-group) td:first-child{font-weight:650}
+:is(.library-resources,.resource-card){border-color:var(--line)}
+.resource-card:not(:hover){background:var(--surface)}
+.resource-icon{background:var(--stage-bg);color:var(--stage-accent)}
+@media(prefers-reduced-motion:reduce){.diagram-node,.diagram-edge-label{transition:none}}
+.presentation-panel{
+  --option-surface:var(--surface,#fff);
+  margin:0 12px 15px;padding:11px 12px 12px;display:block;min-inline-size:0;
+  background:var(--stripe);border:1px solid var(--line);border-radius:9px;
+}
+.presentation-panel legend{padding:0 5px;font-size:13px;font-weight:750;color:var(--ink)}
+#presentation-help,#presentation-reset,.presentation-description,.presentation-current p{font-size:12px;line-height:1.45;color:var(--sub)}
+.presentation-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:9px}
+.presentation-option{display:grid;grid-template-rows:auto 1fr auto;gap:7px;min-width:0;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--option-surface);cursor:pointer}
+.presentation-option:has(input:checked){border-color:var(--stage-accent);outline:1px solid var(--stage-accent);outline-offset:-2px}
+.presentation-option:focus-within{outline:2px solid var(--stage-accent);outline-offset:1px}
+.presentation-option-heading{display:flex;align-items:center;gap:6px;color:var(--ink);font-size:13px}
+.presentation-option-heading input{width:15px;height:15px;margin:0;flex:none;accent-color:var(--stage-accent)}
+.presentation-option-heading small{font-weight:450;color:var(--sub)}
+.layout-example{display:grid;align-content:center;gap:3px;min-height:60px;padding:5px;background:var(--stripe);border-radius:5px}
+.layout-example>span{display:flex;justify-content:space-between;align-items:center;gap:3px;padding:3px 5px;border:1px solid var(--line);border-radius:4px;background:var(--option-surface);color:var(--ink);font-size:10px}
+.layout-example i{font-style:normal;color:var(--stage-accent);font-size:9px}
+.board-example{grid-template-columns:repeat(2,minmax(0,1fr))}
+.board-example>span{flex-direction:column;align-items:flex-start;justify-content:center;min-width:0}
+#presentation-reset{margin-top:9px}
+.presentation-current{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:0 12px 12px;padding:9px 12px;border-left:3px solid var(--stage-accent);background:var(--stage-bg);border-radius:6px}
+.presentation-current strong{color:var(--stage-accent);font-size:12px}
+.presentation-current p{margin-top:2px}
+@media(max-width:560px){.presentation-options{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -81,11 +228,15 @@ details.side-card{padding:0}details.side-card>summary{display:flex;justify-conte
   <span class="context">Nuevos paradigmas de programación · Flujo CIM → PIM → PSM → M2T</span>
   <div class="top-actions">
     <button class="open-tab-btn" id="open-new-tab-top" type="button" hidden>Abrir app en pestaña ↗</button>
-    <button class="generate" id="compile" type="button" hidden>Generar aplicación <span aria-hidden="true">→</span></button>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Tema oscuro" aria-pressed="false" title="Cambiar tema">
+      <svg class="theme-moon" viewBox="0 0 24 24" role="presentation" aria-hidden="true"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"/></svg>
+      <svg class="theme-sun" viewBox="0 0 24 24" role="presentation" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+      <span id="theme-label">Oscuro</span>
+    </button>
   </div>
 </header>
 <main id="guide" hidden>
-  <div class="guide-head"><div><p class="eyebrow">DOCUMENTACIÓN</p><h1 tabindex="-1" id="guide-title">Guía de inicio</h1><p>Crea un proceso, genera su aplicación y comprueba cómo se transforma el modelo en cada fase MDA.</p></div><button id="close-guide" type="button">Volver a proyectos</button></div>
+  <div class="guide-head"><div><p class="eyebrow">DOCUMENTACIÓN</p><h1 tabindex="-1" id="guide-title">Guía de inicio</h1><p>Crea un proceso, genera su aplicación y comprueba cómo se transforma el modelo en cada fase MDA.</p></div><button class="back-link" id="close-guide" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6m-6-6h16"/></svg>Volver a proyectos</button></div>
   <div class="guide-layout">
     <nav aria-label="Índice del manual" class="guide-index">
       <a href="#guide-start">Primer proyecto</a>
@@ -100,8 +251,8 @@ details.side-card{padding:0}details.side-card>summary{display:flex;justify-conte
         <ol>
           <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso básico</strong>.</li>
           <li>En <strong>CIM → Campos y negocio</strong>, usa <strong>+ Añadir campo</strong> directamente en la tabla para agregar atributos sin tocar el JSON, o usa los botones <strong>+ Actor</strong>, <strong>+ Estado</strong>, <strong>+ Transición</strong> y <strong>+ Regla OCL</strong> del panel lateral.</li>
-          <li>Pasa a <strong>PIM</strong> para inspeccionar el modelo lógico independiente de plataforma (clases UML/Ecore, tipos <code>EString</code>/<code>EInt</code>, multiplicidades, firmas de operaciones y archivo <code>.ecore</code>).</li>
-          <li>Pasa a <strong>PSM</strong> para elegir entre <strong>Bandeja de casos</strong> y <strong>Tablero por estado</strong> viendo cómo cambia la arquitectura visual, los controles HTML5 y el esquema relacional SQL (<code>.sql</code>).</li>
+          <li>Pulsa <strong>Validar y ver PIM</strong> para inspeccionar el modelo lógico independiente de plataforma (clases UML/Ecore, tipos <code>EString</code>/<code>EInt</code>, multiplicidades, firmas de operaciones y archivo <code>.ecore</code>).</li>
+          <li>Sigue con <strong>Ver PSM</strong> para elegir entre <strong>Lista de casos (bandeja)</strong> y <strong>Tablero por estado</strong> viendo cómo cambia la arquitectura visual, los controles HTML5 y el esquema relacional SQL (<code>.sql</code>).</li>
           <li>Pulsa <strong>Generar aplicación</strong> o <strong>Abrir app en pestaña ↗</strong> para ejecutar la aplicación con persistencia en Base de Datos (IndexedDB) y conexión directa a archivo (<code>.db.json</code> / <code>.sql</code>).</li>
         </ol>
         <button id="guide-new-project" class="generate" type="button">Crear un proyecto</button>
@@ -163,11 +314,21 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
 </dialog>
 <main id="library">
   <div class="library-head">
-    <div><p class="eyebrow">MDA STUDIO</p><h1>Proyectos</h1><p>Abre un proyecto para editar su modelo, inspeccionar sus entregables MDA y generar su aplicación.</p></div>
-    <button class="generate" id="new-project" type="button">Nuevo proyecto</button>
+    <div class="library-intro"><h1>Proyectos</h1><p>Modela procesos, organiza tus datos, inspecciona entregables MDA y genera aplicaciones web con persistencia.</p>
+      <button class="generate" id="new-project" type="button"><span aria-hidden="true">+</span> Nuevo proyecto</button></div>
+    <svg class="library-art" viewBox="0 0 550 236" fill="none" aria-hidden="true">
+      <defs><pattern id="hero-grid" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#819ccc" opacity=".44"/></pattern><linearGradient id="hero-fade"><stop stop-color="#192750" stop-opacity="0"/><stop offset="1" stop-color="#192750" stop-opacity=".96"/></linearGradient></defs>
+      <path fill="url(#hero-grid)" d="M0 0h550v236H0z"/><path fill="url(#hero-fade)" d="M0 0h550v236H0z" transform="translate(550 0) scale(-1 1)"/>
+      <path class="illustration-route" d="M112 113h56q12 0 12-12V62q0-12 12-12h128M112 113h128m-128 0h56q12 0 12 12v46q0 12 12 12h128M321 50h60q12 0 12 12v39q0 12 12 12h34m-118 70h60q12 0 12-12v-46q0-12 12-12h34M321 113h118" stroke="#a6b8ee" stroke-width="1.4"/>
+      <rect x="67" y="91" width="45" height="45" rx="12" fill="#253964" stroke="#90a8ed"/><rect x="75" y="99" width="29" height="29" rx="7" fill="#425f9c"/><path d="M83 113h13m-6.5-6.5v13" stroke="#e0eaff" stroke-width="1.5"/>
+      <g stroke-width="1.3"><rect x="240" y="30" width="81" height="40" rx="9" fill="#2a3968" stroke="#92a9ed"/><rect x="240" y="93" width="81" height="40" rx="9" fill="#3e3269" stroke="#a993e4"/><rect x="240" y="163" width="81" height="40" rx="9" fill="#21475a" stroke="#68c4c1"/></g>
+      <path d="M253 45h20m-20 10h40m-40 52h20m-20 10h40m-40 60h20m-20 10h40" stroke="#dae5ff" opacity=".66" stroke-width="2" stroke-linecap="round"/>
+      <rect x="439" y="83" width="61" height="60" rx="14" fill="#2a5f65" stroke="#78d6c4"/><path d="m459 113 7 7 14-15" stroke="#baf6df" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="180" cy="113" r="4" fill="#a9c3ff"/><circle class="illustration-signal" cx="392" cy="113" r="5" fill="#baf6df"/>
+    </svg>
   </div>
   <section class="library-workspace" aria-labelledby="projects-title">
-    <div class="library-section-head"><h2 id="projects-title">Mis proyectos</h2><p id="library-status" class="save-status" role="status"></p></div>
+    <div class="library-section-head"><div><h2 id="projects-title">Mis proyectos</h2><p id="library-status" class="save-status" role="status"></p></div><label class="project-search">Buscar proyectos<input id="project-search" type="search" placeholder="Nombre, descripción o tipo"></label></div>
     <div id="project-list" class="project-grid"></div>
   </section>
   <section class="library-resources" aria-labelledby="resources-title">
@@ -208,22 +369,29 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
   </form>
 </dialog>
 <main id="editor" hidden>
-  <div class="editor-nav"><button id="back-projects" type="button">← Proyectos</button><span id="project-caption"></span><p id="project-status" class="save-status" role="status"></p></div>
+  <div class="editor-nav"><button class="back-link" id="back-projects" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6m-6-6h16"/></svg>Volver a proyectos</button><span id="project-caption"></span><p id="project-status" class="save-status" role="status"></p></div>
   <div class="intro"><div><p class="eyebrow">FLUJO DIRIGIDO POR MODELOS (MDA)</p><h1 id="title">Préstamos de laboratorio</h1><p id="description"></p></div>
   <span id="build-status" class="status" role="status"></span></div>
   <div class="pipeline" role="group" aria-label="Etapas del flujo MDA">
-    <button type="button" data-view="model" aria-pressed="true"><b>01 · CIM</b><small>Dominio, BPM y Reglas (.cim / .svg)</small></button>
+    <button type="button" data-view="model" aria-pressed="true"><b><span class="step-symbol" aria-hidden="true">◇</span>01 · CIM</b><small>Dominio, BPM y Reglas (.cim / .svg)</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="pim" aria-pressed="false"><b>02 · PIM</b><small>Clases UML, Ecore y AST (.ecore / .ocl)</small></button>
+    <button type="button" data-view="pim" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▤</span>02 · PIM</b><small>Clases UML, Ecore y AST (.ecore / .ocl)</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="psm" aria-pressed="false"><b>03 · PSM</b><small>Arquitectura Web y DDL (.sql / .schema)</small></button>
+    <button type="button" data-view="psm" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▥</span>03 · PSM</b><small>Arquitectura Web y DDL (.sql / .schema)</small></button>
     <span class="arrow" aria-hidden="true">M2T →</span>
-    <button type="button" data-view="app" aria-pressed="false"><b>04 · Aplicación</b><small>Ejecutable + Base de Datos (.html / .db)</small></button>
+    <button type="button" data-view="app" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">↗</span>04 · Aplicación</b><small>Ejecutable + Base de Datos (.html / .db)</small></button>
   </div>
+  <nav class="stage-navigation" aria-label="Navegación entre etapas">
+    <div class="stage-context"><p id="stage-progress"></p><p id="stage-description"></p></div>
+    <div class="stage-actions">
+      <button id="stage-back" type="button" hidden><span aria-hidden="true">←</span><span id="stage-back-label"></span></button>
+      <button class="generate" id="stage-next" type="button"><span id="stage-next-label"></span><span aria-hidden="true">→</span></button>
+    </div>
+  </nav>
   <div class="workspace">
     <section class="work-card">
       <div class="section-head">
-        <div><h2 id="view-title">Modelo de negocio (CIM)</h2><p id="view-subtitle"></p></div>
+        <div><h2 id="view-title" tabindex="-1">Modelo de negocio (CIM)</h2><p id="view-subtitle"></p></div>
         <div class="tools">
           <button id="reset" type="button">Restaurar ejemplo</button>
           <button id="load-button" type="button">Importar CIM (.json)</button>
@@ -232,17 +400,29 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
         </div>
       </div>
       <div id="deliverables-bar" class="deliverables-bar" aria-label="Entregables de la etapa actual"></div>
-      <div id="presentation-panel" class="presentation-panel" hidden>
-        <div class="presentation-control">
-          <label for="presentation"><strong>Presentación de la aplicación (PSM):</strong></label>
-          <select id="presentation">
-            <option value="bandeja">Bandeja maestro-detalle (Lista + Inspector)</option>
-            <option value="tablero">Tablero Kanban agrupado por estado</option>
-          </select>
+      <fieldset id="presentation-panel" class="presentation-panel" aria-describedby="presentation-help" hidden>
+        <legend>¿Cómo se mostrarán los casos en la plataforma web (PSM)?</legend>
+        <p id="presentation-help">Elige cómo organizar los mismos casos. El wireframe de arquitectura PSM y la aplicación generada se actualizan automáticamente.</p>
+        <div class="presentation-options">
+          <label class="presentation-option">
+            <span class="presentation-option-heading"><input type="radio" name="presentation" value="bandeja" checked><strong>Lista de casos <small>(bandeja maestro-detalle)</small></strong></span>
+            <span class="layout-example list-example" aria-hidden="true"><span><b>Préstamo de Ana</b><i>En revisión</i></span><span><b>Préstamo de Luis</b><i>Aprobado</i></span></span>
+            <span class="presentation-description">Todos los casos en una sola lista junto a su estado e inspector lateral. Útil para revisar uno a la vez.</span>
+          </label>
+          <label class="presentation-option">
+            <span class="presentation-option-heading"><input type="radio" name="presentation" value="tablero"><strong>Tablero Kanban por estado</strong></span>
+            <span class="layout-example board-example" aria-hidden="true"><span><i>En revisión</i><b>Préstamo de Ana</b></span><span><i>Aprobado</i><b>Préstamo de Luis</b></span></span>
+            <span class="presentation-description">Los casos se agrupan en columnas por cada estado del proceso. Útil para visualizar el flujo completo de un vistazo.</span>
+          </label>
         </div>
-        <span id="presentation-summary" class="presentation-summary"></span>
+        <p id="presentation-summary" class="presentation-summary"></p>
+        <p id="presentation-reset" hidden>Cambiar la vista reiniciará la vista previa la próxima vez que abras la etapa Aplicación.</p>
+      </fieldset>
+      <div id="presentation-current" class="presentation-current" hidden>
+        <div><strong id="presentation-current-name"></strong><p id="presentation-current-description"></p></div>
+        <button id="change-presentation" type="button">Cambiar vista en PSM</button>
       </div>
-      <div id="error" class="error" role="alert" hidden></div>
+      <div id="error" class="error" role="alert" tabindex="-1" hidden></div>
       <div id="model-format" class="model-format" role="group" aria-label="Vista del modelo">
         <button id="show-fields" type="button" aria-pressed="true">Vista estructurada</button>
         <button id="show-diagram" type="button" aria-pressed="false">Diagrama interactivo</button>
@@ -350,7 +530,7 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
         </div>
         <p id="source-error" class="json-error" role="alert" hidden></p>
         <div id="source"></div>
-        <div class="json-status"><span id="source-location">Línea 1, columna 1</span><span>JSON · Ctrl+Enter para generar</span></div>
+        <div class="json-status"><span id="source-location">Línea 1, columna 1</span><span>JSON · Ctrl+Enter para validar y ver PIM</span></div>
       </section>
 
       <section id="diagram-panel" class="diagram-panel" aria-label="Editor de diagramas" hidden>
@@ -491,7 +671,7 @@ urgente | Urgente`}),G=()=>{K.parentElement.hidden=_.value!=="Seleccion",K.requi
   (*! For license information please see dagre.esm.js.LEGAL.txt *)
 */
 
-const TEMPLATES = {"html":"\u003c!doctype html>\n\u003chtml lang=\"es\">\n\u003chead>\n\u003cmeta charset=\"utf-8\">\n\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\u003ctitle>Aplicación generada\u003c/title>\n\u003cstyle>{{CSS}}\u003c/style>\n\u003c/head>\n\u003cbody>\n\u003cmain id=\"application\">\n  \u003cheader>\n    \u003cdiv>\u003cp class=\"product\">MDA STUDIO · APLICACIÓN EJECUTABLE (M2T)\u003c/p>\u003ch1 id=\"app-title\">\u003c/h1>\u003cp id=\"app-description\" class=\"muted\">\u003c/p>\u003c/div>\n    \u003clabel class=\"role\">Rol de demostración\u003cselect id=\"app-role\" aria-describedby=\"app-role-help\">\u003c/select>\u003csmall class=\"muted\" id=\"app-role-help\">Simula quién realiza la tarea.\u003c/small>\u003c/label>\n  \u003c/header>\n  \u003csection id=\"db-bar\" class=\"db-bar\" aria-label=\"Conexión a Base de Datos y Archivo\">\n    \u003cdiv class=\"db-info\">\n      \u003cspan id=\"db-badge\" class=\"db-badge\">BD IndexedDB activa\u003c/span>\n      \u003cspan id=\"db-status-text\" class=\"muted\">Sincronizado en base de datos local del navegador.\u003c/span>\n    \u003c/div>\n    \u003cdiv class=\"db-actions\">\n      \u003cbutton type=\"button\" id=\"db-connect-file\" class=\"primary-outline\">Conectar archivo (.db.json)\u003c/button>\n      \u003cbutton type=\"button\" id=\"db-import-btn\">Importar BD (.json)\u003c/button>\n      \u003cinput type=\"file\" id=\"db-import-input\" accept=\".json,application/json\" hidden>\n      \u003cbutton type=\"button\" id=\"db-export-json\">Guardar BD (.db.json)\u003c/button>\n      \u003cbutton type=\"button\" id=\"db-export-sql\">Volcado SQL (.sql)\u003c/button>\n      \u003cbutton type=\"button\" id=\"db-inspect-btn\">Ver tablas / SQL\u003c/button>\n    \u003c/div>\n  \u003c/section>\n  \u003cnav id=\"app-nav\" aria-label=\"Módulos de la aplicación\" hidden>\n    \u003cbutton type=\"button\" data-module=\"requests\" aria-pressed=\"true\">Solicitudes\u003c/button>\n    \u003cbutton type=\"button\" data-module=\"catalog\" aria-pressed=\"false\">Inventario\u003c/button>\n    \u003cbutton type=\"button\" data-module=\"ledger\" aria-pressed=\"false\">Movimientos\u003c/button>\n  \u003c/nav>\n  \u003cp id=\"app-notice\" role=\"status\" aria-live=\"polite\">\u003c/p>\n  \u003cdiv class=\"layout\">\n    \u003cdiv class=\"column\">\n      \u003csection id=\"app-create\">\u003ch2 id=\"app-form-title\">\u003c/h2>\u003cform id=\"app-form\">\u003c/form>\u003c/section>\n      \u003csection id=\"app-cases\">\u003cdiv class=\"section-head\">\u003ch2 id=\"app-cases-title\">Casos\u003c/h2>\u003cspan id=\"app-count\" class=\"muted\">\u003c/span>\u003c/div>\u003cdiv id=\"app-inbox\">\u003c/div>\u003c/section>\n    \u003c/div>\n    \u003csection id=\"app-detail\" tabindex=\"-1\">\u003c/section>\n  \u003c/div>\n  \u003csection id=\"crud-catalog\" class=\"crud-catalog\" hidden aria-labelledby=\"crud-title\">\n    \u003cdiv class=\"crud-toolbar\">\u003cdiv>\u003ch2 id=\"crud-title\">Registros\u003c/h2>\u003cp id=\"crud-count\" class=\"muted\" aria-live=\"polite\">\u003c/p>\u003c/div>\n      \u003clabel>Buscar registros\u003cinput id=\"crud-search\" type=\"search\" placeholder=\"Escribe un valor…\">\u003c/label>\n    \u003c/div>\n    \u003cdiv class=\"crud-table\" tabindex=\"0\" role=\"region\" aria-label=\"Tabla de registros\">\u003ctable>\u003cthead>\u003ctr id=\"crud-columns\">\u003c/tr>\u003c/thead>\u003ctbody id=\"crud-rows\">\u003c/tbody>\u003c/table>\u003c/div>\n    \u003cp id=\"crud-empty\" class=\"muted\">\u003c/p>\n  \u003c/section>\n  \u003csection id=\"stock-ledger\" aria-labelledby=\"stock-title\" hidden>\u003ch2 id=\"stock-title\">Movimientos de inventario\u003c/h2>\n    \u003cp id=\"stock-empty\" class=\"muted\">Todavía no hay entregas ni devoluciones registradas.\u003c/p>\u003col id=\"stock-movements\">\u003c/ol>\n  \u003c/section>\n  \u003cdialog id=\"crud-delete\" aria-labelledby=\"crud-delete-title\">\n    \u003ch2 id=\"crud-delete-title\">¿Eliminar el registro?\u003c/h2>\u003cp id=\"crud-delete-name\">\u003c/p>\n    \u003cdiv class=\"action-bar\">\u003cbutton id=\"crud-delete-cancel\" type=\"button\" autofocus>Cancelar\u003c/button>\u003cbutton id=\"crud-delete-confirm\" type=\"button\" class=\"danger\">Confirmar eliminación\u003c/button>\u003c/div>\n  \u003c/dialog>\n  \u003cdialog id=\"db-dialog\" aria-labelledby=\"db-dialog-title\">\n    \u003cdiv class=\"section-head\">\n      \u003cdiv>\u003ch2 id=\"db-dialog-title\">Inspector de Base de Datos y Sentencias SQL\u003c/h2>\u003cp class=\"muted\" id=\"db-dialog-subtitle\">\u003c/p>\u003c/div>\n      \u003cbutton type=\"button\" id=\"db-dialog-close\">Cerrar\u003c/button>\n    \u003c/div>\n    \u003cpre id=\"db-dialog-sql\" class=\"db-code\">\u003c/pre>\n  \u003c/dialog>\n\u003c/main>\n\u003cscript>{{SCRIPT}}\u003c/script>\n\u003c/body>\n\u003c/html>\n","css":":root{font-family:\"Segoe UI\",system-ui,sans-serif;color:#152e30;background:#eff5f3;font-synthesis:none}\n*{box-sizing:border-box}body{margin:0}main{max-width:1140px;margin:auto;padding:28px clamp(16px,4vw,48px)}\nheader{display:flex;justify-content:space-between;align-items:end;gap:24px}h1{font-size:clamp(26px,5vw,40px);margin:6px 0}h2{font-size:17px;margin:0 0 14px}h3{font-size:21px;margin:0 0 8px}h4{margin:20px 0 8px}p{margin:0}.product{font-size:10px;letter-spacing:.14em;font-weight:750;color:#216a5b}.muted{color:#4d6664;font-size:13px}\n.db-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;padding:11px 15px;background:#e4f2ec;border:1px solid #b8d8cb;border-radius:11px}.db-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.db-badge{background:#18584c;color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px}.db-badge[data-file=true]{background:#1e4e79}.db-actions{display:flex;gap:6px;flex-wrap:wrap}.db-actions button{font-size:12px;padding:6px 10px}.primary-outline{border-color:#18584c;color:#18584c;background:#f4fbf8;font-weight:700}\n.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}.column{display:grid;gap:16px}section{background:#fff;border:1px solid #d8e5e0;border-radius:13px;padding:18px;min-width:0;overflow-wrap:anywhere}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center}\nform{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:end}label{display:grid;gap:5px;font-size:12px;font-weight:650}.role{min-width:155px}input,select{font:inherit;font-weight:400;width:100%;padding:8px 10px;border:1px solid #c2d3cd;border-radius:6px;background:#fafffd;color:inherit}\nbutton{cursor:pointer;font:inherit;font-size:13px;font-weight:650;padding:8px 12px;border:1px solid #b6cdc5;border-radius:7px;color:#18473e;background:#fff}.primary{background:#18584c;border-color:#18584c;color:white}.primary:hover{background:#123f37}.case{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;margin-bottom:5px}.case[aria-pressed=true]{background:#e5f4ee;border-color:#438372}\n.state{border-radius:4px;padding:3px 7px;background:#e4f3ed;color:#215549;font-size:11px;font-weight:700;display:inline-block}#app-notice{min-height:22px;margin:10px 0;color:#216250;font-size:13px}#app-notice[data-error=true]{color:#a62d25;font-weight:650}dl{display:grid;grid-template-columns:1fr 1.5fr;gap:7px;font-size:13px}dt{color:#4d6664}dd{margin:0}.action-bar{display:flex;flex-wrap:wrap;gap:8px}ol{padding-left:18px;font-size:12px;color:#4d6664;line-height:1.7}\n:focus-visible{outline:2px solid #16816d;outline-offset:2px}[hidden]{display:none!important}@media(max-width:580px){.layout{grid-template-columns:1fr}header{align-items:start;flex-direction:column;gap:12px}}\n[data-presentation=tablero]{--board-accent:#2c537c}\n[data-presentation=tablero] header{border-bottom:2px solid #cbdceb;padding:0 0 18px}\n[data-presentation=tablero] .product{color:var(--board-accent)}\n[data-presentation=tablero] .layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}\n[data-presentation=tablero] .column{display:contents}\n[data-presentation=tablero] #app-cases{grid-column:1/-1;grid-row:1;background:#edf3f9;border-color:#cedbe9}\n[data-presentation=tablero] #app-detail{grid-column:2}\n[data-presentation=tablero] #app-inbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));gap:10px}\n[data-presentation=tablero] .board-lane{min-width:0;padding:10px;background:#f8fbff;border:1px solid #cfdeec;border-radius:8px}\n[data-presentation=tablero] .board-lane h3{font-size:12px;color:#274867;margin-bottom:8px}\n[data-presentation=tablero] .primary{background:#2c537c;border-color:#2c537c}\n[data-presentation=tablero] .case[aria-pressed=true]{background:#dfeefb;border-color:#6284a8}\n@media(max-width:700px){[data-presentation=tablero] .layout{grid-template-columns:1fr}[data-presentation=tablero] #app-detail{grid-column:1}}\nform .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}form input[type=checkbox]{width:auto;flex:none;accent-color:#18584c}\n[data-presentation=tabla] .layout{display:block}\n[data-presentation=tabla] #app-form{grid-template-columns:repeat(3,minmax(0,1fr))}\n.crud-catalog{margin-top:16px}.crud-toolbar{display:flex;align-items:end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.crud-toolbar h2{margin-bottom:4px}.crud-toolbar label{min-width:min(100%,235px)}\n.crud-table{overflow:auto;border:1px solid #d8e5e0;border-radius:8px}.crud-table table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}.crud-table th{background:#eaf4ef;color:#315a51;white-space:nowrap}.crud-table th,.crud-table td{padding:10px 12px;border-bottom:1px solid #e5eee9}.crud-table td{min-width:80px;overflow-wrap:anywhere}.crud-table tr:last-child td{border-bottom:0}.crud-actions{white-space:nowrap}.crud-actions button+button{margin-left:6px}#crud-empty{margin-top:10px}\n.danger{border-color:#dbc0ba;color:#8f352a}.danger:hover{background:#fff1ed}#crud-delete,#db-dialog{width:min(760px,calc(100% - 24px));border:1px solid #c2d3cd;border-radius:12px;padding:20px;color:inherit;background:#fff}#crud-delete{width:min(420px,calc(100% - 24px))}#crud-delete::backdrop,#db-dialog::backdrop{background:#132e2b66}#crud-delete .action-bar{margin-top:15px;justify-content:end}\n.db-code{margin:12px 0 0;padding:13px;background:#142b29;color:#e1f6ec;border-radius:8px;font:12px/1.5 \"Cascadia Code\",Consolas,monospace;max-height:55vh;overflow:auto;white-space:pre-wrap}\n@media(max-width:700px){[data-presentation=tabla] #app-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:430px){[data-presentation=tabla] #app-form{grid-template-columns:1fr}}\n#app-nav{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}#app-nav button[aria-pressed=true]{background:#18584c;color:#fff;border-color:#18584c}#stock-movements{margin:0;font-variant-numeric:tabular-nums}#stock-movements li{padding:6px 0}\n"};
+const TEMPLATES = {"html":"\u003c!doctype html>\n\u003chtml lang=\"es\">\n\u003chead>\n\u003cmeta charset=\"utf-8\">\n\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\u003ctitle>Aplicación generada\u003c/title>\n\u003cscript>\n  if (!document.documentElement.dataset.theme) {\n    const preference = matchMedia('(prefers-color-scheme: dark)');\n    const apply = () => { document.documentElement.dataset.theme = preference.matches ? 'dark' : 'light'; };\n    apply();\n    preference.addEventListener('change', apply);\n  }\n\u003c/script>\n\u003cstyle>{{CSS}}\u003c/style>\n\u003c/head>\n\u003cbody>\n\u003cmain id=\"application\">\n  \u003cheader>\n    \u003csvg class=\"app-decoration\" viewBox=\"0 0 350 175\" preserveAspectRatio=\"xMidYMid slice\" fill=\"none\" aria-hidden=\"true\">\u003cg stroke=\"#a4bcf4\" stroke-width=\"1.2\">\u003cpath d=\"M80 139h58q12 0 12-12V68q0-12 12-12h69m-81 54h109m-28-54h26q12 0 12 12v70h41\"/>\u003crect x=\"32\" y=\"118\" width=\"49\" height=\"43\" rx=\"9\" fill=\"#38568c\"/>\u003crect x=\"230\" y=\"33\" width=\"53\" height=\"45\" rx=\"10\" fill=\"#3d5587\"/>\u003crect x=\"255\" y=\"94\" width=\"48\" height=\"34\" rx=\"8\" fill=\"#476397\"/>\u003crect x=\"305\" y=\"121\" width=\"43\" height=\"35\" rx=\"8\" fill=\"#45678e\"/>\u003c/g>\u003cpath d=\"M46 134h20m-20 10h13m196-99v22m-11-11h22m1 55h23m24 27h18\" stroke=\"#c9dbff\" stroke-linecap=\"round\" stroke-width=\"2\"/>\u003c/svg>\n    \u003cdiv>\u003cp class=\"product\">MDA STUDIO · APLICACIÓN EJECUTABLE (M2T)\u003c/p>\u003ch1 id=\"app-title\">\u003c/h1>\u003cp id=\"app-description\" class=\"muted\">\u003c/p>\u003c/div>\n    \u003clabel class=\"role\">Rol de demostración\u003cselect id=\"app-role\" aria-describedby=\"app-role-help\">\u003c/select>\u003csmall class=\"muted\" id=\"app-role-help\">Simula quién realiza la tarea.\u003c/small>\u003c/label>\n  \u003c/header>\n  \u003csection id=\"db-bar\" class=\"db-bar\" aria-label=\"Conexión a Base de Datos y Archivo\">\n    \u003cdiv class=\"db-info\">\n      \u003cspan id=\"db-badge\" class=\"db-badge\">BD IndexedDB activa\u003c/span>\n      \u003cspan id=\"db-status-text\" class=\"muted\">Sincronizado en base de datos local del navegador.\u003c/span>\n    \u003c/div>\n    \u003cdiv class=\"db-actions\">\n      \u003cbutton type=\"button\" id=\"db-connect-file\" class=\"primary-outline\">Conectar archivo (.db.json)\u003c/button>\n      \u003cbutton type=\"button\" id=\"db-import-btn\">Importar BD (.json)\u003c/button>\n      \u003cinput type=\"file\" id=\"db-import-input\" accept=\".json,application/json\" hidden>\n      \u003cbutton type=\"button\" id=\"db-export-json\">Guardar BD (.db.json)\u003c/button>\n      \u003cbutton type=\"button\" id=\"db-export-sql\">Volcado SQL (.sql)\u003c/button>\n      \u003cbutton type=\"button\" id=\"db-inspect-btn\">Ver tablas / SQL\u003c/button>\n    \u003c/div>\n  \u003c/section>\n  \u003cnav id=\"app-nav\" aria-label=\"Módulos de la aplicación\" hidden>\n    \u003cbutton type=\"button\" data-module=\"requests\" aria-pressed=\"true\">\u003csvg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M5 19V5h14M5 12h8v6h6M16 3l3 2-3 2m0 9 3 2-3 2\"/>\u003c/svg>Solicitudes\u003c/button>\n    \u003cbutton type=\"button\" data-module=\"catalog\" aria-pressed=\"false\">\u003csvg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M4 7h16v13H4zM3 4h18v3M9 11h6m-6 5h6\"/>\u003c/svg>Inventario\u003c/button>\n    \u003cbutton type=\"button\" data-module=\"ledger\" aria-pressed=\"false\">\u003csvg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M4 7h16M4 12h16M4 17h10m-9-12v4m0 1v4m0 1v4\"/>\u003c/svg>Movimientos\u003c/button>\n  \u003c/nav>\n  \u003cp id=\"app-notice\" role=\"status\" aria-live=\"polite\">\u003c/p>\n  \u003cdiv class=\"layout\">\n    \u003cdiv class=\"column\">\n      \u003csection id=\"app-create\">\u003ch2 id=\"app-form-title\">\u003c/h2>\u003cform id=\"app-form\">\u003c/form>\u003c/section>\n      \u003csection id=\"app-cases\">\u003cdiv class=\"section-head\">\u003ch2 id=\"app-cases-title\">Casos\u003c/h2>\u003cspan id=\"app-count\" class=\"muted\">\u003c/span>\u003c/div>\u003cp id=\"app-cases-help\" class=\"muted\">\u003c/p>\u003cdiv id=\"app-inbox\">\u003c/div>\u003c/section>\n    \u003c/div>\n    \u003csection id=\"app-detail\" tabindex=\"-1\">\u003c/section>\n  \u003c/div>\n  \u003csection id=\"crud-catalog\" class=\"crud-catalog\" hidden aria-labelledby=\"crud-title\">\n    \u003cdiv class=\"crud-toolbar\">\u003cdiv>\u003ch2 id=\"crud-title\">Registros\u003c/h2>\u003cp id=\"crud-count\" class=\"muted\" aria-live=\"polite\">\u003c/p>\u003c/div>\n      \u003clabel>Buscar registros\u003cinput id=\"crud-search\" type=\"search\" placeholder=\"Escribe un valor…\">\u003c/label>\n    \u003c/div>\n    \u003cdiv class=\"crud-table\" tabindex=\"0\" role=\"region\" aria-label=\"Tabla de registros\">\u003ctable>\u003cthead>\u003ctr id=\"crud-columns\">\u003c/tr>\u003c/thead>\u003ctbody id=\"crud-rows\">\u003c/tbody>\u003c/table>\u003c/div>\n    \u003cp id=\"crud-empty\" class=\"muted\">\u003c/p>\n  \u003c/section>\n  \u003csection id=\"stock-ledger\" aria-labelledby=\"stock-title\" hidden>\u003ch2 id=\"stock-title\">Movimientos de inventario\u003c/h2>\n    \u003cp id=\"stock-empty\" class=\"muted\">Todavía no hay entregas ni devoluciones registradas.\u003c/p>\u003col id=\"stock-movements\">\u003c/ol>\n  \u003c/section>\n  \u003cdialog id=\"crud-delete\" aria-labelledby=\"crud-delete-title\">\n    \u003ch2 id=\"crud-delete-title\">¿Eliminar el registro?\u003c/h2>\u003cp id=\"crud-delete-name\">\u003c/p>\n    \u003cdiv class=\"action-bar\">\u003cbutton id=\"crud-delete-cancel\" type=\"button\" autofocus>Cancelar\u003c/button>\u003cbutton id=\"crud-delete-confirm\" type=\"button\" class=\"danger\">Confirmar eliminación\u003c/button>\u003c/div>\n  \u003c/dialog>\n  \u003cdialog id=\"db-dialog\" aria-labelledby=\"db-dialog-title\">\n    \u003cdiv class=\"section-head\">\n      \u003cdiv>\u003ch2 id=\"db-dialog-title\">Inspector de Base de Datos y Sentencias SQL\u003c/h2>\u003cp class=\"muted\" id=\"db-dialog-subtitle\">\u003c/p>\u003c/div>\n      \u003cbutton type=\"button\" id=\"db-dialog-close\">Cerrar\u003c/button>\n    \u003c/div>\n    \u003cpre id=\"db-dialog-sql\" class=\"db-code\">\u003c/pre>\n  \u003c/dialog>\n\u003c/main>\n\u003cscript>\n  if (window.parent !== window) window.addEventListener('message', event => {\n    const { type, theme } = event.data ?? {};\n    if (event.source === window.parent && type === 'mda-preview-theme' && (theme === 'dark' || theme === 'light')) {\n      document.documentElement.dataset.theme = theme;\n    }\n  });\n  {{SCRIPT}}\n\u003c/script>\n\u003c/body>\n\u003c/html>\n","css":":root{font-family:\"Segoe UI\",system-ui,sans-serif;color:#152e30;background:#eff5f3;font-synthesis:none}\n*{box-sizing:border-box}body{margin:0}main{max-width:1140px;margin:auto;padding:28px clamp(16px,4vw,48px)}\nheader{display:flex;justify-content:space-between;align-items:end;gap:24px}h1{font-size:clamp(26px,5vw,40px);margin:6px 0}h2{font-size:17px;margin:0 0 14px}h3{font-size:21px;margin:0 0 8px}h4{margin:20px 0 8px}p{margin:0}.product{font-size:10px;letter-spacing:.14em;font-weight:750;color:#216a5b}.muted{color:#4d6664;font-size:13px}\n.db-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;padding:11px 15px;background:#eaf1ff;border:1px solid #c6d6f7;border-radius:11px}.db-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.db-badge{background:#3153a5;color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px}.db-badge[data-file=true]{background:#176453}.db-actions{display:flex;gap:6px;flex-wrap:wrap}.db-actions button{font-size:12px;padding:6px 10px}.primary-outline{border-color:#3153a5;color:#3153a5;background:#f4f7ff;font-weight:700}\n.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}.column{display:grid;gap:16px}section{background:#fff;border:1px solid #d8e5e0;border-radius:13px;padding:18px;min-width:0;overflow-wrap:anywhere}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center}\nform{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:end}label{display:grid;gap:5px;font-size:12px;font-weight:650}.role{min-width:155px}input,select{font:inherit;font-weight:400;width:100%;padding:8px 10px;border:1px solid #c2d3cd;border-radius:6px;background:#fafffd;color:inherit}\nbutton{cursor:pointer;font:inherit;font-size:13px;font-weight:650;padding:8px 12px;border:1px solid #b6cdc5;border-radius:7px;color:#18473e;background:#fff}.primary{background:#18584c;border-color:#18584c;color:white}.primary:hover{background:#123f37}.case{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;margin-bottom:5px}.case[aria-pressed=true]{background:#e5f4ee;border-color:#438372}\n.state{border-radius:4px;padding:3px 7px;background:#e4f3ed;color:#215549;font-size:11px;font-weight:700;display:inline-block}#app-notice{min-height:22px;margin:10px 0;color:#216250;font-size:13px}#app-notice[data-error=true]{color:#a62d25;font-weight:650}dl{display:grid;grid-template-columns:1fr 1.5fr;gap:7px;font-size:13px}dt{color:#4d6664}dd{margin:0}.action-bar{display:flex;flex-wrap:wrap;gap:8px}ol{padding-left:18px;font-size:12px;color:#4d6664;line-height:1.7}\n:focus-visible{outline:2px solid #16816d;outline-offset:2px}[hidden]{display:none!important}@media(max-width:580px){.layout{grid-template-columns:1fr}header{align-items:start;flex-direction:column;gap:12px}}\n[data-presentation=tablero]{--board-accent:#2c537c}\n[data-presentation=tablero] header{border-bottom:2px solid #cbdceb;padding:0 0 18px}\n[data-presentation=tablero] .product{color:var(--board-accent)}\n[data-presentation=tablero] .layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}\n[data-presentation=tablero] .column{display:contents}\n[data-presentation=tablero] #app-cases{grid-column:1/-1;grid-row:1;background:#edf3f9;border-color:#cedbe9}\n[data-presentation=tablero] #app-detail{grid-column:2}\n[data-presentation=tablero] #app-inbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));gap:10px}\n[data-presentation=tablero] .board-lane{min-width:0;padding:10px;background:#f8fbff;border:1px solid #cfdeec;border-radius:8px}\n[data-presentation=tablero] .board-lane h3{font-size:12px;color:#274867;margin-bottom:8px}\n[data-presentation=tablero] .primary{background:#2c537c;border-color:#2c537c}\n[data-presentation=tablero] .case[aria-pressed=true]{background:#dfeefb;border-color:#6284a8}\n@media(max-width:700px){[data-presentation=tablero] .layout{grid-template-columns:1fr}[data-presentation=tablero] #app-detail{grid-column:1}}\nform .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}form input[type=checkbox]{width:auto;flex:none;accent-color:#18584c}\n[data-presentation=tabla] .layout{display:block}\n[data-presentation=tabla] #app-form{grid-template-columns:repeat(3,minmax(0,1fr))}\n.crud-catalog{margin-top:16px}.crud-toolbar{display:flex;align-items:end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.crud-toolbar h2{margin-bottom:4px}.crud-toolbar label{min-width:min(100%,235px)}\n.crud-table{overflow:auto;border:1px solid #d8e5e0;border-radius:8px}.crud-table table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}.crud-table th{background:#eaf4ef;color:#315a51;white-space:nowrap}.crud-table th,.crud-table td{padding:10px 12px;border-bottom:1px solid #e5eee9}.crud-table td{min-width:80px;overflow-wrap:anywhere}.crud-table tr:last-child td{border-bottom:0}.crud-actions{white-space:nowrap}.crud-actions button+button{margin-left:6px}#crud-empty{margin-top:10px}\n.danger{border-color:#dbc0ba;color:#8f352a}.danger:hover{background:#fff1ed}#crud-delete,#db-dialog{width:min(760px,calc(100% - 24px));border:1px solid #c2d3cd;border-radius:12px;padding:20px;color:inherit;background:#fff}#crud-delete{width:min(420px,calc(100% - 24px))}#crud-delete::backdrop,#db-dialog::backdrop{background:#132e2b66}#crud-delete .action-bar{margin-top:15px;justify-content:end}\n.db-code{margin:12px 0 0;padding:13px;background:#142b29;color:#e1f6ec;border-radius:8px;font:12px/1.5 \"Cascadia Code\",Consolas,monospace;max-height:55vh;overflow:auto;white-space:pre-wrap}\n@media(max-width:700px){[data-presentation=tabla] #app-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:430px){[data-presentation=tabla] #app-form{grid-template-columns:1fr}}\n#app-nav{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}#app-nav button[aria-pressed=true]{background:#18584c;color:#fff;border-color:#18584c}#stock-movements{margin:0;font-variant-numeric:tabular-nums}#stock-movements li{padding:6px 0}\n\n:root[data-theme=\"dark\"]{--ink:#e5f0ea;--sub:#a9c0b6;--line:#345148;--teal:#94d8bb;--dark-bg:#101b19;--dark-panel:#172622;--dark-raised:#20332d;--dark-input:#121f1b;--dark-selected:#28473d;--dark-selected-border:#5c9b84;--dark-link:#a4dec6;--dark-danger:#ffc0b4;--dark-warning:#f2d098;color:var(--ink);background:var(--dark-bg);color-scheme:dark;}\n:root[data-theme=\"dark\"] :is(section,#crud-delete,#db-dialog){background:var(--dark-panel);border-color:var(--line);color:var(--ink)}\n:root[data-theme=\"dark\"] :is(.muted,dt,ol){color:var(--sub)}\n:root[data-theme=\"dark\"] .product,#app-notice{color:var(--teal)}\n:root[data-theme=\"dark\"] #app-notice[data-error=true]{color:var(--dark-danger)}\n:root[data-theme=\"dark\"] :is(input,select){background:var(--dark-input);border-color:#5c8576}\n:root[data-theme=\"dark\"] button{background:var(--dark-raised);color:var(--ink);border-color:var(--line)}\n:root[data-theme=\"dark\"] :is(.primary,#app-nav button[aria-pressed=true],[data-presentation=tablero] .primary,.db-badge){background:#9adbc0;color:#102d25;border-color:#9adbc0}\n:root[data-theme=\"dark\"] .primary:hover{background:#b8ead4;color:#102d25}\n:root[data-theme=\"dark\"] :is(.case[aria-pressed=true],[data-presentation=tablero] .case[aria-pressed=true],.state){background:var(--dark-selected);border-color:var(--dark-selected-border);color:var(--ink)}\n:root[data-theme=\"dark\"] .crud-table,.crud-table th,.crud-table td,[data-presentation=tablero] header{border-color:var(--line)}\n:root[data-theme=\"dark\"] :is(.crud-table th,[data-presentation=tablero] #app-cases,[data-presentation=tablero] .board-lane){background:var(--dark-raised);color:var(--ink);border-color:var(--line)}\n:root[data-theme=\"dark\"] [data-presentation=tablero] :is(.product,.board-lane h3){color:var(--teal)}\n:root[data-theme=\"dark\"] .danger{color:var(--dark-danger);border-color:#8a514a}:root[data-theme=\"dark\"] .danger:hover{background:#422822}\n:root{font-family:\"Inter\",\"Segoe UI\",system-ui,sans-serif;background:#f1f4fa;color:#182342;--app-line:#d9e2ee;--app-sub:#52627d;--app-stripe:#f5f7fc;--app-panel:#fff;--app-tint:#eaf1ff;--app-accent:#3459ac}\n:root[data-theme=\"dark\"]{--ink:#edf1fc;--sub:#b5c0d8;--line:#374661;--dark-bg:#101625;--dark-panel:#192235;--dark-raised:#24334f;--dark-input:#141d2f;--dark-selected:#2d4165;--dark-selected-border:#758ebd;--teal:#b4c9ff;--app-line:var(--line);--app-sub:var(--sub);--app-stripe:#202c42;--app-panel:var(--dark-panel);--app-tint:#283b60;--app-accent:#bed0ff}\n#application>header{position:relative;overflow:hidden;isolation:isolate;padding:28px clamp(17px,4vw,34px);border-radius:15px;background:linear-gradient(114deg,#18264d,#263b68);color:#f6f8ff;align-items:center;border:0}\n#application>header .product{color:#b4c9ff}\n#application>header h1{font-size:clamp(27px,5vw,42px);margin:0 0 8px;letter-spacing:-.035em;line-height:1.08}\n#application>header .muted{color:#dbe5fc;line-height:1.55}\n#application>header .role{position:relative;flex:none;background:#324875;border-radius:9px;padding:10px 12px;color:#fff}\n#application>header .role select{background:#1b2b50;color:#eef4ff;border-color:#8297c1}#application>header .role small{font-size:11px}\n.app-decoration{position:absolute;z-index:-1;right:0;top:0;width:min(44%,360px);height:100%;opacity:.55;pointer-events:none}\n#app-nav{gap:0;border-bottom:1px solid var(--app-line);margin-top:14px}\n#app-nav button,:root[data-theme=\"dark\"] #app-nav button{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--app-sub);padding:12px 16px;display:inline-flex;gap:7px;align-items:center}\n#app-nav button[aria-pressed=true],:root[data-theme=\"dark\"] #app-nav button[aria-pressed=true]{color:var(--app-accent);background:var(--app-tint);border-color:var(--app-accent);border-radius:7px 7px 0 0}\n#app-nav svg{width:17px;height:17px}\n#app-create,#app-cases,#app-detail,#crud-catalog,#stock-ledger,#db-bar{border-color:var(--app-line)}\n#app-create{border-top:3px solid var(--app-accent)}\n#app-detail{border-top:3px solid #8972bc}\n#app-form-title,#crud-title,#stock-title{font-size:18px}#crud-catalog,#stock-ledger{background:var(--app-panel)}\n.crud-table{border-color:var(--app-line)}.crud-table th,:root[data-theme=\"dark\"] .crud-table th{background:var(--app-tint);color:var(--app-accent);border-color:var(--app-line);font-size:12px}\n.crud-table td{border-color:var(--app-line)}.crud-table tbody tr:nth-child(even){background:var(--app-stripe)}\n.crud-table td:first-child{font-weight:650}.crud-table td[data-stock]{font-variant-numeric:tabular-nums;color:var(--app-accent);font-weight:750}\n#crud-empty,#stock-empty,.app-empty{padding:13px 12px;border:1px dashed var(--app-line);border-radius:8px;background:var(--app-stripe);color:var(--app-sub);line-height:1.5}\n#stock-movements{list-style:none;padding:0;display:grid;gap:0}\n#stock-movements .movement{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;border-bottom:1px solid var(--app-line);padding:12px 4px}\n.movement:last-child{border-bottom:0!important}.movement-direction{display:grid;place-items:center;width:33px;height:33px;border-radius:50%;font-size:16px;font-weight:750;background:var(--app-tint);color:var(--app-accent)}\n.movement-copy{display:grid;gap:3px;min-width:0}.movement-copy strong{font-size:14px;color:var(--ink,#182342)}.movement-copy span,.movement-totals span{font-size:11px;color:var(--app-sub)}.movement-totals{display:grid;text-align:right;gap:3px}.movement-totals strong{font-size:15px;color:var(--app-accent)}\n:root:not([data-theme=\"dark\"]) .primary{background:#3153a5;border-color:#3153a5;color:#fff}\n:root[data-theme=\"dark\"] .primary{background:#a9bfff;border-color:#a9bfff;color:#16264a}\n@media(prefers-reduced-motion:no-preference){.module-enter{animation:module-enter .2s ease-out both}}\n@keyframes module-enter{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}\n@media(max-width:550px){#application>header{align-items:start}.app-decoration{opacity:.23}#app-nav button,:root[data-theme=\"dark\"] #app-nav button{padding:10px 8px;gap:5px;font-size:12px}}\n.movement[data-direction=\"out\"] .movement-direction{background:#fff0d9;color:#81531f}\n.movement[data-direction=\"in\"] .movement-direction{background:#e0f3ea;color:#175d4c}\n:root[data-theme=\"dark\"] .movement[data-direction=\"out\"] .movement-direction{background:#443520;color:#f4ce91}\n:root[data-theme=\"dark\"] .movement[data-direction=\"in\"] .movement-direction{background:#234237;color:#a6e9cb}\n#app-notice{color:#235c49}\n:root[data-theme=\"dark\"] #app-notice{color:var(--teal)}\n:root[data-theme=\"dark\"] #app-notice[data-error=true]{color:var(--dark-danger)}\n#app-cases-help{margin:-5px 0 12px}\n"};
 const DEMO = "{\n  \"version\": 1,\n  \"id\": \"prestamos-lab\",\n  \"nombre\": \"Préstamos de laboratorio\",\n  \"objetivo\": \"Solicitar, aprobar y devolver equipos del laboratorio universitario.\",\n  \"entidad\": \"Prestamo\",\n  \"actores\": [\n    {\n      \"id\": \"estudiante\",\n      \"nombre\": \"Estudiante\"\n    },\n    {\n      \"id\": \"responsable\",\n      \"nombre\": \"Responsable\"\n    }\n  ],\n  \"datos\": [\n    {\n      \"id\": \"solicitante\",\n      \"nombre\": \"Solicitante\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"equipo\",\n      \"nombre\": \"Equipo\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"cantidad\",\n      \"nombre\": \"Cantidad\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"dias\",\n      \"nombre\": \"Días de préstamo\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"motivo\",\n      \"nombre\": \"Motivo\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    }\n  ],\n  \"inicio\": {\n    \"actor\": \"estudiante\",\n    \"estado\": \"solicitado\",\n    \"nombre\": \"Nueva solicitud\"\n  },\n  \"estados\": [\n    {\n      \"id\": \"solicitado\",\n      \"nombre\": \"En revisión\"\n    },\n    {\n      \"id\": \"aprobado\",\n      \"nombre\": \"Aprobado\"\n    },\n    {\n      \"id\": \"entregado\",\n      \"nombre\": \"Entregado\"\n    },\n    {\n      \"id\": \"devuelto\",\n      \"nombre\": \"Devuelto\",\n      \"final\": true\n    },\n    {\n      \"id\": \"rechazado\",\n      \"nombre\": \"Rechazado\",\n      \"final\": true\n    }\n  ],\n  \"transiciones\": [\n    {\n      \"id\": \"aprobar\",\n      \"nombre\": \"Aprobar\",\n      \"actor\": \"responsable\",\n      \"desde\": \"solicitado\",\n      \"hasta\": \"aprobado\"\n    },\n    {\n      \"id\": \"rechazar\",\n      \"nombre\": \"Rechazar\",\n      \"actor\": \"responsable\",\n      \"desde\": \"solicitado\",\n      \"hasta\": \"rechazado\"\n    },\n    {\n      \"id\": \"entregar\",\n      \"nombre\": \"Registrar entrega\",\n      \"actor\": \"responsable\",\n      \"desde\": \"aprobado\",\n      \"hasta\": \"entregado\"\n    },\n    {\n      \"id\": \"devolver\",\n      \"nombre\": \"Registrar devolución\",\n      \"actor\": \"estudiante\",\n      \"desde\": \"entregado\",\n      \"hasta\": \"devuelto\"\n    }\n  ],\n  \"ocl\": [\n    \"context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 5\",\n    \"context Prestamo inv PlazoValido: self.dias >= 1 and self.dias \u003c= 30\",\n    \"context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8\"\n  ]\n}";
 const EXAMPLE = "{\n  \"version\": 1,\n  \"id\": \"prestamos-lab\",\n  \"nombre\": \"Préstamos de laboratorio\",\n  \"objetivo\": \"Solicitar, aprobar y devolver equipos del laboratorio universitario.\",\n  \"entidad\": \"Prestamo\",\n  \"actores\": [\n    {\n      \"id\": \"estudiante\",\n      \"nombre\": \"Estudiante\"\n    },\n    {\n      \"id\": \"responsable\",\n      \"nombre\": \"Responsable\"\n    }\n  ],\n  \"datos\": [\n    {\n      \"id\": \"solicitante\",\n      \"nombre\": \"Solicitante\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"equipo\",\n      \"nombre\": \"Equipo\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"cantidad\",\n      \"nombre\": \"Cantidad\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"dias\",\n      \"nombre\": \"Días de préstamo\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"motivo\",\n      \"nombre\": \"Motivo\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    }\n  ],\n  \"inicio\": {\n    \"actor\": \"estudiante\",\n    \"estado\": \"solicitado\",\n    \"nombre\": \"Nueva solicitud\"\n  },\n  \"estados\": [\n    {\n      \"id\": \"solicitado\",\n      \"nombre\": \"En revisión\"\n    },\n    {\n      \"id\": \"aprobado\",\n      \"nombre\": \"Aprobado\"\n    },\n    {\n      \"id\": \"entregado\",\n      \"nombre\": \"Entregado\"\n    },\n    {\n      \"id\": \"devuelto\",\n      \"nombre\": \"Devuelto\",\n      \"final\": true\n    },\n    {\n      \"id\": \"rechazado\",\n      \"nombre\": \"Rechazado\",\n      \"final\": true\n    }\n  ],\n  \"transiciones\": [\n    {\n      \"id\": \"aprobar\",\n      \"nombre\": \"Aprobar\",\n      \"actor\": \"responsable\",\n      \"desde\": \"solicitado\",\n      \"hasta\": \"aprobado\"\n    },\n    {\n      \"id\": \"rechazar\",\n      \"nombre\": \"Rechazar\",\n      \"actor\": \"responsable\",\n      \"desde\": \"solicitado\",\n      \"hasta\": \"rechazado\"\n    },\n    {\n      \"id\": \"entregar\",\n      \"nombre\": \"Registrar entrega\",\n      \"actor\": \"responsable\",\n      \"desde\": \"aprobado\",\n      \"hasta\": \"entregado\"\n    },\n    {\n      \"id\": \"devolver\",\n      \"nombre\": \"Registrar devolución\",\n      \"actor\": \"estudiante\",\n      \"desde\": \"entregado\",\n      \"hasta\": \"devuelto\"\n    }\n  ],\n  \"ocl\": [\n    \"context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 5\",\n    \"context Prestamo inv PlazoValido: self.dias >= 1 and self.dias \u003c= 30\",\n    \"context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8\"\n  ]\n}";
 const ADVANCED = "{\n  \"version\": 1,\n  \"id\": \"compras-institucionales\",\n  \"nombre\": \"Compras institucionales\",\n  \"objetivo\": \"Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.\",\n  \"entidad\": \"Compra\",\n  \"actores\": [\n    {\n      \"id\": \"solicitante\",\n      \"nombre\": \"Solicitante\"\n    },\n    {\n      \"id\": \"jefatura\",\n      \"nombre\": \"Jefatura\"\n    },\n    {\n      \"id\": \"presupuesto\",\n      \"nombre\": \"Presupuesto\"\n    },\n    {\n      \"id\": \"compras\",\n      \"nombre\": \"Compras\"\n    },\n    {\n      \"id\": \"juridico\",\n      \"nombre\": \"Jurídico\"\n    },\n    {\n      \"id\": \"comite\",\n      \"nombre\": \"Comité\"\n    },\n    {\n      \"id\": \"bodega\",\n      \"nombre\": \"Bodega\"\n    },\n    {\n      \"id\": \"contabilidad\",\n      \"nombre\": \"Contabilidad\"\n    },\n    {\n      \"id\": \"tesoreria\",\n      \"nombre\": \"Tesorería\"\n    }\n  ],\n  \"datos\": [\n    {\n      \"id\": \"referencia\",\n      \"nombre\": \"Referencia interna\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"unidad\",\n      \"nombre\": \"Unidad solicitante\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"objeto\",\n      \"nombre\": \"Objeto de la compra\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"justificacion\",\n      \"nombre\": \"Justificación\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"monto\",\n      \"nombre\": \"Monto estimado (USD)\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"cantidad\",\n      \"nombre\": \"Unidades\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"cotizaciones\",\n      \"nombre\": \"Cotizaciones disponibles\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"plazo\",\n      \"nombre\": \"Plazo de entrega (días)\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"proveedor\",\n      \"nombre\": \"Proveedor propuesto\",\n      \"tipo\": \"Texto\",\n      \"requerido\": false\n    },\n    {\n      \"id\": \"partida\",\n      \"nombre\": \"Partida presupuestaria\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"prioridad\",\n      \"tipo\": \"Seleccion\",\n      \"opciones\": [\n        {\n          \"nombre\": \"Normal\",\n          \"id\": \"normal\"\n        },\n        {\n          \"nombre\": \"Urgente\",\n          \"id\": \"urgente\"\n        },\n        {\n          \"nombre\": \"Crítica\",\n          \"id\": \"critica\"\n        }\n      ],\n      \"requerido\": false,\n      \"nombre\": \"Prioridad\"\n    },\n    {\n      \"id\": \"fecha-necesaria\",\n      \"tipo\": \"Fecha\",\n      \"requerido\": false,\n      \"nombre\": \"Fecha en que se necesita\"\n    },\n    {\n      \"id\": \"documentacion\",\n      \"tipo\": \"Booleano\",\n      \"requerido\": false,\n      \"nombre\": \"Documentación adjunta disponible\"\n    }\n  ],\n  \"inicio\": {\n    \"actor\": \"solicitante\",\n    \"estado\": \"solicitada\",\n    \"nombre\": \"Registrar solicitud\"\n  },\n  \"estados\": [\n    {\n      \"id\": \"solicitada\",\n      \"nombre\": \"Revisión de jefatura\"\n    },\n    {\n      \"id\": \"observada\",\n      \"nombre\": \"Ampliación pendiente\"\n    },\n    {\n      \"id\": \"presupuesto\",\n      \"nombre\": \"Control de presupuesto\"\n    },\n    {\n      \"id\": \"modalidad\",\n      \"nombre\": \"Selección de modalidad\"\n    },\n    {\n      \"id\": \"juridica\",\n      \"nombre\": \"Revisión jurídica\"\n    },\n    {\n      \"id\": \"comite\",\n      \"nombre\": \"Evaluación del comité\"\n    },\n    {\n      \"id\": \"adjudicada\",\n      \"nombre\": \"Adjudicada\"\n    },\n    {\n      \"id\": \"ordenada\",\n      \"nombre\": \"Orden emitida\"\n    },\n    {\n      \"id\": \"incidencia\",\n      \"nombre\": \"Incidencia de recepción\"\n    },\n    {\n      \"id\": \"recibida\",\n      \"nombre\": \"Recibida\"\n    },\n    {\n      \"id\": \"contabilidad\",\n      \"nombre\": \"Revisión contable\"\n    },\n    {\n      \"id\": \"pago\",\n      \"nombre\": \"Pendiente de pago\"\n    },\n    {\n      \"id\": \"pagada\",\n      \"nombre\": \"Pagada\"\n    },\n    {\n      \"id\": \"cerrada\",\n      \"nombre\": \"Cerrada\",\n      \"final\": true\n    },\n    {\n      \"id\": \"rechazada\",\n      \"nombre\": \"Rechazada\",\n      \"final\": true\n    },\n    {\n      \"id\": \"cancelada\",\n      \"nombre\": \"Cancelada\",\n      \"final\": true\n    }\n  ],\n  \"transiciones\": [\n    {\n      \"id\": \"avalar\",\n      \"nombre\": \"Enviar a presupuesto\",\n      \"actor\": \"jefatura\",\n      \"desde\": \"solicitada\",\n      \"hasta\": \"presupuesto\"\n    },\n    {\n      \"id\": \"observar\",\n      \"nombre\": \"Solicitar ampliación\",\n      \"actor\": \"jefatura\",\n      \"desde\": \"solicitada\",\n      \"hasta\": \"observada\"\n    },\n    {\n      \"id\": \"justificar\",\n      \"nombre\": \"Registrar ampliación externa\",\n      \"actor\": \"solicitante\",\n      \"desde\": \"observada\",\n      \"hasta\": \"solicitada\"\n    },\n    {\n      \"id\": \"retirar\",\n      \"nombre\": \"Retirar solicitud\",\n      \"actor\": \"solicitante\",\n      \"desde\": \"observada\",\n      \"hasta\": \"cancelada\"\n    },\n    {\n      \"id\": \"denegar\",\n      \"nombre\": \"Rechazar solicitud\",\n      \"actor\": \"jefatura\",\n      \"desde\": \"solicitada\",\n      \"hasta\": \"rechazada\"\n    },\n    {\n      \"id\": \"certificar\",\n      \"nombre\": \"Certificar disponibilidad\",\n      \"actor\": \"presupuesto\",\n      \"desde\": \"presupuesto\",\n      \"hasta\": \"modalidad\"\n    },\n    {\n      \"id\": \"sinfondos\",\n      \"nombre\": \"Rechazar por falta de fondos\",\n      \"actor\": \"presupuesto\",\n      \"desde\": \"presupuesto\",\n      \"hasta\": \"rechazada\"\n    },\n    {\n      \"id\": \"directa\",\n      \"nombre\": \"Adjudicar compra directa\",\n      \"actor\": \"compras\",\n      \"desde\": \"modalidad\",\n      \"hasta\": \"adjudicada\"\n    },\n    {\n      \"id\": \"competitiva\",\n      \"nombre\": \"Enviar a revisión jurídica\",\n      \"actor\": \"compras\",\n      \"desde\": \"modalidad\",\n      \"hasta\": \"juridica\"\n    },\n    {\n      \"id\": \"cancelar\",\n      \"nombre\": \"Cancelar trámite\",\n      \"actor\": \"compras\",\n      \"desde\": \"modalidad\",\n      \"hasta\": \"cancelada\"\n    },\n    {\n      \"id\": \"dictamen\",\n      \"nombre\": \"Emitir dictamen favorable\",\n      \"actor\": \"juridico\",\n      \"desde\": \"juridica\",\n      \"hasta\": \"comite\"\n    },\n    {\n      \"id\": \"devolver\",\n      \"nombre\": \"Devolver a compras\",\n      \"actor\": \"juridico\",\n      \"desde\": \"juridica\",\n      \"hasta\": \"modalidad\"\n    },\n    {\n      \"id\": \"objecion\",\n      \"nombre\": \"Rechazar por objeción jurídica\",\n      \"actor\": \"juridico\",\n      \"desde\": \"juridica\",\n      \"hasta\": \"rechazada\"\n    },\n    {\n      \"id\": \"adjudicar\",\n      \"nombre\": \"Adjudicar por comité\",\n      \"actor\": \"comite\",\n      \"desde\": \"comite\",\n      \"hasta\": \"adjudicada\"\n    },\n    {\n      \"id\": \"desierta\",\n      \"nombre\": \"Declarar proceso desierto\",\n      \"actor\": \"comite\",\n      \"desde\": \"comite\",\n      \"hasta\": \"cancelada\"\n    },\n    {\n      \"id\": \"emitir\",\n      \"nombre\": \"Emitir orden de compra\",\n      \"actor\": \"compras\",\n      \"desde\": \"adjudicada\",\n      \"hasta\": \"ordenada\"\n    },\n    {\n      \"id\": \"recibir\",\n      \"nombre\": \"Confirmar recepción conforme\",\n      \"actor\": \"bodega\",\n      \"desde\": \"ordenada\",\n      \"hasta\": \"recibida\"\n    },\n    {\n      \"id\": \"incidencia\",\n      \"nombre\": \"Registrar recepción no conforme\",\n      \"actor\": \"bodega\",\n      \"desde\": \"ordenada\",\n      \"hasta\": \"incidencia\"\n    },\n    {\n      \"id\": \"subsanar\",\n      \"nombre\": \"Registrar subsanación del proveedor\",\n      \"actor\": \"compras\",\n      \"desde\": \"incidencia\",\n      \"hasta\": \"ordenada\"\n    },\n    {\n      \"id\": \"anular\",\n      \"nombre\": \"Anular orden\",\n      \"actor\": \"compras\",\n      \"desde\": \"incidencia\",\n      \"hasta\": \"cancelada\"\n    },\n    {\n      \"id\": \"enviarcontable\",\n      \"nombre\": \"Enviar expediente a contabilidad\",\n      \"actor\": \"compras\",\n      \"desde\": \"recibida\",\n      \"hasta\": \"contabilidad\"\n    },\n    {\n      \"id\": \"contabilizar\",\n      \"nombre\": \"Autorizar contabilización\",\n      \"actor\": \"contabilidad\",\n      \"desde\": \"contabilidad\",\n      \"hasta\": \"pago\"\n    },\n    {\n      \"id\": \"revisar\",\n      \"nombre\": \"Devolver expediente\",\n      \"actor\": \"contabilidad\",\n      \"desde\": \"contabilidad\",\n      \"hasta\": \"recibida\"\n    },\n    {\n      \"id\": \"pagar\",\n      \"nombre\": \"Registrar pago\",\n      \"actor\": \"tesoreria\",\n      \"desde\": \"pago\",\n      \"hasta\": \"pagada\"\n    },\n    {\n      \"id\": \"cerrar\",\n      \"nombre\": \"Cerrar expediente\",\n      \"actor\": \"compras\",\n      \"desde\": \"pagada\",\n      \"hasta\": \"cerrada\"\n    }\n  ],\n  \"ocl\": [\n    \"context Compra inv MontoValido: self.monto >= 1 and self.monto \u003c= 250000\",\n    \"context Compra inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 10000\",\n    \"context Compra inv PlazoValido: self.plazo >= 1 and self.plazo \u003c= 180\",\n    \"context Compra inv CotizacionesValidas: self.cotizaciones >= 0 and self.cotizaciones \u003c= 30\",\n    \"context Compra inv ReferenciaValida: self.referencia.size() >= 4\",\n    \"context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() >= 20\",\n    \"context Compra::certificar() pre PartidaIdentificada: self.partida.size() >= 4\",\n    \"context Compra::directa() pre MontoCompraDirecta: self.monto \u003c 10000 and self.cotizaciones >= 1\",\n    \"context Compra::competitiva() pre UmbralCompetitivo: self.monto >= 10000 and self.cotizaciones >= 3\",\n    \"context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones >= 3\",\n    \"context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() >= 3\",\n    \"context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() >= 6\"\n  ]\n}";
@@ -2015,7 +2195,11 @@ const compile = (function createCompiler(METAMODEL, application) {
     const rows = document.createDocumentFragment();
     for (const record of matching) {
       const row = element('tr');
-      for (const field of catalog.campos) row.append(element('td', displayValue(field, record.values[field.id])));
+      for (const field of catalog.campos) {
+        const cell = element('td', displayValue(field, record.values[field.id]));
+        if (field.id === link?.existencias) cell.dataset.stock = '';
+        row.append(cell);
+      }
       const actions = element('td', undefined, 'crud-actions');
       const edit = element('button', 'Editar');
       edit.setAttribute('aria-label', 'Editar ' + describe(record, catalog.campos));
@@ -2137,7 +2321,7 @@ const compile = (function createCompiler(METAMODEL, application) {
     const inbox = $('#app-inbox');
     inbox.replaceChildren();
     $('#app-count').textContent = records.length + (records.length === 1 ? ' caso' : ' casos');
-    if (!records.length) inbox.append(element('p', 'Todavía no hay casos.', 'muted'));
+    if (!records.length) inbox.append(element('p', role === model.formulario.actor ? 'Completa el formulario para registrar el primer caso.' : 'Aquí aparecerán los casos cuando se registren.', 'app-empty'));
     if (board) renderBoard(inbox);
     else for (const record of records) inbox.append(caseButton(record));
     renderDetail(records.find(record => record.id === selected));
@@ -2177,12 +2361,25 @@ const compile = (function createCompiler(METAMODEL, application) {
     } else {
       const items = movements.map(item => {
         const action = model.acciones.find(edge => edge.id === item.action)?.nombre ?? item.action;
-        return element('li', [showDate(item.at), action, item.requester, item.name, item.sku,
-          (item.units > 0 ? '+' : '') + item.units, 'Disponibles: ' + item.stock].filter(Boolean).join(' · '));
+        const row = element('li', undefined, 'movement');
+        row.dataset.direction = item.units > 0 ? 'in' : 'out';
+        const direction = element('span', item.units > 0 ? '↙' : '↗', 'movement-direction');
+        direction.setAttribute('aria-hidden', 'true');
+        const copy = element('div', undefined, 'movement-copy');
+        copy.append(element('strong', action + ' · ' + item.name),
+          element('span', [item.sku, item.requester, showDate(item.at)].filter(Boolean).join(' · ')));
+        const totals = element('div', undefined, 'movement-totals');
+        totals.append(element('strong', (item.units > 0 ? '+' : '') + item.units + ' unidades'),
+          element('span', 'Disponibles: ' + item.stock));
+        row.append(direction, copy, totals);
+        return row;
       });
       $('#stock-movements').replaceChildren(...items);
       $('#stock-empty').hidden = items.length > 0;
     }
+    const panel = $(requests ? '.layout' : catalogView ? '#crud-catalog' : '#stock-ledger');
+    panel.classList.remove('module-enter');
+    requestAnimationFrame(() => panel.classList.add('module-enter'));
     if (durable) notify('');
   }
 
@@ -2240,7 +2437,8 @@ const compile = (function createCompiler(METAMODEL, application) {
 
   $('#app-title').textContent = model.nombre;
   root.dataset.presentation = board ? 'tablero' : 'bandeja';
-  if (board) $('#app-cases-title').textContent = 'Tablero por estado';
+  $('#app-cases-title').textContent = board ? 'Tablero por estado' : 'Lista de casos';
+  $('#app-cases-help').textContent = board ? 'Los casos se agrupan por su estado.' : 'Cada caso muestra su estado al lado.';
   document.title = model.nombre;
   $('#app-description').textContent = model.objetivo;
   if (!link && !crud) renderForm($('#app-form'));
@@ -2278,6 +2476,31 @@ const compile = (function createCompiler(METAMODEL, application) {
 });
 (() => {
   const $ = selector => document.querySelector(selector);
+  const systemTheme = matchMedia('(prefers-color-scheme: dark)');
+  const themeToggle = $('#theme-toggle');
+  let preferredTheme = typeof studioTheme !== 'undefined' ? studioTheme : null;
+
+  function currentTheme() {
+    return preferredTheme ?? (systemTheme.matches ? 'dark' : 'light');
+  }
+
+  function updateTheme() {
+    const theme = currentTheme();
+    document.documentElement.dataset.theme = theme;
+    themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+    $('#theme-label').textContent = theme === 'dark' ? 'Claro' : 'Oscuro';
+    $('#preview').contentWindow?.postMessage({ type: 'mda-preview-theme', theme }, '*');
+  }
+
+  themeToggle.onclick = () => {
+    const theme = currentTheme() === 'dark' ? 'light' : 'dark';
+    preferredTheme = theme;
+    try { localStorage.setItem('mda.studio.theme', theme); } catch {}
+    updateTheme();
+  };
+  systemTheme.addEventListener('change', updateTheme);
+  updateTheme();
+
   const make = (tag, value, className) => {
     const node = document.createElement(tag);
     if (value !== undefined) node.textContent = value;
@@ -2288,7 +2511,7 @@ const compile = (function createCompiler(METAMODEL, application) {
     onChange: saveDraft,
     onCursor: (line, column) => { $('#source-location').textContent = 'Línea ' + line + ', columna ' + column; },
     onFormat: formatSource,
-    onBuild: () => build(true),
+    onBuild: () => goToStage('pim'),
   });
   const diagram = MdaJsonEditor.createDiagram($('#editor'), {
     read: compile.readCim,
@@ -2333,6 +2556,12 @@ const compile = (function createCompiler(METAMODEL, application) {
   let inspectedModel;
   let tracePage = 0;
   const tracePageSize = 8;
+  const stages = [
+    { id: 'model', name: 'CIM', next: 'Validar y ver PIM', description: 'Define el proceso, sus datos, sus reglas OCL y descarga sus diagramas (.cim / .svg / .mmd).' },
+    { id: 'pim', name: 'PIM', next: 'Ver PSM', description: 'Revisa las clases UML/Ecore, multiplicidades, firmas y descarga el metamodelo (.ecore / .ocl).' },
+    { id: 'psm', name: 'PSM', next: 'Generar aplicación', description: 'Elige la presentación web, inspecciona el wireframe y descarga el esquema SQL (.sql / .schema.json).' },
+    { id: 'app', name: 'Aplicación', description: 'Prueba la aplicación generada, ábrela en otra pestaña o conéctala a Base de Datos (.db.json / .sql).' },
+  ];
   const views = {
     model: ['01 · Modelo Independiente de la Computación (CIM)', 'Define actores, campos de negocio, flujo del proceso y reglas OCL sin atarte a una tecnología.'],
     pim: ['02 · Modelo Independiente de la Plataforma (PIM)', 'Especificación lógica Ecore/UML con clases, tipos formales, multiplicidades, operaciones y AST OCL.'],
@@ -2416,28 +2645,43 @@ const compile = (function createCompiler(METAMODEL, application) {
       (catalog ? ' + Catálogo ' + catalog.entidad + ' (' + shared.length + ' campos)' : '') +
       (changed ? ' · Cambios pendientes' : '');
 
+    if (catalog && fields.length) {
+      const groupRow = make('tr', '', 'field-group');
+      const heading = make('td', model.entidad + ' · ' + fields.length + ' campos');
+      heading.colSpan = 6;
+      groupRow.append(heading);
+      rows.append(groupRow);
+    }
+
     fields.forEach((field, index) => {
       const editBtn = make('button', 'Editar campo', 'table-action-btn');
       editBtn.type = 'button';
       editBtn.onclick = () => diagram.openItem('datos', index, {}, source.value, active.id);
       const uniqueTag = model.unicos?.includes(field.id) ? ' · Único' : '';
+      const typeBadge = make('span', field.tipo, 'field-type');
       rows.append(tableRow(
-        catalog ? model.entidad + ' · ' + field.nombre : field.nombre,
+        field.nombre,
         field.id,
-        field.tipo,
+        typeBadge,
         (field.requerido ? 'Obligatorio' : 'Opcional') + uniqueTag,
         field.opciones?.map(option => option.nombre + ' (' + option.id + ')').join(', ') ?? '—',
         editBtn,
       ));
     });
 
-    if (catalog) {
+    if (catalog && shared.length) {
+      const groupRow = make('tr', '', 'field-group');
+      const heading = make('td', catalog.entidad + ' · ' + shared.length + ' campos');
+      heading.colSpan = 6;
+      groupRow.append(heading);
+      rows.append(groupRow);
       for (const field of shared) {
         const badge = make('span', 'Catálogo vinculado', 'muted-badge');
+        const typeBadge = make('span', field.tipo, 'field-type');
         rows.append(tableRow(
-          catalog.entidad + ' · ' + field.nombre,
+          field.nombre,
           field.id,
-          field.tipo,
+          typeBadge,
           (field.requerido ? 'Obligatorio' : 'Opcional') + (catalog.unicos?.includes(field.id) ? ' · Único' : ''),
           field.opciones?.map(option => option.nombre).join(', ') ?? '—',
           badge,
@@ -2685,9 +2929,10 @@ const compile = (function createCompiler(METAMODEL, application) {
   }
 
   function openAppInNewTab() {
-    if (!result) build(false);
+    if (!result) build();
     if (!result) return;
-    const blob = new Blob([result.html], { type: 'text/html;charset=utf-8' });
+    const themedHtml = result.html.replace('<html lang="es">', '<html lang="es" data-theme="' + currentTheme() + '">');
+    const blob = new Blob([themedHtml], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank', 'noopener');
     setTimeout(() => URL.revokeObjectURL(url), 60000);
@@ -2731,25 +2976,38 @@ const compile = (function createCompiler(METAMODEL, application) {
     }
   }
 
+  const PROJECT_ICONS = {"flow":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 19V5h14M5 12h8v6h6M16 3l3 2-3 2m0 9 3 2-3 2\"/></svg>","catalog":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 7h16v13H4zM3 4h18v3M9 11h6m-6 5h6\"/></svg>","linked":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 4h7v7H4zM13 13h7v7h-7zM11 7.5h5.5V13M7.5 11v5.5H13\"/></svg>"};
+
   function showLibrary() {
     $('#guide').hidden = true;
     $('#library').hidden = false;
     $('#editor').hidden = true;
-    $('#compile').hidden = true;
     $('#open-new-tab-top').hidden = true;
+    renderProjects();
+    window.scrollTo(0, 0);
+  }
+
+  function renderProjects() {
     const list = $('#project-list');
+    const query = searchText($('#project-search').value.trim());
     list.replaceChildren();
     for (const project of projects.values()) {
       const card = make('article', '');
       card.className = 'project-card';
       const sample = examples.has(project.id);
       let summary = 'Borrador de modelo CIM';
+      let type = 'flow';
       try {
         const model = JSON.parse(project.source);
         if (typeof model?.objetivo === 'string') summary = model.objetivo;
+        if (model?.integracion) type = 'linked';
+        else if (model?.tipo === 'crud') type = 'catalog';
       } catch (error) {
         if (!(error instanceof SyntaxError)) throw error;
       }
+      const label = { linked: 'Proceso + inventario', flow: 'Proceso', catalog: 'Catálogo CRUD' }[type];
+      if (query && !searchText([project.name, summary, label].join(' ')).includes(query)) continue;
+      card.dataset.kind = type;
       const button = make('button', 'Abrir proyecto');
       button.type = 'button';
       button.setAttribute('aria-label', 'Abrir proyecto: ' + project.name);
@@ -2757,18 +3015,27 @@ const compile = (function createCompiler(METAMODEL, application) {
         openProject(project);
         $('#back-projects').focus();
       };
-      const kind = make('p', sample ? 'EJEMPLO' : 'PROYECTO LOCAL');
-      kind.className = 'eyebrow';
-      card.append(kind, make('h2', project.name), make('p', summary), button);
+      const header = make('div', '');
+      header.className = 'project-card-meta';
+      const icon = make('span', '');
+      icon.className = 'project-icon';
+      icon.innerHTML = PROJECT_ICONS[type];
+      const kind = make('span', sample ? label : label + ' · Local');
+      kind.className = 'project-kind';
+      header.append(icon, kind);
+      card.append(header, make('h2', project.name), make('p', summary), button);
       list.append(card);
     }
-    window.scrollTo(0, 0);
+    if (!list.childElementCount) list.append(make('p', 'No hay proyectos que coincidan con la búsqueda.'));
+  }
+
+  function searchText(value) {
+    return value.normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('es');
   }
 
   function openProject(project) {
     $('#library').hidden = true;
     $('#editor').hidden = false;
-    $('#compile').hidden = false;
     $('#open-new-tab-top').hidden = false;
     $('#project-caption').textContent = project.name;
     active = project;
@@ -2792,11 +3059,13 @@ const compile = (function createCompiler(METAMODEL, application) {
     $('#flow-role').replaceChildren();
     $('#flow-count').textContent = '';
     $('#rules-count').textContent = '';
-    $('#presentation').value = projectPresentation(project);
+    for (const option of document.querySelectorAll('[name=presentation]')) {
+      option.checked = option.value === projectPresentation(project);
+    }
     persistProject(false);
     current = 'model';
     modelFormat = 'fields';
-    build(false);
+    build();
     window.scrollTo(0, 0);
   }
 
@@ -2886,9 +3155,14 @@ const compile = (function createCompiler(METAMODEL, application) {
   function view(next) {
     if (next !== 'model' && modelFormat === 'diagram') modelFormat = 'fields';
     current = next;
+    $('#editor').dataset.stage = next;
     for (const button of document.querySelectorAll('[data-view]')) {
-      button.setAttribute('aria-pressed', String(button.dataset.view === next));
+      const selected = button.dataset.view === next;
+      button.setAttribute('aria-pressed', String(selected));
+      if (selected) button.setAttribute('aria-current', 'step');
+      else button.removeAttribute('aria-current');
     }
+    renderStageNavigation(next);
     $('#view-title').textContent = views[next][0];
     $('#view-subtitle').textContent = views[next][1];
     const structuredView = next !== 'app' && modelFormat === 'fields';
@@ -2927,7 +3201,17 @@ const compile = (function createCompiler(METAMODEL, application) {
     $('#app-panel').hidden = next !== 'app';
     $('#model-summary').hidden = next === 'app' || diagramView;
     $('.workspace').classList.toggle('full-width', next === 'app' || diagramView);
-    $('#presentation-panel').hidden = result?.cim.tipo === 'crud' || !['psm', 'app'].includes(next);
+    const process = result && result.cim.tipo !== 'crud';
+    $('#presentation-panel').hidden = !process || next !== 'psm';
+    $('#presentation-current').hidden = !process || next !== 'app';
+    $('#presentation-reset').hidden = !previewResult;
+    if (process && next === 'app') {
+      const board = result.psm.presentacion === 'tablero';
+      $('#presentation-current-name').textContent = board ? 'Vista activa · Tablero por estado' : 'Vista activa · Lista de casos';
+      $('#presentation-current-description').textContent = board
+        ? 'Cada grupo reúne los casos que están en el mismo estado.'
+        : 'Cada caso aparece en la lista junto con su estado.';
+    }
     $('#download').hidden = true;
 
     renderDeliverables();
@@ -2939,7 +3223,8 @@ const compile = (function createCompiler(METAMODEL, application) {
     if (next === 'app' && result && previewResult !== result) {
       const previous = $('#preview');
       const frame = previous.cloneNode(false);
-      frame.srcdoc = result.html;
+      frame.addEventListener('load', updateTheme);
+      frame.srcdoc = result.html.replace('<html lang="es">', '<html lang="es" data-theme="' + currentTheme() + '">');
       previous.replaceWith(frame);
       previewResult = result;
     }
@@ -3039,12 +3324,11 @@ const compile = (function createCompiler(METAMODEL, application) {
   }
 
   function renderTrace() {
-    const fold = value => value.normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('es');
-    const query = fold($('#trace-search').value.trim());
+    const query = searchText($('#trace-search').value.trim());
     const kind = $('#trace-kind').value;
     const trace = result?.trace ?? [];
     const matching = trace.filter(row => (!kind || row.cim.startsWith(kind + '.')) &&
-      (!query || Object.values(row).some(value => fold(value).includes(query))));
+      (!query || Object.values(row).some(value => searchText(value).includes(query))));
     tracePage = Math.min(tracePage, Math.max(0, Math.ceil(matching.length / tracePageSize) - 1));
     const start = tracePage * tracePageSize;
     const end = Math.min(start + tracePageSize, matching.length);
@@ -3066,9 +3350,28 @@ const compile = (function createCompiler(METAMODEL, application) {
     $('#trace-next').disabled = end >= matching.length;
   }
 
-  function build(openApp) {
+  function renderStageNavigation(id) {
+    const index = stages.findIndex(stage => stage.id === id);
+    const stage = stages[index];
+    $('#stage-progress').textContent = stage.name + ' · Etapa ' + (index + 1) + ' de ' + stages.length;
+    $('#stage-description').textContent = stage.description;
+    $('#stage-back').hidden = index === 0;
+    $('#stage-back-label').textContent = index > 0 ? 'Volver al ' + stages[index - 1].name : '';
+    $('#stage-next').hidden = !stage.next;
+    $('#stage-next-label').textContent = stage.next ?? '';
+  }
+
+  function goToStage(target) {
+    if (target === 'model') view(target);
+    else build(target);
+    const heading = current === target ? $('#view-title') : $('#error');
+    heading.focus({ preventScroll: true });
+  }
+
+  function build(target = current) {
     try {
-      const presentation = $('#presentation').value;
+      const nextStage = target === true ? 'app' : target === false ? current : target;
+      const presentation = $('input[name=presentation]:checked')?.value ?? 'bandeja';
       if (source.value !== draft || (result?.cim.tipo !== 'crud' && result?.psm.presentacion !== presentation)) {
         result = compile(source.value, assets, active.id === initialProject.id ? undefined : active.id, presentation);
         draft = source.value;
@@ -3076,7 +3379,7 @@ const compile = (function createCompiler(METAMODEL, application) {
       $('#error').hidden = true;
       status('valid', 'Flujo MDA validado y compilado');
       renderSummary(result.cim);
-      view(openApp ? 'app' : current);
+      view(nextStage);
     } catch (error) {
       status('error', 'Modelo con errores de conformidad');
       $('#error').textContent = error.message;
@@ -3177,7 +3480,7 @@ const compile = (function createCompiler(METAMODEL, application) {
   };
 
   for (const button of document.querySelectorAll('[data-view]')) {
-    button.onclick = () => view(button.dataset.view);
+    button.onclick = () => goToStage(button.dataset.view);
   }
   $('#show-fields').onclick = () => { modelFormat = 'fields'; view(current); };
   $('#show-json').onclick = () => { modelFormat = 'json'; view(current); };
@@ -3210,11 +3513,21 @@ const compile = (function createCompiler(METAMODEL, application) {
   $('#close-metamodel').onclick = () => $('#metamodel-dialog').close();
   $('#metamodel-structure').onchange = renderMetamodel;
   $('#metamodel-download').onclick = () => download(JSON.stringify(METAMODEL, null, 2), 'metamodelo.json', 'application/json');
-  $('#compile').onclick = () => build(true);
-  $('#presentation').onchange = event => {
+  $('#stage-back').onclick = () => moveStage(-1);
+  $('#stage-next').onclick = () => moveStage(1);
+  function moveStage(direction) {
+    const index = stages.findIndex(stage => stage.id === current);
+    const target = stages[index + direction];
+    if (target) goToStage(target.id);
+  }
+  $('#presentation-panel').onchange = event => {
     active.presentation = event.target.value;
     persistProject(true);
-    build(false);
+    build();
+  };
+  $('#change-presentation').onclick = () => {
+    goToStage('psm');
+    if (current === 'psm') $('input[name=presentation]:checked').focus();
   };
   $('#flow-role').onchange = renderFlow;
   for (const selector of ['#trace-search', '#trace-kind']) {
@@ -3252,6 +3565,7 @@ const compile = (function createCompiler(METAMODEL, application) {
   $('#trace-download-csv').onclick = () => result && download(result.entregables.traceCsv, exportStem() + '.traza.csv', 'text/csv;charset=utf-8');
   $('#trace-download').disabled = true;
   $('#trace-download-csv').disabled = true;
+  $('#project-search').oninput = renderProjects;
   restoreProjects();
   persistProject(false);
   showLibrary();

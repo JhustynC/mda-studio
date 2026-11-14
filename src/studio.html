@@ -4,6 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MDA Studio</title>
+<script>
+  const studioTheme = (() => {
+    try {
+      const saved = localStorage.getItem('mda.studio.theme');
+      if (saved === 'dark' || saved === 'light') return saved;
+    } catch {}
+    return null;
+  })();
+  document.documentElement.dataset.theme = studioTheme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+</script>
 <style>{{CSS}}</style>
 </head>
 <body>
@@ -12,11 +22,15 @@
   <span class="context">Nuevos paradigmas de programación · Flujo CIM → PIM → PSM → M2T</span>
   <div class="top-actions">
     <button class="open-tab-btn" id="open-new-tab-top" type="button" hidden>Abrir app en pestaña ↗</button>
-    <button class="generate" id="compile" type="button" hidden>Generar aplicación <span aria-hidden="true">→</span></button>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Tema oscuro" aria-pressed="false" title="Cambiar tema">
+      <svg class="theme-moon" viewBox="0 0 24 24" role="presentation" aria-hidden="true"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"/></svg>
+      <svg class="theme-sun" viewBox="0 0 24 24" role="presentation" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+      <span id="theme-label">Oscuro</span>
+    </button>
   </div>
 </header>
 <main id="guide" hidden>
-  <div class="guide-head"><div><p class="eyebrow">DOCUMENTACIÓN</p><h1 tabindex="-1" id="guide-title">Guía de inicio</h1><p>Crea un proceso, genera su aplicación y comprueba cómo se transforma el modelo en cada fase MDA.</p></div><button id="close-guide" type="button">Volver a proyectos</button></div>
+  <div class="guide-head"><div><p class="eyebrow">DOCUMENTACIÓN</p><h1 tabindex="-1" id="guide-title">Guía de inicio</h1><p>Crea un proceso, genera su aplicación y comprueba cómo se transforma el modelo en cada fase MDA.</p></div><button class="back-link" id="close-guide" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6m-6-6h16"/></svg>Volver a proyectos</button></div>
   <div class="guide-layout">
     <nav aria-label="Índice del manual" class="guide-index">
       <a href="#guide-start">Primer proyecto</a>
@@ -31,8 +45,8 @@
         <ol>
           <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso básico</strong>.</li>
           <li>En <strong>CIM → Campos y negocio</strong>, usa <strong>+ Añadir campo</strong> directamente en la tabla para agregar atributos sin tocar el JSON, o usa los botones <strong>+ Actor</strong>, <strong>+ Estado</strong>, <strong>+ Transición</strong> y <strong>+ Regla OCL</strong> del panel lateral.</li>
-          <li>Pasa a <strong>PIM</strong> para inspeccionar el modelo lógico independiente de plataforma (clases UML/Ecore, tipos <code>EString</code>/<code>EInt</code>, multiplicidades, firmas de operaciones y archivo <code>.ecore</code>).</li>
-          <li>Pasa a <strong>PSM</strong> para elegir entre <strong>Bandeja de casos</strong> y <strong>Tablero por estado</strong> viendo cómo cambia la arquitectura visual, los controles HTML5 y el esquema relacional SQL (<code>.sql</code>).</li>
+          <li>Pulsa <strong>Validar y ver PIM</strong> para inspeccionar el modelo lógico independiente de plataforma (clases UML/Ecore, tipos <code>EString</code>/<code>EInt</code>, multiplicidades, firmas de operaciones y archivo <code>.ecore</code>).</li>
+          <li>Sigue con <strong>Ver PSM</strong> para elegir entre <strong>Lista de casos (bandeja)</strong> y <strong>Tablero por estado</strong> viendo cómo cambia la arquitectura visual, los controles HTML5 y el esquema relacional SQL (<code>.sql</code>).</li>
           <li>Pulsa <strong>Generar aplicación</strong> o <strong>Abrir app en pestaña ↗</strong> para ejecutar la aplicación con persistencia en Base de Datos (IndexedDB) y conexión directa a archivo (<code>.db.json</code> / <code>.sql</code>).</li>
         </ol>
         <button id="guide-new-project" class="generate" type="button">Crear un proyecto</button>
@@ -94,11 +108,21 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
 </dialog>
 <main id="library">
   <div class="library-head">
-    <div><p class="eyebrow">MDA STUDIO</p><h1>Proyectos</h1><p>Abre un proyecto para editar su modelo, inspeccionar sus entregables MDA y generar su aplicación.</p></div>
-    <button class="generate" id="new-project" type="button">Nuevo proyecto</button>
+    <div class="library-intro"><h1>Proyectos</h1><p>Modela procesos, organiza tus datos, inspecciona entregables MDA y genera aplicaciones web con persistencia.</p>
+      <button class="generate" id="new-project" type="button"><span aria-hidden="true">+</span> Nuevo proyecto</button></div>
+    <svg class="library-art" viewBox="0 0 550 236" fill="none" aria-hidden="true">
+      <defs><pattern id="hero-grid" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#819ccc" opacity=".44"/></pattern><linearGradient id="hero-fade"><stop stop-color="#192750" stop-opacity="0"/><stop offset="1" stop-color="#192750" stop-opacity=".96"/></linearGradient></defs>
+      <path fill="url(#hero-grid)" d="M0 0h550v236H0z"/><path fill="url(#hero-fade)" d="M0 0h550v236H0z" transform="translate(550 0) scale(-1 1)"/>
+      <path class="illustration-route" d="M112 113h56q12 0 12-12V62q0-12 12-12h128M112 113h128m-128 0h56q12 0 12 12v46q0 12 12 12h128M321 50h60q12 0 12 12v39q0 12 12 12h34m-118 70h60q12 0 12-12v-46q0-12 12-12h34M321 113h118" stroke="#a6b8ee" stroke-width="1.4"/>
+      <rect x="67" y="91" width="45" height="45" rx="12" fill="#253964" stroke="#90a8ed"/><rect x="75" y="99" width="29" height="29" rx="7" fill="#425f9c"/><path d="M83 113h13m-6.5-6.5v13" stroke="#e0eaff" stroke-width="1.5"/>
+      <g stroke-width="1.3"><rect x="240" y="30" width="81" height="40" rx="9" fill="#2a3968" stroke="#92a9ed"/><rect x="240" y="93" width="81" height="40" rx="9" fill="#3e3269" stroke="#a993e4"/><rect x="240" y="163" width="81" height="40" rx="9" fill="#21475a" stroke="#68c4c1"/></g>
+      <path d="M253 45h20m-20 10h40m-40 52h20m-20 10h40m-40 60h20m-20 10h40" stroke="#dae5ff" opacity=".66" stroke-width="2" stroke-linecap="round"/>
+      <rect x="439" y="83" width="61" height="60" rx="14" fill="#2a5f65" stroke="#78d6c4"/><path d="m459 113 7 7 14-15" stroke="#baf6df" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="180" cy="113" r="4" fill="#a9c3ff"/><circle class="illustration-signal" cx="392" cy="113" r="5" fill="#baf6df"/>
+    </svg>
   </div>
   <section class="library-workspace" aria-labelledby="projects-title">
-    <div class="library-section-head"><h2 id="projects-title">Mis proyectos</h2><p id="library-status" class="save-status" role="status"></p></div>
+    <div class="library-section-head"><div><h2 id="projects-title">Mis proyectos</h2><p id="library-status" class="save-status" role="status"></p></div><label class="project-search">Buscar proyectos<input id="project-search" type="search" placeholder="Nombre, descripción o tipo"></label></div>
     <div id="project-list" class="project-grid"></div>
   </section>
   <section class="library-resources" aria-labelledby="resources-title">
@@ -139,22 +163,29 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
   </form>
 </dialog>
 <main id="editor" hidden>
-  <div class="editor-nav"><button id="back-projects" type="button">← Proyectos</button><span id="project-caption"></span><p id="project-status" class="save-status" role="status"></p></div>
+  <div class="editor-nav"><button class="back-link" id="back-projects" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6m-6-6h16"/></svg>Volver a proyectos</button><span id="project-caption"></span><p id="project-status" class="save-status" role="status"></p></div>
   <div class="intro"><div><p class="eyebrow">FLUJO DIRIGIDO POR MODELOS (MDA)</p><h1 id="title">Préstamos de laboratorio</h1><p id="description"></p></div>
   <span id="build-status" class="status" role="status"></span></div>
   <div class="pipeline" role="group" aria-label="Etapas del flujo MDA">
-    <button type="button" data-view="model" aria-pressed="true"><b>01 · CIM</b><small>Dominio, BPM y Reglas (.cim / .svg)</small></button>
+    <button type="button" data-view="model" aria-pressed="true"><b><span class="step-symbol" aria-hidden="true">◇</span>01 · CIM</b><small>Dominio, BPM y Reglas (.cim / .svg)</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="pim" aria-pressed="false"><b>02 · PIM</b><small>Clases UML, Ecore y AST (.ecore / .ocl)</small></button>
+    <button type="button" data-view="pim" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▤</span>02 · PIM</b><small>Clases UML, Ecore y AST (.ecore / .ocl)</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="psm" aria-pressed="false"><b>03 · PSM</b><small>Arquitectura Web y DDL (.sql / .schema)</small></button>
+    <button type="button" data-view="psm" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▥</span>03 · PSM</b><small>Arquitectura Web y DDL (.sql / .schema)</small></button>
     <span class="arrow" aria-hidden="true">M2T →</span>
-    <button type="button" data-view="app" aria-pressed="false"><b>04 · Aplicación</b><small>Ejecutable + Base de Datos (.html / .db)</small></button>
+    <button type="button" data-view="app" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">↗</span>04 · Aplicación</b><small>Ejecutable + Base de Datos (.html / .db)</small></button>
   </div>
+  <nav class="stage-navigation" aria-label="Navegación entre etapas">
+    <div class="stage-context"><p id="stage-progress"></p><p id="stage-description"></p></div>
+    <div class="stage-actions">
+      <button id="stage-back" type="button" hidden><span aria-hidden="true">←</span><span id="stage-back-label"></span></button>
+      <button class="generate" id="stage-next" type="button"><span id="stage-next-label"></span><span aria-hidden="true">→</span></button>
+    </div>
+  </nav>
   <div class="workspace">
     <section class="work-card">
       <div class="section-head">
-        <div><h2 id="view-title">Modelo de negocio (CIM)</h2><p id="view-subtitle"></p></div>
+        <div><h2 id="view-title" tabindex="-1">Modelo de negocio (CIM)</h2><p id="view-subtitle"></p></div>
         <div class="tools">
           <button id="reset" type="button">Restaurar ejemplo</button>
           <button id="load-button" type="button">Importar CIM (.json)</button>
@@ -163,17 +194,29 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
         </div>
       </div>
       <div id="deliverables-bar" class="deliverables-bar" aria-label="Entregables de la etapa actual"></div>
-      <div id="presentation-panel" class="presentation-panel" hidden>
-        <div class="presentation-control">
-          <label for="presentation"><strong>Presentación de la aplicación (PSM):</strong></label>
-          <select id="presentation">
-            <option value="bandeja">Bandeja maestro-detalle (Lista + Inspector)</option>
-            <option value="tablero">Tablero Kanban agrupado por estado</option>
-          </select>
+      <fieldset id="presentation-panel" class="presentation-panel" aria-describedby="presentation-help" hidden>
+        <legend>¿Cómo se mostrarán los casos en la plataforma web (PSM)?</legend>
+        <p id="presentation-help">Elige cómo organizar los mismos casos. El wireframe de arquitectura PSM y la aplicación generada se actualizan automáticamente.</p>
+        <div class="presentation-options">
+          <label class="presentation-option">
+            <span class="presentation-option-heading"><input type="radio" name="presentation" value="bandeja" checked><strong>Lista de casos <small>(bandeja maestro-detalle)</small></strong></span>
+            <span class="layout-example list-example" aria-hidden="true"><span><b>Préstamo de Ana</b><i>En revisión</i></span><span><b>Préstamo de Luis</b><i>Aprobado</i></span></span>
+            <span class="presentation-description">Todos los casos en una sola lista junto a su estado e inspector lateral. Útil para revisar uno a la vez.</span>
+          </label>
+          <label class="presentation-option">
+            <span class="presentation-option-heading"><input type="radio" name="presentation" value="tablero"><strong>Tablero Kanban por estado</strong></span>
+            <span class="layout-example board-example" aria-hidden="true"><span><i>En revisión</i><b>Préstamo de Ana</b></span><span><i>Aprobado</i><b>Préstamo de Luis</b></span></span>
+            <span class="presentation-description">Los casos se agrupan en columnas por cada estado del proceso. Útil para visualizar el flujo completo de un vistazo.</span>
+          </label>
         </div>
-        <span id="presentation-summary" class="presentation-summary"></span>
+        <p id="presentation-summary" class="presentation-summary"></p>
+        <p id="presentation-reset" hidden>Cambiar la vista reiniciará la vista previa la próxima vez que abras la etapa Aplicación.</p>
+      </fieldset>
+      <div id="presentation-current" class="presentation-current" hidden>
+        <div><strong id="presentation-current-name"></strong><p id="presentation-current-description"></p></div>
+        <button id="change-presentation" type="button">Cambiar vista en PSM</button>
       </div>
-      <div id="error" class="error" role="alert" hidden></div>
+      <div id="error" class="error" role="alert" tabindex="-1" hidden></div>
       <div id="model-format" class="model-format" role="group" aria-label="Vista del modelo">
         <button id="show-fields" type="button" aria-pressed="true">Vista estructurada</button>
         <button id="show-diagram" type="button" aria-pressed="false">Diagrama interactivo</button>
@@ -281,7 +324,7 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
         </div>
         <p id="source-error" class="json-error" role="alert" hidden></p>
         <div id="source"></div>
-        <div class="json-status"><span id="source-location">Línea 1, columna 1</span><span>JSON · Ctrl+Enter para generar</span></div>
+        <div class="json-status"><span id="source-location">Línea 1, columna 1</span><span>JSON · Ctrl+Enter para validar y ver PIM</span></div>
       </section>
 
       <section id="diagram-panel" class="diagram-panel" aria-label="Editor de diagramas" hidden>

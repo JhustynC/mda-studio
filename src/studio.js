@@ -1,5 +1,30 @@
 (() => {
   const $ = selector => document.querySelector(selector);
+  const systemTheme = matchMedia('(prefers-color-scheme: dark)');
+  const themeToggle = $('#theme-toggle');
+  let preferredTheme = typeof studioTheme !== 'undefined' ? studioTheme : null;
+
+  function currentTheme() {
+    return preferredTheme ?? (systemTheme.matches ? 'dark' : 'light');
+  }
+
+  function updateTheme() {
+    const theme = currentTheme();
+    document.documentElement.dataset.theme = theme;
+    themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+    $('#theme-label').textContent = theme === 'dark' ? 'Claro' : 'Oscuro';
+    $('#preview').contentWindow?.postMessage({ type: 'mda-preview-theme', theme }, '*');
+  }
+
+  themeToggle.onclick = () => {
+    const theme = currentTheme() === 'dark' ? 'light' : 'dark';
+    preferredTheme = theme;
+    try { localStorage.setItem('mda.studio.theme', theme); } catch {}
+    updateTheme();
+  };
+  systemTheme.addEventListener('change', updateTheme);
+  updateTheme();
+
   const make = (tag, value, className) => {
     const node = document.createElement(tag);
     if (value !== undefined) node.textContent = value;
@@ -10,7 +35,7 @@
     onChange: saveDraft,
     onCursor: (line, column) => { $('#source-location').textContent = 'Línea ' + line + ', columna ' + column; },
     onFormat: formatSource,
-    onBuild: () => build(true),
+    onBuild: () => goToStage('pim'),
   });
   const diagram = MdaJsonEditor.createDiagram($('#editor'), {
     read: compile.readCim,
@@ -55,6 +80,12 @@
   let inspectedModel;
   let tracePage = 0;
   const tracePageSize = 8;
+  const stages = [
+    { id: 'model', name: 'CIM', next: 'Validar y ver PIM', description: 'Define el proceso, sus datos, sus reglas OCL y descarga sus diagramas (.cim / .svg / .mmd).' },
+    { id: 'pim', name: 'PIM', next: 'Ver PSM', description: 'Revisa las clases UML/Ecore, multiplicidades, firmas y descarga el metamodelo (.ecore / .ocl).' },
+    { id: 'psm', name: 'PSM', next: 'Generar aplicación', description: 'Elige la presentación web, inspecciona el wireframe y descarga el esquema SQL (.sql / .schema.json).' },
+    { id: 'app', name: 'Aplicación', description: 'Prueba la aplicación generada, ábrela en otra pestaña o conéctala a Base de Datos (.db.json / .sql).' },
+  ];
   const views = {
     model: ['01 · Modelo Independiente de la Computación (CIM)', 'Define actores, campos de negocio, flujo del proceso y reglas OCL sin atarte a una tecnología.'],
     pim: ['02 · Modelo Independiente de la Plataforma (PIM)', 'Especificación lógica Ecore/UML con clases, tipos formales, multiplicidades, operaciones y AST OCL.'],
@@ -138,28 +169,43 @@
       (catalog ? ' + Catálogo ' + catalog.entidad + ' (' + shared.length + ' campos)' : '') +
       (changed ? ' · Cambios pendientes' : '');
 
+    if (catalog && fields.length) {
+      const groupRow = make('tr', '', 'field-group');
+      const heading = make('td', model.entidad + ' · ' + fields.length + ' campos');
+      heading.colSpan = 6;
+      groupRow.append(heading);
+      rows.append(groupRow);
+    }
+
     fields.forEach((field, index) => {
       const editBtn = make('button', 'Editar campo', 'table-action-btn');
       editBtn.type = 'button';
       editBtn.onclick = () => diagram.openItem('datos', index, {}, source.value, active.id);
       const uniqueTag = model.unicos?.includes(field.id) ? ' · Único' : '';
+      const typeBadge = make('span', field.tipo, 'field-type');
       rows.append(tableRow(
-        catalog ? model.entidad + ' · ' + field.nombre : field.nombre,
+        field.nombre,
         field.id,
-        field.tipo,
+        typeBadge,
         (field.requerido ? 'Obligatorio' : 'Opcional') + uniqueTag,
         field.opciones?.map(option => option.nombre + ' (' + option.id + ')').join(', ') ?? '—',
         editBtn,
       ));
     });
 
-    if (catalog) {
+    if (catalog && shared.length) {
+      const groupRow = make('tr', '', 'field-group');
+      const heading = make('td', catalog.entidad + ' · ' + shared.length + ' campos');
+      heading.colSpan = 6;
+      groupRow.append(heading);
+      rows.append(groupRow);
       for (const field of shared) {
         const badge = make('span', 'Catálogo vinculado', 'muted-badge');
+        const typeBadge = make('span', field.tipo, 'field-type');
         rows.append(tableRow(
-          catalog.entidad + ' · ' + field.nombre,
+          field.nombre,
           field.id,
-          field.tipo,
+          typeBadge,
           (field.requerido ? 'Obligatorio' : 'Opcional') + (catalog.unicos?.includes(field.id) ? ' · Único' : ''),
           field.opciones?.map(option => option.nombre).join(', ') ?? '—',
           badge,
@@ -407,9 +453,10 @@
   }
 
   function openAppInNewTab() {
-    if (!result) build(false);
+    if (!result) build();
     if (!result) return;
-    const blob = new Blob([result.html], { type: 'text/html;charset=utf-8' });
+    const themedHtml = result.html.replace('<html lang="es">', '<html lang="es" data-theme="' + currentTheme() + '">');
+    const blob = new Blob([themedHtml], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank', 'noopener');
     setTimeout(() => URL.revokeObjectURL(url), 60000);
@@ -453,25 +500,38 @@
     }
   }
 
+  const PROJECT_ICONS = {"flow":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 19V5h14M5 12h8v6h6M16 3l3 2-3 2m0 9 3 2-3 2\"/></svg>","catalog":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 7h16v13H4zM3 4h18v3M9 11h6m-6 5h6\"/></svg>","linked":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 4h7v7H4zM13 13h7v7h-7zM11 7.5h5.5V13M7.5 11v5.5H13\"/></svg>"};
+
   function showLibrary() {
     $('#guide').hidden = true;
     $('#library').hidden = false;
     $('#editor').hidden = true;
-    $('#compile').hidden = true;
     $('#open-new-tab-top').hidden = true;
+    renderProjects();
+    window.scrollTo(0, 0);
+  }
+
+  function renderProjects() {
     const list = $('#project-list');
+    const query = searchText($('#project-search').value.trim());
     list.replaceChildren();
     for (const project of projects.values()) {
       const card = make('article', '');
       card.className = 'project-card';
       const sample = examples.has(project.id);
       let summary = 'Borrador de modelo CIM';
+      let type = 'flow';
       try {
         const model = JSON.parse(project.source);
         if (typeof model?.objetivo === 'string') summary = model.objetivo;
+        if (model?.integracion) type = 'linked';
+        else if (model?.tipo === 'crud') type = 'catalog';
       } catch (error) {
         if (!(error instanceof SyntaxError)) throw error;
       }
+      const label = { linked: 'Proceso + inventario', flow: 'Proceso', catalog: 'Catálogo CRUD' }[type];
+      if (query && !searchText([project.name, summary, label].join(' ')).includes(query)) continue;
+      card.dataset.kind = type;
       const button = make('button', 'Abrir proyecto');
       button.type = 'button';
       button.setAttribute('aria-label', 'Abrir proyecto: ' + project.name);
@@ -479,18 +539,27 @@
         openProject(project);
         $('#back-projects').focus();
       };
-      const kind = make('p', sample ? 'EJEMPLO' : 'PROYECTO LOCAL');
-      kind.className = 'eyebrow';
-      card.append(kind, make('h2', project.name), make('p', summary), button);
+      const header = make('div', '');
+      header.className = 'project-card-meta';
+      const icon = make('span', '');
+      icon.className = 'project-icon';
+      icon.innerHTML = PROJECT_ICONS[type];
+      const kind = make('span', sample ? label : label + ' · Local');
+      kind.className = 'project-kind';
+      header.append(icon, kind);
+      card.append(header, make('h2', project.name), make('p', summary), button);
       list.append(card);
     }
-    window.scrollTo(0, 0);
+    if (!list.childElementCount) list.append(make('p', 'No hay proyectos que coincidan con la búsqueda.'));
+  }
+
+  function searchText(value) {
+    return value.normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('es');
   }
 
   function openProject(project) {
     $('#library').hidden = true;
     $('#editor').hidden = false;
-    $('#compile').hidden = false;
     $('#open-new-tab-top').hidden = false;
     $('#project-caption').textContent = project.name;
     active = project;
@@ -514,11 +583,13 @@
     $('#flow-role').replaceChildren();
     $('#flow-count').textContent = '';
     $('#rules-count').textContent = '';
-    $('#presentation').value = projectPresentation(project);
+    for (const option of document.querySelectorAll('[name=presentation]')) {
+      option.checked = option.value === projectPresentation(project);
+    }
     persistProject(false);
     current = 'model';
     modelFormat = 'fields';
-    build(false);
+    build();
     window.scrollTo(0, 0);
   }
 
@@ -608,9 +679,14 @@
   function view(next) {
     if (next !== 'model' && modelFormat === 'diagram') modelFormat = 'fields';
     current = next;
+    $('#editor').dataset.stage = next;
     for (const button of document.querySelectorAll('[data-view]')) {
-      button.setAttribute('aria-pressed', String(button.dataset.view === next));
+      const selected = button.dataset.view === next;
+      button.setAttribute('aria-pressed', String(selected));
+      if (selected) button.setAttribute('aria-current', 'step');
+      else button.removeAttribute('aria-current');
     }
+    renderStageNavigation(next);
     $('#view-title').textContent = views[next][0];
     $('#view-subtitle').textContent = views[next][1];
     const structuredView = next !== 'app' && modelFormat === 'fields';
@@ -649,7 +725,17 @@
     $('#app-panel').hidden = next !== 'app';
     $('#model-summary').hidden = next === 'app' || diagramView;
     $('.workspace').classList.toggle('full-width', next === 'app' || diagramView);
-    $('#presentation-panel').hidden = result?.cim.tipo === 'crud' || !['psm', 'app'].includes(next);
+    const process = result && result.cim.tipo !== 'crud';
+    $('#presentation-panel').hidden = !process || next !== 'psm';
+    $('#presentation-current').hidden = !process || next !== 'app';
+    $('#presentation-reset').hidden = !previewResult;
+    if (process && next === 'app') {
+      const board = result.psm.presentacion === 'tablero';
+      $('#presentation-current-name').textContent = board ? 'Vista activa · Tablero por estado' : 'Vista activa · Lista de casos';
+      $('#presentation-current-description').textContent = board
+        ? 'Cada grupo reúne los casos que están en el mismo estado.'
+        : 'Cada caso aparece en la lista junto con su estado.';
+    }
     $('#download').hidden = true;
 
     renderDeliverables();
@@ -661,7 +747,8 @@
     if (next === 'app' && result && previewResult !== result) {
       const previous = $('#preview');
       const frame = previous.cloneNode(false);
-      frame.srcdoc = result.html;
+      frame.addEventListener('load', updateTheme);
+      frame.srcdoc = result.html.replace('<html lang="es">', '<html lang="es" data-theme="' + currentTheme() + '">');
       previous.replaceWith(frame);
       previewResult = result;
     }
@@ -761,12 +848,11 @@
   }
 
   function renderTrace() {
-    const fold = value => value.normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('es');
-    const query = fold($('#trace-search').value.trim());
+    const query = searchText($('#trace-search').value.trim());
     const kind = $('#trace-kind').value;
     const trace = result?.trace ?? [];
     const matching = trace.filter(row => (!kind || row.cim.startsWith(kind + '.')) &&
-      (!query || Object.values(row).some(value => fold(value).includes(query))));
+      (!query || Object.values(row).some(value => searchText(value).includes(query))));
     tracePage = Math.min(tracePage, Math.max(0, Math.ceil(matching.length / tracePageSize) - 1));
     const start = tracePage * tracePageSize;
     const end = Math.min(start + tracePageSize, matching.length);
@@ -788,9 +874,28 @@
     $('#trace-next').disabled = end >= matching.length;
   }
 
-  function build(openApp) {
+  function renderStageNavigation(id) {
+    const index = stages.findIndex(stage => stage.id === id);
+    const stage = stages[index];
+    $('#stage-progress').textContent = stage.name + ' · Etapa ' + (index + 1) + ' de ' + stages.length;
+    $('#stage-description').textContent = stage.description;
+    $('#stage-back').hidden = index === 0;
+    $('#stage-back-label').textContent = index > 0 ? 'Volver al ' + stages[index - 1].name : '';
+    $('#stage-next').hidden = !stage.next;
+    $('#stage-next-label').textContent = stage.next ?? '';
+  }
+
+  function goToStage(target) {
+    if (target === 'model') view(target);
+    else build(target);
+    const heading = current === target ? $('#view-title') : $('#error');
+    heading.focus({ preventScroll: true });
+  }
+
+  function build(target = current) {
     try {
-      const presentation = $('#presentation').value;
+      const nextStage = target === true ? 'app' : target === false ? current : target;
+      const presentation = $('input[name=presentation]:checked')?.value ?? 'bandeja';
       if (source.value !== draft || (result?.cim.tipo !== 'crud' && result?.psm.presentacion !== presentation)) {
         result = compile(source.value, assets, active.id === initialProject.id ? undefined : active.id, presentation);
         draft = source.value;
@@ -798,7 +903,7 @@
       $('#error').hidden = true;
       status('valid', 'Flujo MDA validado y compilado');
       renderSummary(result.cim);
-      view(openApp ? 'app' : current);
+      view(nextStage);
     } catch (error) {
       status('error', 'Modelo con errores de conformidad');
       $('#error').textContent = error.message;
@@ -899,7 +1004,7 @@
   };
 
   for (const button of document.querySelectorAll('[data-view]')) {
-    button.onclick = () => view(button.dataset.view);
+    button.onclick = () => goToStage(button.dataset.view);
   }
   $('#show-fields').onclick = () => { modelFormat = 'fields'; view(current); };
   $('#show-json').onclick = () => { modelFormat = 'json'; view(current); };
@@ -932,11 +1037,21 @@
   $('#close-metamodel').onclick = () => $('#metamodel-dialog').close();
   $('#metamodel-structure').onchange = renderMetamodel;
   $('#metamodel-download').onclick = () => download(JSON.stringify(METAMODEL, null, 2), 'metamodelo.json', 'application/json');
-  $('#compile').onclick = () => build(true);
-  $('#presentation').onchange = event => {
+  $('#stage-back').onclick = () => moveStage(-1);
+  $('#stage-next').onclick = () => moveStage(1);
+  function moveStage(direction) {
+    const index = stages.findIndex(stage => stage.id === current);
+    const target = stages[index + direction];
+    if (target) goToStage(target.id);
+  }
+  $('#presentation-panel').onchange = event => {
     active.presentation = event.target.value;
     persistProject(true);
-    build(false);
+    build();
+  };
+  $('#change-presentation').onclick = () => {
+    goToStage('psm');
+    if (current === 'psm') $('input[name=presentation]:checked').focus();
   };
   $('#flow-role').onchange = renderFlow;
   for (const selector of ['#trace-search', '#trace-kind']) {
@@ -974,6 +1089,7 @@
   $('#trace-download-csv').onclick = () => result && download(result.entregables.traceCsv, exportStem() + '.traza.csv', 'text/csv;charset=utf-8');
   $('#trace-download').disabled = true;
   $('#trace-download-csv').disabled = true;
+  $('#project-search').oninput = renderProjects;
   restoreProjects();
   persistProject(false);
   showLibrary();
