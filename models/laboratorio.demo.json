@@ -1,0 +1,211 @@
+{
+  "records": [
+    {
+      "id": "demo-ana",
+      "values": {
+        "solicitante": "Ana Torres",
+        "equipo": "demo-microscopio",
+        "cantidad": 1,
+        "dias": 2,
+        "motivo": "Práctica de observación de tejidos."
+      },
+      "state": "solicitado",
+      "history": [
+        {
+          "action": "Nueva solicitud",
+          "role": "estudiante",
+          "at": "2026-11-13T15:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "demo-mateo",
+      "values": {
+        "solicitante": "Mateo Silva",
+        "equipo": "demo-kit",
+        "cantidad": 2,
+        "dias": 3,
+        "motivo": "Montaje de un circuito para la práctica."
+      },
+      "state": "aprobado",
+      "history": [
+        {
+          "action": "Nueva solicitud",
+          "role": "estudiante",
+          "at": "2026-11-13T13:20:00Z"
+        },
+        {
+          "action": "Aprobar",
+          "role": "responsable",
+          "at": "2026-11-13T14:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "demo-diego",
+      "values": {
+        "solicitante": "Diego Rojas",
+        "equipo": "demo-microscopio",
+        "cantidad": 2,
+        "dias": 4,
+        "motivo": "Observación de muestras en clase."
+      },
+      "state": "entregado",
+      "history": [
+        {
+          "action": "Nueva solicitud",
+          "role": "estudiante",
+          "at": "2026-11-12T14:00:00Z"
+        },
+        {
+          "action": "Aprobar",
+          "role": "responsable",
+          "at": "2026-11-12T15:00:00Z"
+        },
+        {
+          "action": "Registrar entrega",
+          "role": "responsable",
+          "at": "2026-11-12T16:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "demo-nora",
+      "values": {
+        "solicitante": "Nora Vega",
+        "equipo": "demo-portatil",
+        "cantidad": 1,
+        "dias": 2,
+        "motivo": "Instalación de software para un taller."
+      },
+      "state": "rechazado",
+      "history": [
+        {
+          "action": "Nueva solicitud",
+          "role": "estudiante",
+          "at": "2026-11-11T16:00:00Z"
+        },
+        {
+          "action": "Rechazar",
+          "role": "responsable",
+          "at": "2026-11-11T17:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "demo-elena",
+      "values": {
+        "solicitante": "Elena Mora",
+        "equipo": "demo-multimetro",
+        "cantidad": 2,
+        "dias": 2,
+        "motivo": "Medición de resistencia en el proyecto."
+      },
+      "state": "devuelto",
+      "history": [
+        {
+          "action": "Nueva solicitud",
+          "role": "estudiante",
+          "at": "2026-11-09T14:00:00Z"
+        },
+        {
+          "action": "Aprobar",
+          "role": "responsable",
+          "at": "2026-11-09T15:00:00Z"
+        },
+        {
+          "action": "Registrar entrega",
+          "role": "responsable",
+          "at": "2026-11-09T16:00:00Z"
+        },
+        {
+          "action": "Registrar devolución",
+          "role": "estudiante",
+          "at": "2026-11-11T15:00:00Z"
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "demo-microscopio",
+      "values": {
+        "nombre": "Microscopio binocular",
+        "sku": "MIC-DEMO-01",
+        "categoria": "equipos",
+        "stock": 4,
+        "ubicacion": "Óptica · Estante A",
+        "reposicion": null,
+        "activo": true
+      }
+    },
+    {
+      "id": "demo-multimetro",
+      "values": {
+        "nombre": "Multímetro digital",
+        "sku": "MUL-DEMO-01",
+        "categoria": "equipos",
+        "stock": 8,
+        "ubicacion": "Electrónica · Estante B",
+        "reposicion": null,
+        "activo": true
+      }
+    },
+    {
+      "id": "demo-portatil",
+      "values": {
+        "nombre": "Portátil de diagnóstico",
+        "sku": "POR-DEMO-01",
+        "categoria": "equipos",
+        "stock": 3,
+        "ubicacion": "Armario de equipos",
+        "reposicion": null,
+        "activo": true
+      }
+    },
+    {
+      "id": "demo-kit",
+      "values": {
+        "nombre": "Kit de cables de prueba",
+        "sku": "CAB-DEMO-01",
+        "categoria": "repuestos",
+        "stock": 0,
+        "ubicacion": "Electrónica · Cajón 3",
+        "reposicion": "2026-11-20",
+        "activo": true
+      }
+    }
+  ],
+  "movements": [
+    {
+      "request": "demo-diego",
+      "requester": "Diego Rojas",
+      "sku": "MIC-DEMO-01",
+      "name": "Microscopio binocular",
+      "units": -2,
+      "stock": 4,
+      "action": "entregar",
+      "at": "2026-11-12T16:00:00Z"
+    },
+    {
+      "request": "demo-elena",
+      "requester": "Elena Mora",
+      "sku": "MUL-DEMO-01",
+      "name": "Multímetro digital",
+      "units": 2,
+      "stock": 8,
+      "action": "devolver",
+      "at": "2026-11-11T15:00:00Z"
+    },
+    {
+      "request": "demo-elena",
+      "requester": "Elena Mora",
+      "sku": "MUL-DEMO-01",
+      "name": "Multímetro digital",
+      "units": -2,
+      "stock": 6,
+      "action": "entregar",
+      "at": "2026-11-09T16:00:00Z"
+    }
+  ]
+}

@@ -22,7 +22,15 @@ Usa **Oscuro** o **Claro** en la barra superior para cambiar el tema. El Studio 
 
 Desde **Proyectos**, abre **Recursos del Studio** para consultar la **Guía de inicio** o explorar el **Metamodelo base**. La guía acompaña la creación de un primer proceso. El explorador muestra las estructuras de CIM, PIM y PSM y permite descargar el metamodelo en JSON.
 
-La pantalla **Proyectos** reúne los ejemplos y los proyectos locales que crees. El buscador encuentra proyectos por nombre, descripción o tipo. Las tarjetas identifican si se trata de un proceso, un catálogo CRUD o una integración de proceso e inventario. Abre uno para entrar al editor. Usa **← Proyectos** para volver a la biblioteca. **Nuevo proyecto** permite partir de un proceso básico, un CRUD básico, una copia del último proyecto abierto o un ejemplo. El título de la aplicación se define en `nombre` dentro del CIM.
+La pantalla **Proyectos** reúne los ejemplos y los proyectos locales que crees. El buscador encuentra proyectos por nombre, descripción o tipo. Las tarjetas identifican si se trata de un proceso, un catálogo CRUD o una integración de proceso e inventario. Abre uno para entrar al editor. Usa **← Proyectos** para volver a la biblioteca. Los ejemplos se abren desde sus tarjetas.
+
+En **Nuevo proyecto**, elige la estructura inicial según lo que necesites:
+
+- **Proceso** para solicitudes con estados, responsables y acciones.
+- **Catálogo CRUD** para crear, buscar, editar y eliminar registros.
+- **Proceso con catálogo** para tramitar solicitudes sobre artículos de un inventario, descontar existencias al entregar y reponerlas al devolver.
+
+Las tres plantillas generan un CIM editable con el nombre que ingreses. Para crear, por ejemplo, un préstamo de material deportivo, elige **Proceso con catálogo** y configura los actores, estados y pasos en **CIM → Diagrama**. En **CIM → Editar JSON**, adapta los datos de la solicitud y los campos del inventario en `integracion.catalogo`. Genera la aplicación y agrega tus artículos en **Inventario** antes de crear una solicitud.
 
 El Studio guarda cada borrador, incluso mientras el JSON está incompleto, en el almacenamiento de este navegador. Al cambiar de proyecto, restaura su CIM y calcula sus propias salidas. Desde **Descargar** puedes guardar el CIM, PIM, PSM o HTML del proyecto activo. Para trasladar un proyecto, descarga su CIM, crea un proyecto en el otro navegador e importa ese archivo. Los HTML generados para proyectos distintos usan claves locales de casos independientes, incluso si sus CIM tienen el mismo identificador.
 
@@ -68,7 +76,7 @@ Podemos añadir un segundo destino de generación que transforme el mismo PIM en
 
 ## Generar un CRUD
 
-Desde **Proyectos**, abre **Inventario de laboratorio** o crea un proyecto con **CRUD básico**. En **CIM → Estructura** puedes editar los campos y las reglas. En **CIM → Editar JSON** puedes consultar o modificar el modelo fuente.
+Desde **Proyectos**, abre **Inventario de laboratorio** o crea un proyecto con **Catálogo CRUD**. En **CIM → Estructura** puedes editar los campos y las reglas. En **CIM → Editar JSON** puedes consultar o modificar el modelo fuente.
 
 El [CIM de inventario](models/inventario.cim.json) declara `tipo: "crud"`, la entidad `Producto`, sus datos, la unicidad de SKU y la invariante de stock no negativo. El [PIM](generado/inventario.pim.json) contiene las cuatro operaciones lógicas y el [PSM](generado/inventario.psm.json) incorpora la tabla web, los controles y el almacenamiento. La [aplicación generada](generado/inventario.html) permite buscar, crear, editar y eliminar registros. El stock se actualiza editando el registro y las reglas se comprueban al guardar.
 
@@ -77,6 +85,12 @@ Los datos pertenecen al navegador que abre el HTML. La vista previa del Studio c
 ## Gestión de laboratorio integrada
 
 Abre **Gestión de laboratorio** desde Proyectos o la [aplicación generada](generado/gestion-laboratorio.html). El [CIM](models/laboratorio.cim.json) vincula `Prestamo.equipo` con el catálogo de `Producto`. En `integracion` se declaran la clave del catálogo, el campo de existencias, la cantidad y las transiciones de entrada y salida. El [PIM](generado/gestion-laboratorio.pim.json) conserva esa relación y las operaciones. El [PSM](generado/gestion-laboratorio.psm.json) la convierte en un selector de inventario. En [Trazabilidad](generado/gestion-laboratorio.traza.json) puedes seguir los cambios de stock hasta las transiciones.
+
+La demostración abre con cuatro artículos, cinco solicitudes en distintos estados y tres movimientos. En **Solicitudes**, abre el caso de Diego Rojas como Estudiante y devuelve los dos microscopios. En **Inventario**, el artículo con código `MIC-DEMO-01` pasa de 4 a 6 unidades, y en **Movimientos** aparece la nueva entrada. Como Responsable, puedes intentar entregar el kit del caso aprobado de Mateo Silva para comprobar el aviso de existencias insuficientes.
+
+Los datos de ejemplo están en [laboratorio.demo.json](models/laboratorio.demo.json). El HTML autónomo respeta los cambios ya guardados en ese navegador. La vista previa vuelve a cargar los datos de ejemplo al abrir de nuevo el proyecto y generar la aplicación con el CIM original. Los proyectos nuevos empiezan con sus propios formularios vacíos.
+
+Para probar el caso de dos solicitudes que compiten por las mismas unidades:
 
 1. En **Inventario**, crea un microscopio con SKU `MIC-01`, categoría Equipos y stock de **3**.
 2. En **Solicitudes**, como **Estudiante**, registra dos préstamos de **2** unidades para ese microscopio, uno a nombre de Ana y otro de Luis. Usa **3 días** y el motivo **Práctica de laboratorio** en ambos. Cambia a **Responsable** y aprueba los dos casos.

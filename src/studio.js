@@ -306,6 +306,64 @@
     };
   }
 
+  function catalogModel(name, id) {
+    return {
+      version: 1, tipo: 'crud', id: 'catalogo-' + id, nombre: name,
+      objetivo: 'Gestionar los registros de ' + name + '.',
+      entidad: 'Registro',
+      datos: [{ id: 'nombre', nombre: 'Nombre', tipo: 'Texto', requerido: true }],
+      ocl: [],
+    };
+  }
+
+  function integratedModel(name, id) {
+    const process = basicModel(name, id);
+    return {
+      ...process,
+      objetivo: 'Revisar solicitudes y registrar entregas y devoluciones de artículos del catálogo.',
+      entidad: 'Solicitud',
+      actores: [process.actores[0], { id: 'responsable', nombre: 'Responsable' }],
+      datos: [
+        ...process.datos,
+        { id: 'articulo', nombre: 'Artículo', tipo: 'Texto', requerido: true },
+        { id: 'cantidad', nombre: 'Cantidad', tipo: 'Entero', requerido: true },
+      ],
+      estados: [
+        process.estados[0],
+        { id: 'aprobado', nombre: 'Aprobado' },
+        { id: 'entregado', nombre: 'Entregado' },
+        { id: 'devuelto', nombre: 'Devuelto', final: true },
+        { id: 'rechazado', nombre: 'Rechazado', final: true },
+      ],
+      transiciones: [
+        { id: 'aprobar', nombre: 'Aprobar', actor: 'responsable', desde: 'pendiente', hasta: 'aprobado' },
+        { id: 'rechazar', nombre: 'Rechazar', actor: 'responsable', desde: 'pendiente', hasta: 'rechazado' },
+        { id: 'entregar', nombre: 'Registrar entrega', actor: 'responsable', desde: 'aprobado', hasta: 'entregado' },
+        { id: 'devolver', nombre: 'Registrar devolución', actor: 'responsable', desde: 'entregado', hasta: 'devuelto' },
+      ],
+      ocl: ['context Solicitud inv CantidadValida: self.cantidad >= 1'],
+      integracion: {
+        catalogo: {
+          version: 1, tipo: 'crud', id: 'catalogo-' + id, nombre: 'Inventario',
+          objetivo: 'Administrar los artículos y sus existencias.',
+          entidad: 'Articulo',
+          datos: [
+            { id: 'nombre', nombre: 'Nombre', tipo: 'Texto', requerido: true },
+            { id: 'codigo', nombre: 'Código', tipo: 'Texto', requerido: true },
+            { id: 'existencias', nombre: 'Existencias', tipo: 'Entero', requerido: true },
+          ],
+          unicos: ['codigo'],
+          ocl: ['context Articulo inv ExistenciasValidas: self.existencias >= 0'],
+        },
+        referencia: 'articulo', clave: 'codigo', existencias: 'existencias', cantidad: 'cantidad',
+        movimientos: [
+          { transicion: 'entregar', tipo: 'salida' },
+          { transicion: 'devolver', tipo: 'entrada' },
+        ],
+      },
+    };
+  }
+
   function status(kind, message) {
     const badge = $('#build-status');
     badge.textContent = message;
@@ -402,7 +460,7 @@
       source.measure();
     }
     $('#load-button').hidden = next !== 'model';
-    $('#reset').hidden = next !== 'model';
+    $('#reset').hidden = next !== 'model' || !examples.has(active.id);
     $('#output').hidden = fieldView || !['pim', 'psm'].includes(next);
     $('#app-panel').hidden = next !== 'app';
     $('#model-summary').hidden = next === 'app' || diagramView;
@@ -566,7 +624,9 @@
     try {
       const presentation = $('input[name=presentation]:checked').value;
       if (source.value !== draft || (result?.cim.tipo !== 'crud' && result?.psm.presentacion !== presentation)) {
-        result = compile(source.value, assets, active.id === initialProject.id ? undefined : active.id, presentation);
+        const projectId = active.id === initialProject.id ? undefined : active.id;
+        const initialData = projectId === laboratoryProject.id && source.value.trim() === LABORATORY ? LABORATORY_DATA : undefined;
+        result = compile(source.value, assets, projectId, presentation, initialData);
         draft = source.value;
       }
       $('#error').hidden = true;
@@ -634,7 +694,6 @@
   }
   $('#new-project').onclick = () => {
     $('#project-form').reset();
-    $('#copy-option').textContent = 'Copiar ' + active.name;
     $('#project-name').setCustomValidity('');
     projectDialog.showModal();
   };
@@ -650,21 +709,10 @@
       return;
     }
     const id = globalThis.crypto?.randomUUID?.() ?? Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
-    const template = $('#project-template').value;
-    let modelSource = active.source;
-    if (template !== 'copy') {
-      const samples = { example: EXAMPLE, advanced: ADVANCED, inventory: INVENTORY, laboratory: LABORATORY };
-      const model = samples[template]
-        ? { ...JSON.parse(samples[template]), id: 'modelo-' + id, nombre: name }
-        : template === 'crud'
-          ? { version: 1, tipo: 'crud', id: 'modelo-' + id, nombre: name, objetivo: 'Gestionar los registros de ' + name + '.',
-              entidad: 'Registro', datos: [{ id: 'nombre', nombre: 'Nombre', tipo: 'Texto', requerido: true }], ocl: [] }
-          : basicModel(name, id);
-      modelSource = JSON.stringify(model, null, 2);
-    }
-    const presentation = template === 'advanced' ? 'tablero' :
-      template === 'copy' ? projectPresentation(active) : 'bandeja';
-    const project = { id, name, source: modelSource, presentation };
+    const template = new FormData(event.currentTarget).get('template');
+    const templates = { process: basicModel, catalog: catalogModel, integrated: integratedModel };
+    const model = templates[template](name, id);
+    const project = { id, name, source: JSON.stringify(model, null, 2) };
     projects.set(id, project);
     projectDialog.close();
     openProject(project);
@@ -714,7 +762,10 @@
   }
   $('#trace-prev').onclick = () => { tracePage--; renderTrace(); };
   $('#trace-next').onclick = () => { tracePage++; renderTrace(); };
-  $('#reset').onclick = () => markDraft(examples.get(active.id) ?? (result?.cim.tipo === 'crud' ? INVENTORY : EXAMPLE));
+  $('#reset').onclick = () => {
+    const example = examples.get(active.id);
+    if (example) markDraft(example);
+  };
   $('#load-button').onclick = () => $('#load').click();
   $('#load').onchange = async event => {
     const file = event.target.files[0];

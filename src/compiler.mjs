@@ -247,14 +247,14 @@ export function createCompiler(METAMODEL, application) {
     });
   }
 
-  function generateApp(psm, assets) {
+  function generateApp(psm, assets, initialData) {
     const catalogValidators = psm.integracion?.catalogo.validadores.map(emitValidator).join(',\n  ') ?? '';
     return instantiate(assets.html, {
       CSS: assets.css,
       SCRIPT: 'const model = ' + jsLiteral(psm) + ';\n'
         + 'const validators = {\n  ' + psm.validadores.map(emitValidator).join(',\n  ') + '\n};\n'
         + 'const catalogValidators = {' + catalogValidators + '};\n'
-        + '(' + application.toString() + ')(model, validators, catalogValidators);',
+        + '(' + application.toString() + ')(model, validators, catalogValidators, ' + jsLiteral(initialData ?? null) + ');',
     });
   }
 
@@ -271,7 +271,7 @@ export function createCompiler(METAMODEL, application) {
     return cim;
   }
 
-  function compile(source, assets, projectId, presentation = 'bandeja') {
+  function compile(source, assets, projectId, presentation = 'bandeja', initialData) {
     const cim = readCim(source);
     const crud = cim.tipo === 'crud';
     const pim = validateCim(cim);
@@ -311,7 +311,7 @@ export function createCompiler(METAMODEL, application) {
         psm: 'integracion.movimientos.' + movement.transicion, app: movement.tipo === 'salida' ? 'Descontar existencias' : 'Reponer existencias',
       });
     }
-    return { cim, pim, psm, trace, html: generateApp(psm, assets) };
+    return { cim, pim, psm, trace, html: generateApp(psm, assets, initialData) };
   }
   function validateCim(cim) {
     return cim.tipo === 'crud' ? toCrudPim(cim) : toPim(cim);

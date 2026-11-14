@@ -40,12 +40,13 @@
       <section id="guide-start" tabindex="-1">
         <h2>Tu primer proyecto</h2>
         <ol>
-          <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso básico</strong>.</li>
+          <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso</strong>.</li>
           <li>En <strong>CIM → Editar JSON</strong>, cambia el objetivo y revisa el flujo inicial. Usa <strong>Buscar</strong> para encontrar una clave y <strong>Formatear</strong> para ordenar la sangría.</li>
           <li>Dentro de <code>datos</code>, agrega un campo como <em>Prioridad</em> usando el ejemplo de abajo. Separa los objetos de una lista con comas y usa comillas dobles.</li>
           <li>Pulsa <strong>Validar y ver PIM</strong>, revisa el modelo lógico y sigue con <strong>Ver PSM</strong>. Luego pulsa <strong>Generar aplicación</strong>. Crea un caso como Solicitante, cambia a Revisor y pulsa <strong>Completar</strong>. Comprueba el estado y el historial.</li>
         </ol>
-        <p>Para un catálogo o inventario, crea un proyecto con <strong>CRUD básico</strong> o abre <strong>Inventario de laboratorio</strong>. En <strong>CIM → Estructura</strong> define los campos y sus reglas. Al generar tendrás un formulario y una tabla con búsqueda, edición y eliminación.</p>
+        <p>Usa <strong>Catálogo CRUD</strong> para crear una tabla de registros con búsqueda, edición y eliminación. Define sus campos y reglas en <strong>CIM → Estructura</strong>.</p>
+        <p>Para un flujo como el del laboratorio con tus propios datos, elige <strong>Proceso con catálogo</strong>. Por ejemplo, para prestar material deportivo, edita los pasos y roles en <strong>CIM → Diagrama</strong> y los campos del catálogo en <strong>CIM → Editar JSON</strong>, dentro de <code>integracion.catalogo</code>. Genera la aplicación, registra un artículo en <strong>Inventario</strong> y tramita su entrega y devolución en <strong>Solicitudes</strong>.</p>
         <button id="guide-new-project" class="generate" type="button">Crear un proyecto</button>
       </section>
       <section id="guide-dsl" tabindex="-1">
@@ -155,17 +156,22 @@ context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8</co
     <form id="project-form">
       <h2 id="project-dialog-title">Nuevo proyecto</h2>
       <label>Nombre del proyecto<input id="project-name" name="name" maxlength="100" required autofocus></label>
-      <label>Modelo inicial
-        <select id="project-template" name="template">
-          <option value="blank">Proceso básico</option>
-          <option id="copy-option" value="copy">Copia del último proyecto abierto</option>
-          <option value="example">Ejemplo de préstamos</option>
-          <option value="advanced">Ejemplo de compras</option>
-          <option value="crud">CRUD básico</option>
-          <option value="inventory">Ejemplo de inventario</option>
-          <option value="laboratory">Laboratorio integrado</option>
-        </select>
-      </label>
+      <fieldset class="project-templates" aria-describedby="project-template-help">
+        <legend>Estructura inicial</legend>
+        <p id="project-template-help">Elige qué necesita tu aplicación. Después podrás editar el modelo de negocio.</p>
+        <label class="project-template">
+          <input type="radio" name="template" value="process" checked>
+          <span><strong>Proceso</strong><small>Registra solicitudes y define quién puede moverlas de un estado a otro.</small></span>
+        </label>
+        <label class="project-template">
+          <input type="radio" name="template" value="catalog">
+          <span><strong>Catálogo CRUD</strong><small>Crea, busca, edita y elimina registros en una tabla.</small></span>
+        </label>
+        <label class="project-template">
+          <input type="radio" name="template" value="integrated">
+          <span><strong>Proceso con catálogo</strong><small>Vincula las solicitudes a un inventario. Las entregas descuentan existencias y las devoluciones las reponen.</small></span>
+        </label>
+      </fieldset>
       <div class="dialog-actions">
         <button id="cancel-project" type="button">Cancelar</button>
         <button class="generate" type="submit">Crear proyecto</button>
@@ -195,7 +201,7 @@ context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8</co
   <div class="workspace">
     <section class="work-card">
       <div class="section-head"><div><h2 id="view-title" tabindex="-1">Modelo de negocio</h2><p id="view-subtitle"></p></div>
-        <div class="tools"><button id="reset" type="button">Cargar ejemplo</button><button id="load-button" type="button">Abrir JSON</button><input id="load" type="file" accept=".json,application/json" hidden><button id="download" type="button" hidden>Descargar</button></div></div>
+        <div class="tools"><button id="reset" type="button" hidden>Restaurar ejemplo</button><button id="load-button" type="button">Abrir JSON</button><input id="load" type="file" accept=".json,application/json" hidden><button id="download" type="button" hidden>Descargar</button></div></div>
       <fieldset id="presentation-panel" class="presentation-panel" aria-describedby="presentation-help" hidden>
         <legend>¿Cómo se mostrarán los casos?</legend>
         <p id="presentation-help">Elige cómo organizar los mismos casos. Los datos, los estados y las acciones disponibles se mantienen.</p>
