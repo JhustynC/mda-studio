@@ -1,10 +1,10 @@
 # MDA Studio
 
-Proyecto de interciclo de Nuevos Paradigmas de Programación. Modela un proceso de negocio en un DSL textual y genera una aplicación web autónoma con formularios, transiciones por rol, validación y registro de casos. El ejemplo gestiona préstamos de equipos de un laboratorio universitario.
+Proyecto de interciclo de Nuevos Paradigmas de Programación. Modela un proceso de negocio en JSON o desde un diagrama y genera una aplicación web autónoma con formularios, transiciones por rol, validación y registro de casos. Incluye dos ejemplos, Préstamos de laboratorio y Compras institucionales.
 
 ## Abrir la demostración
 
-Abre [MDA Studio](generado/index.html) en Edge o Chrome. El archivo incluye el compilador y las plantillas. Funciona sin servidor y sin paquetes externos. También puedes abrir directamente la [aplicación generada](generado/prestamos-lab.html).
+Clona el repositorio o descárgalo como ZIP y extráelo. Abre [generado/index.html](generado/index.html) con Edge o Chrome desde tu equipo. El HTML ya incluye el compilador y las plantillas, así que puedes probar el Studio sin instalar dependencias ni iniciar un servidor. También puedes abrir directamente las aplicaciones de [Préstamos](generado/prestamos-lab.html) y [Compras](generado/compras-institucionales.html).
 
 Para regenerar desde PowerShell en la carpeta del proyecto, usa Node.js 22 o posterior. Instala las dependencias de compilación con `npm ci` la primera vez. El HTML que se entrega ya incluye CodeMirror y se puede abrir sin conexión.
 
@@ -28,18 +28,26 @@ En el editor, **Proceso de negocio** y **Restricciones OCL** se despliegan al se
 
 En **PSM** o **Aplicación**, usa **Presentación de la aplicación** para elegir entre la bandeja y el tablero agrupado por estado. El Studio recuerda la selección por proyecto. La elección entra al PSM como `presentacion` y se incluye en el HTML exportado. Compras abre en tablero y préstamos en bandeja. Cambiar la presentación vuelve a cargar la vista previa y reinicia sus casos de prueba.
 
-## Capas y transformaciones
+## Las ocho etapas del proyecto
 
-| Etapa | Artefacto | Contenido |
+MDA Studio implementa el recorrido **CIM → PIM → PSM → aplicación** con un DSL, un metamodelo y un compilador propios. La propuesta de clase orienta las etapas. Esta implementación usa JavaScript y genera una aplicación web autónoma.
+
+| Etapa | Implementación en MDA Studio | Evidencia |
 | --- | --- | --- |
-| CIM | [prestamos.cim.json](models/prestamos.cim.json) | Objetivo, actores, datos, estados, acciones del negocio y restricciones declaradas. |
-| Metamodelo | [metamodelo.json](models/metamodelo.json) | Tipos, propiedades, multiplicidades y estructura de los modelos. El compilador valida los tres niveles. |
-| CIM → PIM (M2M) | [prestamos-lab.pim.json](generado/prestamos-lab.pim.json) | Los actores pasan a roles y las transiciones a operaciones. Las restricciones se analizan en comparaciones tipadas. Se comprueban referencias, identificadores repetidos y caminos hacia un fin. |
-| PIM → PSM (M2M) | [prestamos-lab.psm.json](generado/prestamos-lab.psm.json) | Los datos se asignan a controles HTML, las operaciones a acciones web y los casos a un almacén local. |
-| PSM → código (M2T) | [prestamos-lab.html](generado/prestamos-lab.html) | Plantilla HTML, CSS, configuración del proceso y funciones de validación JavaScript emitidas por el generador. |
-| Trazabilidad | [prestamos-lab.traza.json](generado/prestamos-lab.traza.json) | Correspondencia de campos, operaciones y restricciones entre las cuatro etapas. |
+| 01 · Análisis del problema | El CIM describe el objetivo, los actores, los datos y el flujo de negocio. La pestaña **Diagrama** representa estados y transiciones. | [CIM de Préstamos](models/prestamos.cim.json) |
+| 02 · Diseño del metamodelo | Un metamodelo JSON define la estructura, los tipos y la presencia de propiedades del CIM, PIM y PSM. El compilador verifica la conformidad de los tres. | [Metamodelo](models/metamodelo.json) |
+| 03 · Construcción del PIM | El generador deriva una entidad con campos tipados, roles, estados, operaciones y restricciones. El PIM expresa relaciones del proceso, como qué actor ejecuta una transición y qué estados conecta. | [PIM de Préstamos](generado/prestamos-lab.pim.json) |
+| 04 · Validación OCL | El compilador revisa los contextos y tipos de un subconjunto de OCL. La aplicación evalúa invariantes al crear o avanzar un caso y precondiciones al ejecutar su transición. | [Análisis y generación de validadores](src/compiler.mjs) |
+| 05 · Diseño del PSM | La estructura del destino web define controles de formulario, acciones, presentación y almacenamiento local. | [Estructura PSM en el metamodelo](models/metamodelo.json) |
+| 06 · Transformación M2M | Dos transformaciones convierten automáticamente el CIM en PIM y el PIM en una instancia del PSM. Por ejemplo, un `Entero` lógico pasa a un control web `number`. | [PSM de Préstamos](generado/prestamos-lab.psm.json) |
+| 07 · Generación M2T | El PSM alimenta una plantilla que genera HTML, CSS y JavaScript con el flujo y sus validadores. | [Plantilla](src/generated.html) · [HTML de Préstamos](generado/prestamos-lab.html) |
+| 08 · Ejecución y pruebas | La aplicación se ejecuta en el navegador. El guion permite verificar transiciones, historial y el rechazo de solicitudes que incumplen una regla. | [Guion para exponer](#guion-para-exponer) |
 
-El CIM no contiene controles HTML, detalles de almacenamiento ni código JavaScript. El PIM representa una entidad con campos tipados y un proceso como máquina de estados independiente de la plataforma. Las transformaciones viven en [compiler.mjs](src/compiler.mjs). La plantilla y el motor reutilizable de la aplicación están en [generated.html](src/generated.html) y [runtime.mjs](src/runtime.mjs).
+La [trazabilidad](generado/prestamos-lab.traza.json) permite seguir cada campo, transición y regla desde el CIM hasta la aplicación. En la versión actual, cada proyecto modela un tipo de caso. La aplicación usa almacenamiento local y un selector para simular los actores durante la demostración.
+
+### Posible extensión para el equipo
+
+Podemos añadir un segundo destino de generación que transforme el mismo PIM en un **PSM de servidor**. Ese módulo generaría una aplicación Spring Boot con una API y persistencia en PostgreSQL. La autorización de usuarios y la validación de transiciones se ejecutarían en el servidor. Las pruebas JUnit podrían cubrir reglas, permisos y persistencia. Esta extensión queda abierta para que el equipo decida su alcance. La versión web local ya se puede ejecutar y presentar.
 
 ### DSL y restricciones
 
