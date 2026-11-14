@@ -1,0 +1,172 @@
+{
+  "id": "prestamos-lab",
+  "nombre": "Préstamos de laboratorio",
+  "objetivo": "Solicitar, aprobar y devolver equipos del laboratorio universitario.",
+  "entidad": "Prestamo",
+  "plataforma": "HTML5 / JavaScript ES2022 / Web Storage",
+  "presentacion": "bandeja",
+  "almacen": {
+    "tipo": "localStorage",
+    "clave": "mda.casos.prestamos-lab"
+  },
+  "roles": [
+    {
+      "id": "estudiante",
+      "nombre": "Estudiante"
+    },
+    {
+      "id": "responsable",
+      "nombre": "Responsable"
+    }
+  ],
+  "campos": [
+    {
+      "id": "solicitante",
+      "nombre": "Solicitante",
+      "control": "text",
+      "requerido": true
+    },
+    {
+      "id": "equipo",
+      "nombre": "Equipo",
+      "control": "text",
+      "requerido": true
+    },
+    {
+      "id": "cantidad",
+      "nombre": "Cantidad",
+      "control": "number",
+      "requerido": true
+    },
+    {
+      "id": "dias",
+      "nombre": "Días de préstamo",
+      "control": "number",
+      "requerido": true
+    },
+    {
+      "id": "motivo",
+      "nombre": "Motivo",
+      "control": "text",
+      "requerido": true
+    }
+  ],
+  "formulario": {
+    "actor": "estudiante",
+    "estado": "solicitado",
+    "nombre": "Nueva solicitud"
+  },
+  "estados": [
+    {
+      "id": "solicitado",
+      "nombre": "En revisión"
+    },
+    {
+      "id": "aprobado",
+      "nombre": "Aprobado"
+    },
+    {
+      "id": "entregado",
+      "nombre": "Entregado"
+    },
+    {
+      "id": "devuelto",
+      "nombre": "Devuelto",
+      "final": true
+    },
+    {
+      "id": "rechazado",
+      "nombre": "Rechazado",
+      "final": true
+    }
+  ],
+  "acciones": [
+    {
+      "id": "aprobar",
+      "nombre": "Aprobar",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "aprobado"
+    },
+    {
+      "id": "rechazar",
+      "nombre": "Rechazar",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "rechazado"
+    },
+    {
+      "id": "entregar",
+      "nombre": "Registrar entrega",
+      "actor": "responsable",
+      "desde": "aprobado",
+      "hasta": "entregado"
+    },
+    {
+      "id": "devolver",
+      "nombre": "Registrar devolución",
+      "actor": "estudiante",
+      "desde": "entregado",
+      "hasta": "devuelto"
+    }
+  ],
+  "validadores": [
+    {
+      "id": "CantidadValida",
+      "clase": "Prestamo",
+      "tipo": "inv",
+      "operacion": null,
+      "expresion": [
+        {
+          "campo": "cantidad",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 1
+        },
+        {
+          "campo": "cantidad",
+          "acceso": "value",
+          "operador": "<=",
+          "valor": 5
+        }
+      ],
+      "fuente": "context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad <= 5"
+    },
+    {
+      "id": "PlazoValido",
+      "clase": "Prestamo",
+      "tipo": "inv",
+      "operacion": null,
+      "expresion": [
+        {
+          "campo": "dias",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 1
+        },
+        {
+          "campo": "dias",
+          "acceso": "value",
+          "operador": "<=",
+          "valor": 30
+        }
+      ],
+      "fuente": "context Prestamo inv PlazoValido: self.dias >= 1 and self.dias <= 30"
+    },
+    {
+      "id": "MotivoSuficiente",
+      "clase": "Prestamo",
+      "tipo": "pre",
+      "operacion": "aprobar",
+      "expresion": [
+        {
+          "campo": "motivo",
+          "acceso": "size",
+          "operador": ">=",
+          "valor": 8
+        }
+      ],
+      "fuente": "context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8"
+    }
+  ]
+}

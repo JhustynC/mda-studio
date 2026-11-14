@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MDA Studio</title>
+<style>{{CSS}}</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span>MDA Studio</div>
+  <span class="context">Nuevos paradigmas de programación</span>
+  <button id="open-guide" type="button">Manual</button>
+  <button id="open-metamodel" type="button">Metamodelo base</button>
+  <button class="generate" id="compile" hidden>Generar aplicación <span aria-hidden="true">→</span></button>
+</header>
+<main id="guide" hidden>
+  <div class="guide-head"><div><p class="eyebrow">DOCUMENTACIÓN</p><h1 tabindex="-1" id="guide-title">Manual de MDA Studio</h1><p>Crea un proceso, genera su aplicación y comprueba cómo se transforma el modelo.</p></div><button id="close-guide" type="button">Volver <span id="guide-origin"></span></button></div>
+  <div class="guide-layout">
+    <nav aria-label="Índice del manual" class="guide-index">
+      <a href="#guide-start">Primer proyecto</a>
+      <a href="#guide-dsl">Estructura del CIM</a>
+      <a href="#guide-fields">Tipos de campo</a>
+      <a href="#guide-ocl">Reglas OCL</a>
+      <a href="#guide-generation">Generar y probar</a>
+      <a href="#guide-roles">Roles y Bonita</a>
+    </nav>
+    <article class="guide-article">
+      <section id="guide-start" tabindex="-1">
+        <h2>Tu primer proyecto</h2>
+        <ol>
+          <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso básico</strong>.</li>
+          <li>En <strong>CIM → Editar JSON</strong>, cambia el objetivo y revisa el flujo inicial. Usa <strong>Buscar</strong> para encontrar una clave y <strong>Formatear</strong> para ordenar la sangría.</li>
+          <li>Dentro de <code>datos</code>, agrega un campo como <em>Prioridad</em> usando el ejemplo de abajo. Separa los objetos de una lista con comas y usa comillas dobles.</li>
+          <li>Pulsa <strong>Generar aplicación</strong>. Crea un caso como Solicitante, cambia a Revisor y pulsa <strong>Completar</strong>. Comprueba el estado y el historial.</li>
+        </ol>
+        <button id="guide-new-project" class="generate" type="button">Crear un proyecto</button>
+      </section>
+      <section id="guide-dsl" tabindex="-1">
+        <h2>Estructura del CIM</h2>
+        <div class="table-wrap"><table><thead><tr><th scope="col">Clave</th><th scope="col">Qué debes definir</th></tr></thead><tbody>
+          <tr><td>version, id</td><td>Usa la versión 1 y un identificador como <code>mantenimiento</code>.</td></tr>
+          <tr><td>nombre, objetivo, entidad</td><td>Título de la aplicación, finalidad y nombre de la entidad, por ejemplo <code>Solicitud</code>.</td></tr>
+          <tr><td>actores</td><td>Quién participa. Cada actor tiene <code>id</code> y <code>nombre</code>.</td></tr>
+          <tr><td>datos</td><td>Los campos del caso. Cada uno declara <code>id</code>, <code>nombre</code>, <code>tipo</code> y, si aplica, <code>requerido</code> u <code>opciones</code>.</td></tr>
+          <tr><td>inicio</td><td>El <code>actor</code> que crea el caso, su primer <code>estado</code> y el <code>nombre</code> de la acción inicial.</td></tr>
+          <tr><td>estados</td><td>Las etapas con <code>id</code> y <code>nombre</code>. Marca los finales con <code>"final": true</code>.</td></tr>
+          <tr><td>transiciones</td><td>Acciones con <code>id</code>, <code>nombre</code>, <code>actor</code>, <code>desde</code> y <code>hasta</code>. El actor y ambos estados deben existir.</td></tr>
+          <tr><td>ocl</td><td>Lista de reglas. Usa <code>[]</code> si aún no necesitas ninguna.</td></tr>
+        </tbody></table></div>
+        <p>Usa identificadores únicos por lista, en minúsculas, con números o guiones después de la primera letra. Cada estado debe ser alcanzable y tener un camino hacia un final. En <strong>Metamodelo base</strong> puedes consultar la estructura completa.</p>
+        <p>En <strong>CIM → Diagrama</strong> puedes editar el proceso. Abre un estado y pulsa <strong>Nueva transición desde aquí</strong> para elegir el actor y el destino. Para añadir una precondición, abre <strong>OCL</strong> y elige esa transición. Los cambios aparecen en <strong>Editar JSON</strong>.</p>
+      </section>
+      <section id="guide-fields" tabindex="-1">
+        <h2>Tipos de campo</h2>
+        <div class="table-wrap"><table><thead><tr><th scope="col">Tipo del DSL</th><th scope="col">Control generado</th></tr></thead><tbody>
+          <tr><td>Texto</td><td>Entrada de texto.</td></tr>
+          <tr><td>Entero</td><td>Entrada numérica sin decimales.</td></tr>
+          <tr><td>Fecha</td><td>Calendario. El valor se conserva como <code>AAAA-MM-DD</code>.</td></tr>
+          <tr><td>Seleccion</td><td>Lista desplegable. Declara al menos una opción con <code>id</code> y <code>nombre</code>. Se guarda el identificador y se muestra la etiqueta.</td></tr>
+          <tr><td>Booleano</td><td>Casilla Sí/No. Con <code>"requerido": true</code>, se exige marcarla antes de enviar el formulario.</td></tr>
+        </tbody></table></div>
+        <pre class="guide-code"><code>{
+  "id": "prioridad",
+  "nombre": "Prioridad",
+  "tipo": "Seleccion",
+  "requerido": true,
+  "opciones": [
+    { "id": "normal", "nombre": "Normal" },
+    { "id": "urgente", "nombre": "Urgente" }
+  ]
+}</code></pre>
+        <p>Los botones de trabajo salen de <code>transiciones</code>. Para ofrecer <em>Aprobar</em> y <em>Rechazar</em>, declara dos transiciones con el mismo estado de origen y sus respectivos destinos.</p>
+      </section>
+      <section id="guide-ocl" tabindex="-1">
+        <h2>Reglas OCL</h2>
+        <p>El Studio implementa un subconjunto de OCL. Admite comparaciones de enteros, <code>.size()</code> sobre texto y <code>and</code> para combinar condiciones. Los tipos nuevos se validan mediante el formulario y las opciones del DSL.</p>
+        <pre class="guide-code"><code>context Prestamo inv CantidadValida: self.cantidad &gt;= 1 and self.cantidad &lt;= 5
+context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8</code></pre>
+        <p>Una invariante se revisa al crear un caso y antes de cambiar su estado. Una precondición se comprueba al intentar la transición que indica. Sustituye <code>Prestamo</code> por la entidad de tu CIM y <code>aprobar</code> por el identificador de la acción correspondiente.</p>
+      </section>
+      <section id="guide-generation" tabindex="-1">
+        <h2>Generar, probar y exportar</h2>
+        <ol>
+          <li><strong>CIM → PIM.</strong> La primera transformación valida el proceso y produce el modelo lógico con roles, propiedades y operaciones.</li>
+          <li><strong>PIM → PSM.</strong> La segunda elige los controles web. Por ejemplo, <code>Seleccion</code> pasa a <code>select</code>. Aquí también eliges bandeja o tablero.</li>
+          <li><strong>PSM → aplicación.</strong> El generador combina el PSM con una plantilla HTML y emite los validadores ejecutables.</li>
+        </ol>
+        <p>En PIM y PSM, abre <strong>Inspeccionar JSON</strong> para explorar las secciones de la salida generada. Usa <strong>Trazabilidad</strong> para seguir un campo desde el CIM hasta su control. Descarga el CIM para llevarlo a otro navegador, o el HTML para ejecutar la aplicación por separado. Si aparece un error, revisa el campo o la referencia indicada y vuelve a generar.</p>
+      </section>
+      <section id="guide-roles" tabindex="-1">
+        <h2>Roles de demostración y Bonita</h2>
+        <p>El selector de roles de MDA Studio permite representar a varias personas durante una exposición. El HTML autónomo ejecuta el flujo en un navegador y conserva los casos localmente cuando el almacenamiento está disponible.</p>
+        <p>En Bonita, el actor se define durante el diseño y se vincula antes del despliegue a usuarios, grupos, roles o membresías de una organización. El usuario inicia sesión y accede a las tareas que puede reclamar o ejecutar. El UI Designer puede partir de un contrato de datos para crear el formulario de inicio o de una tarea.</p>
+        <p>Un destino multiusuario para MDA Studio requeriría una API con autenticación, asignación de actores a identidades, verificación de permisos y reglas en el servidor, y una base compartida con historial. El actor seguiría declarado en el CIM. La asignación a identidades se configuraría en el despliegue.</p>
+        <p>REA permitió inspeccionar los módulos instalados de identidad, contratos y diseño. Para el comportamiento de las tareas y formularios, consulta la documentación de <a href="https://documentation.ofelia.com/bonita/2025.2/process/actors" target="_blank" rel="noopener">actores de Bonita</a> y de <a href="https://documentation.ofelia.com/bonita/2025.2/pages-and-forms/widgets-inputs" target="_blank" rel="noopener">controles del UI Designer</a>.</p>
+      </section>
+    </article>
+  </div>
+</main>
+<dialog id="metamodel-dialog" aria-labelledby="metamodel-title">
+  <div class="metamodel-heading"><h2 id="metamodel-title">Metamodelo base</h2><button id="close-metamodel" type="button">Cerrar</button></div>
+  <p>Define la estructura que el generador valida en todos los proyectos.</p>
+  <div class="metamodel-controls">
+    <label for="metamodel-structure">Estructura</label>
+    <select id="metamodel-structure">
+      <optgroup label="Modelos"><option>CIM</option><option>PIM</option><option>PSM</option></optgroup>
+      <optgroup id="metamodel-types" label="Tipos reutilizables"></optgroup>
+    </select>
+    <button id="metamodel-download" type="button">Descargar JSON</button>
+  </div>
+  <div class="table-wrap"><table><thead><tr><th scope="col">Propiedad</th><th scope="col">Tipo admitido</th><th scope="col">Presencia</th></tr></thead><tbody id="metamodel-rows"></tbody></table></div>
+</dialog>
+<main id="library">
+  <div class="library-head">
+    <div><p class="eyebrow">MDA STUDIO</p><h1>Proyectos</h1><p>Abre un proyecto para editar su modelo y generar una aplicación.</p></div>
+    <button class="generate" id="new-project" type="button">Nuevo proyecto</button>
+  </div>
+  <p id="library-status" class="save-status" role="status"></p>
+  <div id="project-list" class="project-grid"></div>
+</main>
+  <dialog id="project-dialog" aria-labelledby="project-dialog-title">
+    <form id="project-form">
+      <h2 id="project-dialog-title">Nuevo proyecto</h2>
+      <label>Nombre del proyecto<input id="project-name" name="name" maxlength="100" required autofocus></label>
+      <label>Modelo inicial
+        <select id="project-template" name="template">
+          <option value="blank">Proceso básico</option>
+          <option id="copy-option" value="copy">Copia del último proyecto abierto</option>
+          <option value="example">Ejemplo de préstamos</option>
+          <option value="advanced">Ejemplo de compras</option>
+        </select>
+      </label>
+      <div class="dialog-actions">
+        <button id="cancel-project" type="button">Cancelar</button>
+        <button class="generate" type="submit">Crear proyecto</button>
+      </div>
+    </form>
+  </dialog>
+<main id="editor" hidden>
+  <div class="editor-nav"><button id="back-projects" type="button">← Proyectos</button><span id="project-caption"></span><p id="project-status" class="save-status" role="status"></p></div>
+  <div class="intro"><div><p class="eyebrow">PROYECTO DE INTERCICLO</p><h1 id="title">Préstamos de laboratorio</h1><p id="description"></p></div>
+  <span id="build-status" class="status" role="status"></span></div>
+  <div class="pipeline" role="group" aria-label="Etapas del flujo MDA">
+    <button type="button" data-view="model" aria-pressed="true"><b>CIM</b><small>Modelo de negocio</small></button>
+    <span class="arrow" aria-hidden="true">M2M →</span>
+    <button type="button" data-view="pim" aria-pressed="false"><b>PIM</b><small>Modelo lógico</small></button>
+    <span class="arrow" aria-hidden="true">M2M →</span>
+    <button type="button" data-view="psm" aria-pressed="false"><b>PSM</b><small>Modelo web</small></button>
+    <span class="arrow" aria-hidden="true">M2T →</span>
+    <button type="button" data-view="app" aria-pressed="false"><b>Aplicación</b><small>HTML ejecutable</small></button>
+  </div>
+  <div class="workspace">
+    <section class="work-card">
+      <div class="section-head"><div><h2 id="view-title">Modelo de negocio</h2><p id="view-subtitle"></p></div>
+        <div class="tools"><button id="reset" type="button">Cargar ejemplo</button><button id="load-button" type="button">Abrir JSON</button><input id="load" type="file" accept=".json,application/json" hidden><button id="download" type="button" hidden>Descargar</button></div></div>
+      <div id="presentation-panel" class="presentation-panel" hidden>
+        <label for="presentation">Presentación de la aplicación</label>
+        <select id="presentation"><option value="bandeja">Bandeja de casos</option><option value="tablero">Tablero por estado</option></select>
+      </div>
+      <div id="error" class="error" role="alert" hidden></div>
+      <div id="model-format" class="model-format" role="group" aria-label="Vista del modelo">
+        <button id="show-fields" type="button" aria-pressed="true">Campos y tipos</button>
+        <button id="show-json" type="button" aria-pressed="false">Editar JSON</button>
+        <button id="show-diagram" type="button" aria-pressed="false">Diagrama</button>
+      </div>
+      <div id="fields-panel">
+        <p id="fields-caption"></p>
+        <div class="table-wrap" id="fields-table"><table><thead><tr><th scope="col">Campo</th><th scope="col">Identificador</th><th scope="col" id="fields-type">Tipo</th><th scope="col">Presencia</th><th scope="col">Opciones</th></tr></thead><tbody id="fields-rows"></tbody></table></div>
+      </div>
+      <section id="source-panel" class="json-workbench" aria-label="Editor de JSON" hidden>
+        <div class="json-toolbar"><div><strong id="source-filename">modelo.cim.json</strong><span class="json-mode">Editable</span></div>
+          <div class="tools"><button id="source-search" type="button" title="Ctrl+F dentro del editor">Buscar</button><button id="source-format" type="button" title="Alt+Mayús+F">Formatear</button></div>
+        </div>
+        <p id="source-error" class="json-error" role="alert" hidden></p>
+        <div id="source"></div>
+        <div class="json-status"><span id="source-location">Línea 1, columna 1</span><span>JSON · Ctrl+Enter para generar</span></div>
+      </section>
+      <section id="diagram-panel" class="diagram-panel" aria-label="Editor de diagramas" hidden>
+        <div id="diagram-error" class="diagram-issue" role="status" hidden></div>
+        <div id="diagram-workbench">
+          <div class="diagram-bar">
+            <div><h3>Flujo del proceso</h3><p id="diagram-stats"></p></div>
+            <div class="diagram-tools">
+              <label>Actor <select id="diagram-actor" aria-label="Filtrar diagrama por actor"></select></label>
+              <button id="diagram-minus" type="button" aria-label="Alejar">−</button><output id="diagram-zoom" aria-label="Nivel de zoom"></output><button id="diagram-plus" type="button" aria-label="Acercar">+</button>
+              <button id="diagram-fit" type="button">Ajustar</button>
+            </div>
+          </div>
+          <div class="diagram-layout">
+            <div id="diagram-viewport" class="diagram-viewport" tabindex="0" aria-label="Lienzo del proceso"><div id="diagram-scroller"><div id="diagram-scene"></div></div></div>
+            <aside class="diagram-inspector" aria-label="Elementos del CIM">
+              <div id="diagram-tabs" class="diagram-tabs" role="group" aria-label="Elementos del modelo"></div>
+              <div class="diagram-list-head"><h3 id="diagram-list-title"></h3><button id="diagram-add" type="button"></button></div>
+              <div id="diagram-items" class="diagram-items"></div>
+            </aside>
+          </div>
+          <p class="diagram-legend"><span><i class="legend-start"></i> Inicio</span><span><i class="legend-state"></i> Estado</span><span><i class="legend-end"></i> Final</span><span><i class="legend-link"></i> Transición</span><span><i class="legend-return"></i> Retorno</span><span>Selecciona para editar. Arrastra el fondo para desplazarte.</span></p>
+        </div>
+        <dialog id="diagram-dialog" aria-labelledby="diagram-dialog-title">
+          <form id="diagram-form">
+            <h2 id="diagram-dialog-title"></h2>
+            <p id="diagram-dialog-context"></p>
+            <div id="diagram-form-fields"></div>
+            <p id="diagram-form-error" class="diagram-issue" role="alert" hidden></p>
+            <div class="diagram-dialog-actions"><button type="button" id="diagram-remove">Eliminar</button><button type="button" id="diagram-connect" hidden>Nueva transición desde aquí</button><button type="button" id="diagram-cancel">Cancelar</button><button class="generate" type="submit">Guardar cambios</button></div>
+          </form>
+        </dialog>
+      </section>
+      <section id="output" class="json-inspector" aria-label="Inspector de JSON generado" hidden>
+        <div class="json-toolbar"><div><strong id="output-filename"></strong><span class="json-mode">Solo lectura</span></div>
+          <div class="tools" id="output-tools"><button id="output-expand" type="button">Abrir secciones</button><button id="output-collapse" type="button">Plegar secciones</button></div>
+        </div>
+        <p id="output-hint"></p>
+        <div id="output-tree" tabindex="0" aria-label="Estructura del modelo generado"></div>
+      </section>
+      <div id="app-panel" hidden><iframe id="preview" title="Aplicación generada" sandbox="allow-scripts allow-forms"></iframe></div>
+    </section>
+    <aside id="model-summary">
+      <details class="side-card" id="flow-card">
+        <summary><strong>Proceso de negocio</strong><span id="flow-count"></span></summary>
+        <p id="flow-start" class="flow-start"></p>
+        <label class="side-filter" for="flow-role">Filtrar por actor</label>
+        <select id="flow-role"></select>
+        <div id="flow" class="side-list" tabindex="0" aria-label="Transiciones"></div>
+      </details>
+      <details class="side-card" id="rules-card">
+        <summary><strong>Restricciones OCL</strong><span id="rules-count"></span></summary>
+        <ul id="rules" class="side-list" tabindex="0" aria-label="Reglas OCL"></ul>
+      </details>
+    </aside>
+  </div>
+  <section class="trace-card" aria-labelledby="trace-title">
+    <div class="section-head"><div><h2 id="trace-title">Trazabilidad</h2><p>Correspondencia entre los elementos de cada modelo y la aplicación.</p></div><button id="trace-download" type="button">Descargar todo en JSON</button></div>
+    <div class="trace-controls">
+      <div><label for="trace-search">Buscar en la trazabilidad</label><input id="trace-search" type="search" placeholder="Ej. CantidadValida"></div>
+      <div><label for="trace-kind">Tipo</label><select id="trace-kind"><option value="">Todos</option><option value="datos">Campos</option><option value="transiciones">Transiciones</option><option value="ocl">Reglas OCL</option></select></div>
+    </div>
+    <p id="trace-empty" class="trace-empty" hidden></p>
+    <div class="table-wrap" id="trace-table"><table><thead><tr><th>CIM</th><th>PIM</th><th>PSM</th><th>Aplicación</th></tr></thead><tbody id="trace"></tbody></table></div>
+    <div class="trace-footer"><p id="trace-count" role="status"></p><div class="tools"><button id="trace-prev" type="button">Anterior</button><button id="trace-next" type="button">Siguiente</button></div></div>
+  </section>
+</main>
+<script>{{SCRIPT}}</script>
+</body>
+</html>
+

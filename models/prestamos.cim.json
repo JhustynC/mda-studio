@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "id": "prestamos-lab",
+  "nombre": "Préstamos de laboratorio",
+  "objetivo": "Solicitar, aprobar y devolver equipos del laboratorio universitario.",
+  "entidad": "Prestamo",
+  "actores": [
+    {
+      "id": "estudiante",
+      "nombre": "Estudiante"
+    },
+    {
+      "id": "responsable",
+      "nombre": "Responsable"
+    }
+  ],
+  "datos": [
+    {
+      "id": "solicitante",
+      "nombre": "Solicitante",
+      "tipo": "Texto",
+      "requerido": true
+    },
+    {
+      "id": "equipo",
+      "nombre": "Equipo",
+      "tipo": "Texto",
+      "requerido": true
+    },
+    {
+      "id": "cantidad",
+      "nombre": "Cantidad",
+      "tipo": "Entero",
+      "requerido": true
+    },
+    {
+      "id": "dias",
+      "nombre": "Días de préstamo",
+      "tipo": "Entero",
+      "requerido": true
+    },
+    {
+      "id": "motivo",
+      "nombre": "Motivo",
+      "tipo": "Texto",
+      "requerido": true
+    }
+  ],
+  "inicio": {
+    "actor": "estudiante",
+    "estado": "solicitado",
+    "nombre": "Nueva solicitud"
+  },
+  "estados": [
+    {
+      "id": "solicitado",
+      "nombre": "En revisión"
+    },
+    {
+      "id": "aprobado",
+      "nombre": "Aprobado"
+    },
+    {
+      "id": "entregado",
+      "nombre": "Entregado"
+    },
+    {
+      "id": "devuelto",
+      "nombre": "Devuelto",
+      "final": true
+    },
+    {
+      "id": "rechazado",
+      "nombre": "Rechazado",
+      "final": true
+    }
+  ],
+  "transiciones": [
+    {
+      "id": "aprobar",
+      "nombre": "Aprobar",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "aprobado"
+    },
+    {
+      "id": "rechazar",
+      "nombre": "Rechazar",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "rechazado"
+    },
+    {
+      "id": "entregar",
+      "nombre": "Registrar entrega",
+      "actor": "responsable",
+      "desde": "aprobado",
+      "hasta": "entregado"
+    },
+    {
+      "id": "devolver",
+      "nombre": "Registrar devolución",
+      "actor": "estudiante",
+      "desde": "entregado",
+      "hasta": "devuelto"
+    }
+  ],
+  "ocl": [
+    "context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad <= 5",
+    "context Prestamo inv PlazoValido: self.dias >= 1 and self.dias <= 30",
+    "context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8"
+  ]
+}

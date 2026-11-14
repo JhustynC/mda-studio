@@ -1,0 +1,131 @@
+{
+  "CIM": {
+    "version": "version",
+    "id": "id",
+    "nombre": "text",
+    "objetivo": "text",
+    "entidad": "class",
+    "actores": [
+      "Actor"
+    ],
+    "datos": [
+      "Dato"
+    ],
+    "inicio": "Inicio",
+    "estados": [
+      "Estado"
+    ],
+    "transiciones": [
+      "Transicion"
+    ],
+    "ocl": [
+      "text"
+    ]
+  },
+  "Actor": {
+    "id": "id",
+    "nombre": "text"
+  },
+  "Dato": {
+    "id": "id",
+    "nombre": "text",
+    "tipo": "domainType",
+    "requerido?": "bool",
+    "opciones?": ["Opcion"]
+  },
+  "Opcion": {
+    "id": "id",
+    "nombre": "text"
+  },
+  "Inicio": {
+    "actor": "id",
+    "estado": "id",
+    "nombre": "text"
+  },
+  "Estado": {
+    "id": "id",
+    "nombre": "text",
+    "final?": "bool"
+  },
+  "Transicion": {
+    "id": "id",
+    "nombre": "text",
+    "actor": "id",
+    "desde": "id",
+    "hasta": "id"
+  },
+  "PIM": {
+    "id": "id",
+    "nombre": "text",
+    "objetivo": "text",
+    "entidad": "class",
+    "roles": [
+      "Actor"
+    ],
+    "propiedades": [
+      "Dato"
+    ],
+    "creacion": "Inicio",
+    "estados": [
+      "Estado"
+    ],
+    "operaciones": [
+      "Transicion"
+    ],
+    "restricciones": [
+      "Restriccion"
+    ]
+  },
+  "Restriccion": {
+    "id": "class",
+    "clase": "class",
+    "tipo": "ruleType",
+    "operacion": "nullableId",
+    "expresion": [
+      "Comparacion"
+    ],
+    "fuente": "text"
+  },
+  "Comparacion": {
+    "campo": "id",
+    "acceso": "access",
+    "operador": "operator",
+    "valor": "int"
+  },
+  "PSM": {
+    "id": "id",
+    "nombre": "text",
+    "objetivo": "text",
+    "entidad": "class",
+    "plataforma": "text",
+    "presentacion": "presentation",
+    "almacen": "Almacen",
+    "roles": [
+      "Actor"
+    ],
+    "campos": [
+      "CampoWeb"
+    ],
+    "formulario": "Inicio",
+    "estados": [
+      "Estado"
+    ],
+    "acciones": [
+      "Transicion"
+    ],
+    "validadores": [
+      "Restriccion"
+    ]
+  },
+  "Almacen": {
+    "tipo": "text",
+    "clave": "text"
+  },
+  "CampoWeb": {
+    "id": "id",
+    "nombre": "text",
+    "control": "control",
+    "requerido": "bool",
+    "opciones?": ["Opcion"]
+  }
+}

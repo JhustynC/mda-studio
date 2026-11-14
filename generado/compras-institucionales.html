@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aplicación generada</title>
+<style>:root{font-family:"Segoe UI",system-ui,sans-serif;color:#152e30;background:#eff5f3;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}main{max-width:1100px;margin:auto;padding:32px clamp(16px,4vw,48px)}
+header{display:flex;justify-content:space-between;align-items:end;gap:24px}h1{font-size:clamp(26px,5vw,42px);margin:6px 0}h2{font-size:17px;margin:0 0 14px}h3{font-size:21px;margin:0 0 8px}h4{margin:20px 0 8px}p{margin:0}.product{font-size:10px;letter-spacing:.14em;font-weight:750;color:#216a5b}.muted{color:#4d6664;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}.column{display:grid;gap:16px}section{background:#fff;border:1px solid #d8e5e0;border-radius:13px;padding:18px;min-width:0;overflow-wrap:anywhere}.section-head{display:flex;justify-content:space-between;gap:12px}
+form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:end}label{display:grid;gap:5px;font-size:12px;font-weight:650}.role{min-width:155px}input,select{font:inherit;font-weight:400;width:100%;padding:8px 10px;border:1px solid #c2d3cd;border-radius:6px;background:#fafffd;color:inherit}
+button{cursor:pointer;font:inherit;font-size:13px;font-weight:650;padding:8px 12px;border:1px solid #b6cdc5;border-radius:7px;color:#18473e;background:#fff}.primary{background:#18584c;border-color:#18584c;color:white}.primary:hover{background:#123f37}.case{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;margin-bottom:5px}.case[aria-pressed=true]{background:#e5f4ee;border-color:#438372}
+.state{border-radius:4px;padding:3px 7px;background:#e4f3ed;color:#215549;font-size:11px;font-weight:700;display:inline-block}#app-notice{min-height:22px;margin:10px 0;color:#216250;font-size:13px}#app-notice[data-error=true]{color:#a62d25;font-weight:650}dl{display:grid;grid-template-columns:1fr 1.5fr;gap:7px;font-size:13px}dt{color:#4d6664}dd{margin:0}.action-bar{display:flex;flex-wrap:wrap;gap:8px}ol{padding-left:18px;font-size:12px;color:#4d6664;line-height:1.7}
+:focus-visible{outline:2px solid #16816d;outline-offset:2px}[hidden]{display:none!important}@media(max-width:580px){.layout{grid-template-columns:1fr}header{align-items:start;flex-direction:column;gap:12px}}
+[data-presentation=tablero]{--board-accent:#2c537c}
+[data-presentation=tablero] header{border-bottom:2px solid #cbdceb;padding:0 0 18px}
+[data-presentation=tablero] .product{color:var(--board-accent)}
+[data-presentation=tablero] .layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+[data-presentation=tablero] .column{display:contents}
+[data-presentation=tablero] #app-cases{grid-column:1/-1;grid-row:1;background:#edf3f9;border-color:#cedbe9}
+[data-presentation=tablero] #app-detail{grid-column:2}
+[data-presentation=tablero] #app-inbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));gap:10px}
+[data-presentation=tablero] .board-lane{min-width:0;padding:10px;background:#f8fbff;border:1px solid #cfdeec;border-radius:8px}
+[data-presentation=tablero] .board-lane h3{font-size:12px;color:#274867;margin-bottom:8px}
+[data-presentation=tablero] .primary{background:#2c537c;border-color:#2c537c}
+[data-presentation=tablero] .case[aria-pressed=true]{background:#dfeefb;border-color:#6284a8}
+@media(max-width:700px){[data-presentation=tablero] .layout{grid-template-columns:1fr}[data-presentation=tablero] #app-detail{grid-column:1}}
+form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}form input[type=checkbox]{width:auto;flex:none;accent-color:#18584c}
+</style>
+</head>
+<body>
+<main id="application">
+  <header>
+    <div><p class="product">MDA STUDIO / APLICACIÓN GENERADA</p><h1 id="app-title"></h1><p id="app-description" class="muted"></p></div>
+    <label class="role">Rol de demostración<select id="app-role" aria-describedby="app-role-help"></select><small class="muted" id="app-role-help">Simula quién realiza la tarea.</small></label>
+  </header>
+  <p id="app-notice" role="status" aria-live="polite"></p>
+  <div class="layout">
+    <div class="column">
+      <section id="app-create"><h2 id="app-form-title"></h2><form id="app-form"></form></section>
+      <section id="app-cases"><div class="section-head"><h2 id="app-cases-title">Casos</h2><span id="app-count" class="muted"></span></div><div id="app-inbox"></div></section>
+    </div>
+    <section id="app-detail" tabindex="-1"></section>
+  </div>
+</main>
+<script>const model = {"id":"compras-institucionales","nombre":"Compras institucionales","objetivo":"Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.","entidad":"Compra","plataforma":"HTML5 / JavaScript ES2022 / Web Storage","presentacion":"tablero","almacen":{"tipo":"localStorage","clave":"mda.casos.proyecto.example-compras.compras-institucionales"},"roles":[{"id":"solicitante","nombre":"Solicitante"},{"id":"jefatura","nombre":"Jefatura"},{"id":"presupuesto","nombre":"Presupuesto"},{"id":"compras","nombre":"Compras"},{"id":"juridico","nombre":"Jurídico"},{"id":"comite","nombre":"Comité"},{"id":"bodega","nombre":"Bodega"},{"id":"contabilidad","nombre":"Contabilidad"},{"id":"tesoreria","nombre":"Tesorería"}],"campos":[{"id":"referencia","nombre":"Referencia interna","control":"text","requerido":true},{"id":"unidad","nombre":"Unidad solicitante","control":"text","requerido":true},{"id":"objeto","nombre":"Objeto de la compra","control":"text","requerido":true},{"id":"justificacion","nombre":"Justificación","control":"text","requerido":true},{"id":"monto","nombre":"Monto estimado (USD)","control":"number","requerido":true},{"id":"cantidad","nombre":"Unidades","control":"number","requerido":true},{"id":"cotizaciones","nombre":"Cotizaciones disponibles","control":"number","requerido":true},{"id":"plazo","nombre":"Plazo de entrega (días)","control":"number","requerido":true},{"id":"proveedor","nombre":"Proveedor propuesto","control":"text","requerido":false},{"id":"partida","nombre":"Partida presupuestaria","control":"text","requerido":true},{"id":"prioridad","nombre":"Prioridad","control":"select","requerido":false,"opciones":[{"nombre":"Normal","id":"normal"},{"nombre":"Urgente","id":"urgente"},{"nombre":"Crítica","id":"critica"}]},{"id":"fecha-necesaria","nombre":"Fecha en que se necesita","control":"date","requerido":false},{"id":"documentacion","nombre":"Documentación adjunta disponible","control":"checkbox","requerido":false}],"formulario":{"actor":"solicitante","estado":"solicitada","nombre":"Registrar solicitud"},"estados":[{"id":"solicitada","nombre":"Revisión de jefatura"},{"id":"observada","nombre":"Ampliación pendiente"},{"id":"presupuesto","nombre":"Control de presupuesto"},{"id":"modalidad","nombre":"Selección de modalidad"},{"id":"juridica","nombre":"Revisión jurídica"},{"id":"comite","nombre":"Evaluación del comité"},{"id":"adjudicada","nombre":"Adjudicada"},{"id":"ordenada","nombre":"Orden emitida"},{"id":"incidencia","nombre":"Incidencia de recepción"},{"id":"recibida","nombre":"Recibida"},{"id":"contabilidad","nombre":"Revisión contable"},{"id":"pago","nombre":"Pendiente de pago"},{"id":"pagada","nombre":"Pagada"},{"id":"cerrada","nombre":"Cerrada","final":true},{"id":"rechazada","nombre":"Rechazada","final":true},{"id":"cancelada","nombre":"Cancelada","final":true}],"acciones":[{"id":"avalar","nombre":"Enviar a presupuesto","actor":"jefatura","desde":"solicitada","hasta":"presupuesto"},{"id":"observar","nombre":"Solicitar ampliación","actor":"jefatura","desde":"solicitada","hasta":"observada"},{"id":"justificar","nombre":"Registrar ampliación externa","actor":"solicitante","desde":"observada","hasta":"solicitada"},{"id":"retirar","nombre":"Retirar solicitud","actor":"solicitante","desde":"observada","hasta":"cancelada"},{"id":"denegar","nombre":"Rechazar solicitud","actor":"jefatura","desde":"solicitada","hasta":"rechazada"},{"id":"certificar","nombre":"Certificar disponibilidad","actor":"presupuesto","desde":"presupuesto","hasta":"modalidad"},{"id":"sinfondos","nombre":"Rechazar por falta de fondos","actor":"presupuesto","desde":"presupuesto","hasta":"rechazada"},{"id":"directa","nombre":"Adjudicar compra directa","actor":"compras","desde":"modalidad","hasta":"adjudicada"},{"id":"competitiva","nombre":"Enviar a revisión jurídica","actor":"compras","desde":"modalidad","hasta":"juridica"},{"id":"cancelar","nombre":"Cancelar trámite","actor":"compras","desde":"modalidad","hasta":"cancelada"},{"id":"dictamen","nombre":"Emitir dictamen favorable","actor":"juridico","desde":"juridica","hasta":"comite"},{"id":"devolver","nombre":"Devolver a compras","actor":"juridico","desde":"juridica","hasta":"modalidad"},{"id":"objecion","nombre":"Rechazar por objeción jurídica","actor":"juridico","desde":"juridica","hasta":"rechazada"},{"id":"adjudicar","nombre":"Adjudicar por comité","actor":"comite","desde":"comite","hasta":"adjudicada"},{"id":"desierta","nombre":"Declarar proceso desierto","actor":"comite","desde":"comite","hasta":"cancelada"},{"id":"emitir","nombre":"Emitir orden de compra","actor":"compras","desde":"adjudicada","hasta":"ordenada"},{"id":"recibir","nombre":"Confirmar recepción conforme","actor":"bodega","desde":"ordenada","hasta":"recibida"},{"id":"incidencia","nombre":"Registrar recepción no conforme","actor":"bodega","desde":"ordenada","hasta":"incidencia"},{"id":"subsanar","nombre":"Registrar subsanación del proveedor","actor":"compras","desde":"incidencia","hasta":"ordenada"},{"id":"anular","nombre":"Anular orden","actor":"compras","desde":"incidencia","hasta":"cancelada"},{"id":"enviarcontable","nombre":"Enviar expediente a contabilidad","actor":"compras","desde":"recibida","hasta":"contabilidad"},{"id":"contabilizar","nombre":"Autorizar contabilización","actor":"contabilidad","desde":"contabilidad","hasta":"pago"},{"id":"revisar","nombre":"Devolver expediente","actor":"contabilidad","desde":"contabilidad","hasta":"recibida"},{"id":"pagar","nombre":"Registrar pago","actor":"tesoreria","desde":"pago","hasta":"pagada"},{"id":"cerrar","nombre":"Cerrar expediente","actor":"compras","desde":"pagada","hasta":"cerrada"}],"validadores":[{"id":"MontoValido","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"monto","acceso":"value","operador":">=","valor":1},{"campo":"monto","acceso":"value","operador":"\u003c=","valor":250000}],"fuente":"context Compra inv MontoValido: self.monto >= 1 and self.monto \u003c= 250000"},{"id":"CantidadValida","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"cantidad","acceso":"value","operador":">=","valor":1},{"campo":"cantidad","acceso":"value","operador":"\u003c=","valor":10000}],"fuente":"context Compra inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 10000"},{"id":"PlazoValido","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"plazo","acceso":"value","operador":">=","valor":1},{"campo":"plazo","acceso":"value","operador":"\u003c=","valor":180}],"fuente":"context Compra inv PlazoValido: self.plazo >= 1 and self.plazo \u003c= 180"},{"id":"CotizacionesValidas","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"cotizaciones","acceso":"value","operador":">=","valor":0},{"campo":"cotizaciones","acceso":"value","operador":"\u003c=","valor":30}],"fuente":"context Compra inv CotizacionesValidas: self.cotizaciones >= 0 and self.cotizaciones \u003c= 30"},{"id":"ReferenciaValida","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"referencia","acceso":"size","operador":">=","valor":4}],"fuente":"context Compra inv ReferenciaValida: self.referencia.size() >= 4"},{"id":"JustificacionSuficiente","clase":"Compra","tipo":"pre","operacion":"avalar","expresion":[{"campo":"justificacion","acceso":"size","operador":">=","valor":20}],"fuente":"context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() >= 20"},{"id":"PartidaIdentificada","clase":"Compra","tipo":"pre","operacion":"certificar","expresion":[{"campo":"partida","acceso":"size","operador":">=","valor":4}],"fuente":"context Compra::certificar() pre PartidaIdentificada: self.partida.size() >= 4"},{"id":"MontoCompraDirecta","clase":"Compra","tipo":"pre","operacion":"directa","expresion":[{"campo":"monto","acceso":"value","operador":"\u003c","valor":10000},{"campo":"cotizaciones","acceso":"value","operador":">=","valor":1}],"fuente":"context Compra::directa() pre MontoCompraDirecta: self.monto \u003c 10000 and self.cotizaciones >= 1"},{"id":"UmbralCompetitivo","clase":"Compra","tipo":"pre","operacion":"competitiva","expresion":[{"campo":"monto","acceso":"value","operador":">=","valor":10000},{"campo":"cotizaciones","acceso":"value","operador":">=","valor":3}],"fuente":"context Compra::competitiva() pre UmbralCompetitivo: self.monto >= 10000 and self.cotizaciones >= 3"},{"id":"CotizacionesComite","clase":"Compra","tipo":"pre","operacion":"adjudicar","expresion":[{"campo":"cotizaciones","acceso":"value","operador":">=","valor":3}],"fuente":"context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones >= 3"},{"id":"ProveedorIdentificado","clase":"Compra","tipo":"pre","operacion":"emitir","expresion":[{"campo":"proveedor","acceso":"size","operador":">=","valor":3}],"fuente":"context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() >= 3"},{"id":"ReferenciaContable","clase":"Compra","tipo":"pre","operacion":"contabilizar","expresion":[{"campo":"referencia","acceso":"size","operador":">=","valor":6}],"fuente":"context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() >= 6"}]};
+const validators = {
+  "MontoValido": (values) => (values["monto"] != null && values["monto"] >= 1) && (values["monto"] != null && values["monto"] <= 250000),
+  "CantidadValida": (values) => (values["cantidad"] != null && values["cantidad"] >= 1) && (values["cantidad"] != null && values["cantidad"] <= 10000),
+  "PlazoValido": (values) => (values["plazo"] != null && values["plazo"] >= 1) && (values["plazo"] != null && values["plazo"] <= 180),
+  "CotizacionesValidas": (values) => (values["cotizaciones"] != null && values["cotizaciones"] >= 0) && (values["cotizaciones"] != null && values["cotizaciones"] <= 30),
+  "ReferenciaValida": (values) => (values["referencia"] != null && Array.from(values["referencia"] ?? "").length >= 4),
+  "JustificacionSuficiente": (values) => (values["justificacion"] != null && Array.from(values["justificacion"] ?? "").length >= 20),
+  "PartidaIdentificada": (values) => (values["partida"] != null && Array.from(values["partida"] ?? "").length >= 4),
+  "MontoCompraDirecta": (values) => (values["monto"] != null && values["monto"] < 10000) && (values["cotizaciones"] != null && values["cotizaciones"] >= 1),
+  "UmbralCompetitivo": (values) => (values["monto"] != null && values["monto"] >= 10000) && (values["cotizaciones"] != null && values["cotizaciones"] >= 3),
+  "CotizacionesComite": (values) => (values["cotizaciones"] != null && values["cotizaciones"] >= 3),
+  "ProveedorIdentificado": (values) => (values["proveedor"] != null && Array.from(values["proveedor"] ?? "").length >= 3),
+  "ReferenciaContable": (values) => (values["referencia"] != null && Array.from(values["referencia"] ?? "").length >= 6)
+};
+(function application(model, validators) {
+  const root = document.querySelector('#application');
+  const $ = selector => root.querySelector(selector);
+  const stateNames = new Map(model.estados.map(state => [state.id, state.nombre]));
+  const board = model.presentacion === 'tablero';
+  let role = model.formulario.actor;
+  let selected = null;
+  let records = [];
+  let durable = true;
+  try {
+    const stored = JSON.parse(localStorage.getItem(model.almacen.clave) ?? '[]');
+    if (Array.isArray(stored)) records = stored.filter(record =>
+      record && typeof record.id === 'string' && record.values && Array.isArray(record.history) && stateNames.has(record.state));
+  } catch {
+    durable = false;
+  }
+
+  function element(tag, label, className) {
+    const node = document.createElement(tag);
+    if (label !== undefined) node.textContent = label;
+    if (className) node.className = className;
+    return node;
+  }
+
+  function notify(message, error = false) {
+    const notice = $('#app-notice');
+    notice.textContent = message;
+    notice.dataset.error = String(error);
+  }
+
+  function persist(next) {
+    if (durable) {
+      try {
+        localStorage.setItem(model.almacen.clave, JSON.stringify(next));
+      } catch {
+        durable = false;
+      }
+    }
+    records = next;
+    return durable ? '' : ' Los cambios se conservan en esta pestaña.';
+  }
+
+  function showDate(iso) {
+    return new Date(iso).toLocaleString('es', { dateStyle: 'short', timeStyle: 'short' });
+  }
+
+  function describe(record) {
+    const title = model.campos.map(field => record.values[field.id]).find(value => typeof value === 'string' && value.length);
+    return title ?? model.entidad;
+  }
+
+  function violations(values, operation) {
+    return model.validadores.filter(rule => {
+      if (rule.tipo === 'pre' && rule.operacion !== operation) return false;
+      return !validators[rule.id](values);
+    }).map(rule => rule.fuente.split(': ').at(-1) + ' (' + rule.id + ')');
+  }
+
+  function renderForm(form) {
+    const controls = new Map();
+    for (const field of model.campos) {
+      const label = element('label', field.nombre);
+      const input = element(field.control === 'select' ? 'select' : 'input');
+      controls.set(field.id, input);
+      input.name = field.id;
+      input.required = field.requerido;
+      if (field.control === 'select') {
+        const empty = element('option', 'Selecciona una opción');
+        empty.value = '';
+        input.append(empty);
+        for (const choice of field.opciones) {
+          const option = element('option', choice.nombre);
+          option.value = choice.id;
+          input.append(option);
+        }
+      } else {
+        input.type = field.control;
+      }
+      if (field.control === 'number') {
+        input.step = '1';
+        input.inputMode = 'numeric';
+        input.placeholder = '0';
+      } else if (field.control === 'text') {
+        input.placeholder = field.nombre;
+        input.maxLength = 300;
+      }
+      if (field.control === 'checkbox') {
+        label.className = 'checkbox-field';
+        label.prepend(input);
+        form.append(label);
+        continue;
+      }
+      label.append(input);
+      form.append(label);
+    }
+    const submit = element('button', 'Crear caso', 'primary');
+    submit.type = 'submit';
+    form.append(submit);
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      if (role !== model.formulario.actor) return;
+      const values = Object.create(null);
+      for (const field of model.campos) {
+        const input = controls.get(field.id);
+        if (field.control === 'checkbox') {
+          if (field.requerido && !input.checked) return notify('Marca ' + field.nombre + '.', true);
+          values[field.id] = input.checked;
+          continue;
+        }
+        const inputValue = input.value.trim();
+        if (field.requerido && !inputValue) return notify('Completa ' + field.nombre + '.', true);
+        if (field.control === 'number' && inputValue && !Number.isSafeInteger(Number(inputValue))) {
+          return notify(field.nombre + ' debe ser un entero válido.', true);
+        }
+        if (field.control === 'select' && inputValue && !field.opciones.some(choice => choice.id === inputValue)) {
+          return notify('Selecciona una opción válida para ' + field.nombre + '.', true);
+        }
+        values[field.id] = inputValue && field.control === 'number' ? Number(inputValue) : inputValue || null;
+      }
+      const errors = violations(values, null);
+      if (errors.length) return notify('Restricción incumplida: ' + errors.join(' · '), true);
+      const now = new Date().toISOString();
+      const record = {
+        id: globalThis.crypto?.randomUUID?.() ?? String(Date.now()) + '-' + String(Math.random()).slice(2),
+        values, state: model.formulario.estado,
+        history: [{ action: model.formulario.nombre, role, at: now }],
+      };
+      const saved = persist([record, ...records]);
+      selected = record.id;
+      form.reset();
+      render();
+      notify('Caso creado.' + saved);
+    });
+  }
+
+  function transition(record, action) {
+    const latest = records.find(item => item.id === record.id);
+    if (action.actor !== role || latest?.state !== action.desde) return;
+    const errors = violations(latest.values, action.id);
+    if (errors.length) return notify('Restricción incumplida: ' + errors.join(' · '), true);
+    const next = {
+      ...latest, state: action.hasta,
+      history: [...latest.history, { action: action.nombre, role, at: new Date().toISOString() }],
+    };
+    const saved = persist(records.map(item => item.id === next.id ? next : item));
+    render();
+    notify(action.nombre + ' → ' + stateNames.get(next.state) + '.' + saved);
+  }
+
+  function renderDetail(record) {
+    const detail = $('#app-detail');
+    detail.replaceChildren();
+    if (!record) {
+      detail.append(element('h3', 'Detalle del caso'), element('p', 'Selecciona un caso para ver sus datos y acciones.', 'muted'));
+      return;
+    }
+    detail.append(element('h3', describe(record)), element('span', stateNames.get(record.state), 'state'));
+    const fields = element('dl');
+    for (const field of model.campos) {
+      const value = record.values[field.id];
+      const display = typeof value === 'boolean' ? (value ? 'Sí' : 'No') :
+        field.opciones?.find(choice => choice.id === value)?.nombre ?? value ?? '—';
+      fields.append(element('dt', field.nombre), element('dd', display));
+    }
+    detail.append(fields);
+    const actions = model.acciones.filter(action => action.desde === record.state && action.actor === role);
+    const bar = element('div', undefined, 'action-bar');
+    for (const action of actions) {
+      const button = element('button', action.nombre, 'primary');
+      button.onclick = () => transition(record, action);
+      bar.append(button);
+    }
+    if (!actions.length) bar.append(element('p', 'No hay acciones pendientes para este rol.', 'muted'));
+    detail.append(bar, element('h4', 'Historial'));
+    const history = element('ol');
+    for (const event of record.history) {
+      const actor = model.roles.find(item => item.id === event.role);
+      history.append(element('li', event.action + ' · ' + (actor?.nombre ?? event.role) + ' · ' + showDate(event.at)));
+    }
+    detail.append(history);
+  }
+
+  function caseButton(record) {
+    const button = element('button', undefined, 'case');
+    button.type = 'button';
+    button.setAttribute('aria-pressed', String(record.id === selected));
+    button.append(element('strong', describe(record)));
+    if (!board) button.append(element('span', stateNames.get(record.state), 'state'));
+    button.onclick = () => {
+      selected = record.id;
+      notify('');
+      render();
+      $('#app-detail').focus();
+    };
+    return button;
+  }
+
+  function renderBoard(inbox) {
+    const groups = new Map(model.estados.map(state => [state.id, []]));
+    for (const record of records) groups.get(record.state).push(record);
+    for (const state of model.estados) {
+      const group = groups.get(state.id);
+      if (!group.length) continue;
+      const lane = element('div', undefined, 'board-lane');
+      const heading = element('h3', state.nombre + ' · ' + group.length);
+      lane.append(heading, ...group.map(caseButton));
+      inbox.append(lane);
+    }
+  }
+
+  function render() {
+    $('#app-create').hidden = role !== model.formulario.actor;
+    const inbox = $('#app-inbox');
+    inbox.replaceChildren();
+    $('#app-count').textContent = records.length + (records.length === 1 ? ' caso' : ' casos');
+    if (!records.length) inbox.append(element('p', 'Todavía no hay casos.', 'muted'));
+    if (board) renderBoard(inbox);
+    else for (const record of records) inbox.append(caseButton(record));
+    renderDetail(records.find(record => record.id === selected));
+  }
+
+  $('#app-title').textContent = model.nombre;
+  root.dataset.presentation = board ? 'tablero' : 'bandeja';
+  if (board) $('#app-cases-title').textContent = 'Tablero por estado';
+  document.title = model.nombre;
+  $('#app-description').textContent = model.objetivo;
+  $('#app-form-title').textContent = model.formulario.nombre;
+  for (const actor of model.roles) {
+    const option = element('option', actor.nombre);
+    option.value = actor.id;
+    $('#app-role').append(option);
+  }
+  $('#app-role').value = role;
+  $('#app-role').onchange = event => {
+    role = event.target.value;
+    notify('');
+    render();
+  };
+  renderForm($('#app-form'));
+  render();
+  if (!durable) notify('El almacenamiento local no está disponible. Los cambios se conservan en esta pestaña.');
+})(model, validators);</script>
+</body>
+</html>

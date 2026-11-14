@@ -1,0 +1,607 @@
+{
+  "id": "compras-institucionales",
+  "nombre": "Compras institucionales",
+  "objetivo": "Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.",
+  "entidad": "Compra",
+  "roles": [
+    {
+      "id": "solicitante",
+      "nombre": "Solicitante"
+    },
+    {
+      "id": "jefatura",
+      "nombre": "Jefatura"
+    },
+    {
+      "id": "presupuesto",
+      "nombre": "Presupuesto"
+    },
+    {
+      "id": "compras",
+      "nombre": "Compras"
+    },
+    {
+      "id": "juridico",
+      "nombre": "Jurídico"
+    },
+    {
+      "id": "comite",
+      "nombre": "Comité"
+    },
+    {
+      "id": "bodega",
+      "nombre": "Bodega"
+    },
+    {
+      "id": "contabilidad",
+      "nombre": "Contabilidad"
+    },
+    {
+      "id": "tesoreria",
+      "nombre": "Tesorería"
+    }
+  ],
+  "propiedades": [
+    {
+      "id": "referencia",
+      "nombre": "Referencia interna",
+      "tipo": "Texto",
+      "requerido": true
+    },
+    {
+      "id": "unidad",
+      "nombre": "Unidad solicitante",
+      "tipo": "Texto",
+      "requerido": true
+    },
+    {
+      "id": "objeto",
+      "nombre": "Objeto de la compra",
+      "tipo": "Texto",
+      "requerido": true
+    },
+    {
+      "id": "justificacion",
+      "nombre": "Justificación",
+      "tipo": "Texto",
+      "requerido": true
+    },
+    {
+      "id": "monto",
+      "nombre": "Monto estimado (USD)",
+      "tipo": "Entero",
+      "requerido": true
+    },
+    {
+      "id": "cantidad",
+      "nombre": "Unidades",
+      "tipo": "Entero",
+      "requerido": true
+    },
+    {
+      "id": "cotizaciones",
+      "nombre": "Cotizaciones disponibles",
+      "tipo": "Entero",
+      "requerido": true
+    },
+    {
+      "id": "plazo",
+      "nombre": "Plazo de entrega (días)",
+      "tipo": "Entero",
+      "requerido": true
+    },
+    {
+      "id": "proveedor",
+      "nombre": "Proveedor propuesto",
+      "tipo": "Texto",
+      "requerido": false
+    },
+    {
+      "id": "partida",
+      "nombre": "Partida presupuestaria",
+      "tipo": "Texto",
+      "requerido": true
+    },
+    {
+      "id": "prioridad",
+      "tipo": "Seleccion",
+      "opciones": [
+        {
+          "nombre": "Normal",
+          "id": "normal"
+        },
+        {
+          "nombre": "Urgente",
+          "id": "urgente"
+        },
+        {
+          "nombre": "Crítica",
+          "id": "critica"
+        }
+      ],
+      "requerido": false,
+      "nombre": "Prioridad"
+    },
+    {
+      "id": "fecha-necesaria",
+      "tipo": "Fecha",
+      "requerido": false,
+      "nombre": "Fecha en que se necesita"
+    },
+    {
+      "id": "documentacion",
+      "tipo": "Booleano",
+      "requerido": false,
+      "nombre": "Documentación adjunta disponible"
+    }
+  ],
+  "creacion": {
+    "actor": "solicitante",
+    "estado": "solicitada",
+    "nombre": "Registrar solicitud"
+  },
+  "estados": [
+    {
+      "id": "solicitada",
+      "nombre": "Revisión de jefatura"
+    },
+    {
+      "id": "observada",
+      "nombre": "Ampliación pendiente"
+    },
+    {
+      "id": "presupuesto",
+      "nombre": "Control de presupuesto"
+    },
+    {
+      "id": "modalidad",
+      "nombre": "Selección de modalidad"
+    },
+    {
+      "id": "juridica",
+      "nombre": "Revisión jurídica"
+    },
+    {
+      "id": "comite",
+      "nombre": "Evaluación del comité"
+    },
+    {
+      "id": "adjudicada",
+      "nombre": "Adjudicada"
+    },
+    {
+      "id": "ordenada",
+      "nombre": "Orden emitida"
+    },
+    {
+      "id": "incidencia",
+      "nombre": "Incidencia de recepción"
+    },
+    {
+      "id": "recibida",
+      "nombre": "Recibida"
+    },
+    {
+      "id": "contabilidad",
+      "nombre": "Revisión contable"
+    },
+    {
+      "id": "pago",
+      "nombre": "Pendiente de pago"
+    },
+    {
+      "id": "pagada",
+      "nombre": "Pagada"
+    },
+    {
+      "id": "cerrada",
+      "nombre": "Cerrada",
+      "final": true
+    },
+    {
+      "id": "rechazada",
+      "nombre": "Rechazada",
+      "final": true
+    },
+    {
+      "id": "cancelada",
+      "nombre": "Cancelada",
+      "final": true
+    }
+  ],
+  "operaciones": [
+    {
+      "id": "avalar",
+      "nombre": "Enviar a presupuesto",
+      "actor": "jefatura",
+      "desde": "solicitada",
+      "hasta": "presupuesto"
+    },
+    {
+      "id": "observar",
+      "nombre": "Solicitar ampliación",
+      "actor": "jefatura",
+      "desde": "solicitada",
+      "hasta": "observada"
+    },
+    {
+      "id": "justificar",
+      "nombre": "Registrar ampliación externa",
+      "actor": "solicitante",
+      "desde": "observada",
+      "hasta": "solicitada"
+    },
+    {
+      "id": "retirar",
+      "nombre": "Retirar solicitud",
+      "actor": "solicitante",
+      "desde": "observada",
+      "hasta": "cancelada"
+    },
+    {
+      "id": "denegar",
+      "nombre": "Rechazar solicitud",
+      "actor": "jefatura",
+      "desde": "solicitada",
+      "hasta": "rechazada"
+    },
+    {
+      "id": "certificar",
+      "nombre": "Certificar disponibilidad",
+      "actor": "presupuesto",
+      "desde": "presupuesto",
+      "hasta": "modalidad"
+    },
+    {
+      "id": "sinfondos",
+      "nombre": "Rechazar por falta de fondos",
+      "actor": "presupuesto",
+      "desde": "presupuesto",
+      "hasta": "rechazada"
+    },
+    {
+      "id": "directa",
+      "nombre": "Adjudicar compra directa",
+      "actor": "compras",
+      "desde": "modalidad",
+      "hasta": "adjudicada"
+    },
+    {
+      "id": "competitiva",
+      "nombre": "Enviar a revisión jurídica",
+      "actor": "compras",
+      "desde": "modalidad",
+      "hasta": "juridica"
+    },
+    {
+      "id": "cancelar",
+      "nombre": "Cancelar trámite",
+      "actor": "compras",
+      "desde": "modalidad",
+      "hasta": "cancelada"
+    },
+    {
+      "id": "dictamen",
+      "nombre": "Emitir dictamen favorable",
+      "actor": "juridico",
+      "desde": "juridica",
+      "hasta": "comite"
+    },
+    {
+      "id": "devolver",
+      "nombre": "Devolver a compras",
+      "actor": "juridico",
+      "desde": "juridica",
+      "hasta": "modalidad"
+    },
+    {
+      "id": "objecion",
+      "nombre": "Rechazar por objeción jurídica",
+      "actor": "juridico",
+      "desde": "juridica",
+      "hasta": "rechazada"
+    },
+    {
+      "id": "adjudicar",
+      "nombre": "Adjudicar por comité",
+      "actor": "comite",
+      "desde": "comite",
+      "hasta": "adjudicada"
+    },
+    {
+      "id": "desierta",
+      "nombre": "Declarar proceso desierto",
+      "actor": "comite",
+      "desde": "comite",
+      "hasta": "cancelada"
+    },
+    {
+      "id": "emitir",
+      "nombre": "Emitir orden de compra",
+      "actor": "compras",
+      "desde": "adjudicada",
+      "hasta": "ordenada"
+    },
+    {
+      "id": "recibir",
+      "nombre": "Confirmar recepción conforme",
+      "actor": "bodega",
+      "desde": "ordenada",
+      "hasta": "recibida"
+    },
+    {
+      "id": "incidencia",
+      "nombre": "Registrar recepción no conforme",
+      "actor": "bodega",
+      "desde": "ordenada",
+      "hasta": "incidencia"
+    },
+    {
+      "id": "subsanar",
+      "nombre": "Registrar subsanación del proveedor",
+      "actor": "compras",
+      "desde": "incidencia",
+      "hasta": "ordenada"
+    },
+    {
+      "id": "anular",
+      "nombre": "Anular orden",
+      "actor": "compras",
+      "desde": "incidencia",
+      "hasta": "cancelada"
+    },
+    {
+      "id": "enviarcontable",
+      "nombre": "Enviar expediente a contabilidad",
+      "actor": "compras",
+      "desde": "recibida",
+      "hasta": "contabilidad"
+    },
+    {
+      "id": "contabilizar",
+      "nombre": "Autorizar contabilización",
+      "actor": "contabilidad",
+      "desde": "contabilidad",
+      "hasta": "pago"
+    },
+    {
+      "id": "revisar",
+      "nombre": "Devolver expediente",
+      "actor": "contabilidad",
+      "desde": "contabilidad",
+      "hasta": "recibida"
+    },
+    {
+      "id": "pagar",
+      "nombre": "Registrar pago",
+      "actor": "tesoreria",
+      "desde": "pago",
+      "hasta": "pagada"
+    },
+    {
+      "id": "cerrar",
+      "nombre": "Cerrar expediente",
+      "actor": "compras",
+      "desde": "pagada",
+      "hasta": "cerrada"
+    }
+  ],
+  "restricciones": [
+    {
+      "id": "MontoValido",
+      "clase": "Compra",
+      "tipo": "inv",
+      "operacion": null,
+      "expresion": [
+        {
+          "campo": "monto",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 1
+        },
+        {
+          "campo": "monto",
+          "acceso": "value",
+          "operador": "<=",
+          "valor": 250000
+        }
+      ],
+      "fuente": "context Compra inv MontoValido: self.monto >= 1 and self.monto <= 250000"
+    },
+    {
+      "id": "CantidadValida",
+      "clase": "Compra",
+      "tipo": "inv",
+      "operacion": null,
+      "expresion": [
+        {
+          "campo": "cantidad",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 1
+        },
+        {
+          "campo": "cantidad",
+          "acceso": "value",
+          "operador": "<=",
+          "valor": 10000
+        }
+      ],
+      "fuente": "context Compra inv CantidadValida: self.cantidad >= 1 and self.cantidad <= 10000"
+    },
+    {
+      "id": "PlazoValido",
+      "clase": "Compra",
+      "tipo": "inv",
+      "operacion": null,
+      "expresion": [
+        {
+          "campo": "plazo",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 1
+        },
+        {
+          "campo": "plazo",
+          "acceso": "value",
+          "operador": "<=",
+          "valor": 180
+        }
+      ],
+      "fuente": "context Compra inv PlazoValido: self.plazo >= 1 and self.plazo <= 180"
+    },
+    {
+      "id": "CotizacionesValidas",
+      "clase": "Compra",
+      "tipo": "inv",
+      "operacion": null,
+      "expresion": [
+        {
+          "campo": "cotizaciones",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 0
+        },
+        {
+          "campo": "cotizaciones",
+          "acceso": "value",
+          "operador": "<=",
+          "valor": 30
+        }
+      ],
+      "fuente": "context Compra inv CotizacionesValidas: self.cotizaciones >= 0 and self.cotizaciones <= 30"
+    },
+    {
+      "id": "ReferenciaValida",
+      "clase": "Compra",
+      "tipo": "inv",
+      "operacion": null,
+      "expresion": [
+        {
+          "campo": "referencia",
+          "acceso": "size",
+          "operador": ">=",
+          "valor": 4
+        }
+      ],
+      "fuente": "context Compra inv ReferenciaValida: self.referencia.size() >= 4"
+    },
+    {
+      "id": "JustificacionSuficiente",
+      "clase": "Compra",
+      "tipo": "pre",
+      "operacion": "avalar",
+      "expresion": [
+        {
+          "campo": "justificacion",
+          "acceso": "size",
+          "operador": ">=",
+          "valor": 20
+        }
+      ],
+      "fuente": "context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() >= 20"
+    },
+    {
+      "id": "PartidaIdentificada",
+      "clase": "Compra",
+      "tipo": "pre",
+      "operacion": "certificar",
+      "expresion": [
+        {
+          "campo": "partida",
+          "acceso": "size",
+          "operador": ">=",
+          "valor": 4
+        }
+      ],
+      "fuente": "context Compra::certificar() pre PartidaIdentificada: self.partida.size() >= 4"
+    },
+    {
+      "id": "MontoCompraDirecta",
+      "clase": "Compra",
+      "tipo": "pre",
+      "operacion": "directa",
+      "expresion": [
+        {
+          "campo": "monto",
+          "acceso": "value",
+          "operador": "<",
+          "valor": 10000
+        },
+        {
+          "campo": "cotizaciones",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 1
+        }
+      ],
+      "fuente": "context Compra::directa() pre MontoCompraDirecta: self.monto < 10000 and self.cotizaciones >= 1"
+    },
+    {
+      "id": "UmbralCompetitivo",
+      "clase": "Compra",
+      "tipo": "pre",
+      "operacion": "competitiva",
+      "expresion": [
+        {
+          "campo": "monto",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 10000
+        },
+        {
+          "campo": "cotizaciones",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 3
+        }
+      ],
+      "fuente": "context Compra::competitiva() pre UmbralCompetitivo: self.monto >= 10000 and self.cotizaciones >= 3"
+    },
+    {
+      "id": "CotizacionesComite",
+      "clase": "Compra",
+      "tipo": "pre",
+      "operacion": "adjudicar",
+      "expresion": [
+        {
+          "campo": "cotizaciones",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 3
+        }
+      ],
+      "fuente": "context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones >= 3"
+    },
+    {
+      "id": "ProveedorIdentificado",
+      "clase": "Compra",
+      "tipo": "pre",
+      "operacion": "emitir",
+      "expresion": [
+        {
+          "campo": "proveedor",
+          "acceso": "size",
+          "operador": ">=",
+          "valor": 3
+        }
+      ],
+      "fuente": "context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() >= 3"
+    },
+    {
+      "id": "ReferenciaContable",
+      "clase": "Compra",
+      "tipo": "pre",
+      "operacion": "contabilizar",
+      "expresion": [
+        {
+          "campo": "referencia",
+          "acceso": "size",
+          "operador": ">=",
+          "valor": 6
+        }
+      ],
+      "fuente": "context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() >= 6"
+    }
+  ]
+}
