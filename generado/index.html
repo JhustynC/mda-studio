@@ -319,12 +319,13 @@ dialog .project-template{display:flex;align-items:flex-start;gap:10px;border:1px
       <section id="guide-start" tabindex="-1">
         <h2>Tu primer proyecto</h2>
         <ol>
-          <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso básico</strong>.</li>
-          <li>En <strong>CIM → Campos y negocio</strong>, usa <strong>+ Añadir campo</strong> directamente en la tabla para agregar atributos sin tocar el JSON, o usa los botones <strong>+ Actor</strong>, <strong>+ Estado</strong>, <strong>+ Transición</strong> y <strong>+ Regla OCL</strong> del panel lateral.</li>
+          <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso</strong>.</li>
+          <li>En <strong>CIM → Campos</strong>, usa <strong>+ Añadir campo</strong>. Despliega <strong>Proceso de negocio</strong> para editar actores, estados y transiciones, o <strong>Restricciones OCL</strong> para añadir una regla. También puedes usar <strong>Diagrama</strong> para editar el flujo.</li>
           <li>Pulsa <strong>Validar y ver PIM</strong>. Comprueba los datos en <strong>Campos y tipos</strong>. Consulta las relaciones en <strong>Clases</strong> y las restricciones en <strong>Reglas OCL</strong>.</li>
           <li>Sigue con <strong>Ver PSM</strong>. En <strong>Interfaz</strong> elige una lista o un tablero. <strong>Mapeo</strong> muestra qué control se genera por campo y <strong>Datos y SQL</strong> reúne el almacenamiento y el esquema.</li>
           <li>Pulsa <strong>Generar aplicación</strong> para probar el flujo. Usa <strong>Abrir en otra pestaña</strong> cuando quieras conservar los cambios en el navegador.</li>
         </ol>
+        <p>Elige <strong>Catálogo CRUD</strong> para trabajar con registros o <strong>Proceso con catálogo</strong> para vincular solicitudes a un inventario. Las filas con <strong>Catálogo vinculado</strong> se configuran en <strong>Editar JSON</strong>, dentro de <code>integracion.catalogo</code>.</p>
         <button id="guide-new-project" class="generate" type="button">Crear un proyecto</button>
       </section>
       <section id="guide-dsl" tabindex="-1">
@@ -346,25 +347,26 @@ dialog .project-template{display:flex;align-items:flex-start;gap:10px;border:1px
           <tr><td>Texto</td><td><code>EString</code></td><td><code>input[type=text]</code> · <code>VARCHAR(300)</code></td></tr>
           <tr><td>Entero</td><td><code>EInt</code></td><td><code>input[type=number]</code> · <code>INTEGER</code></td></tr>
           <tr><td>Fecha</td><td><code>EDate</code></td><td><code>input[type=date]</code> · <code>DATE</code></td></tr>
-          <tr><td>Seleccion</td><td><code>EEnum</code></td><td><code>select</code> · <code>VARCHAR(64) CHECK IN (...)</code></td></tr>
+          <tr><td>Seleccion</td><td><code>EEnum</code></td><td><code>select</code> · <code>VARCHAR(64)</code> con <code>CHECK</code></td></tr>
           <tr><td>Booleano</td><td><code>EBoolean</code></td><td><code>input[type=checkbox]</code> · <code>BOOLEAN</code></td></tr>
         </tbody></table></div>
       </section>
       <section id="guide-ocl" tabindex="-1">
-        <h2>Reglas OCL ampliadas</h2>
-        <p>El compilador soporta invariantes (<code>inv</code>), precondiciones (<code>pre</code>) y postcondiciones (<code>post</code>) sobre campos de tipo <code>Entero</code>, <code>Texto</code>, <code>Seleccion</code>, <code>Booleano</code> y <code>Fecha</code>, comparaciones entre dos campos (<code>self.a &gt;= self.b</code>) y conectores lógicos <code>and</code>, <code>or</code> e <code>implies</code>.</p>
+        <h2>Reglas OCL</h2>
+        <p>El compilador implementa un subconjunto de OCL que admite invariantes (<code>inv</code>), precondiciones (<code>pre</code>) y postcondiciones (<code>post</code>) sobre campos de tipo <code>Entero</code>, <code>Texto</code>, <code>Seleccion</code>, <code>Booleano</code> y <code>Fecha</code>, comparaciones entre dos campos (<code>self.a &gt;= self.b</code>) y conectores lógicos <code>and</code>, <code>or</code> e <code>implies</code>.</p>
         <pre class="guide-code"><code>context Prestamo inv CantidadValida: self.cantidad &gt;= 1 and self.cantidad &lt;= 5
 context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8
-context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self.documentado = true</code></pre>
+context Prestamo inv PlazoParaVariasUnidades: self.cantidad &gt; 2 implies self.dias &lt;= 10</code></pre>
+        <p>Las reglas de operación se verifican sobre los datos del caso antes de confirmar la transición. En <strong>PIM → Reglas OCL</strong> puedes desplegar cada regla para ver su expresión y cómo la interpreta el compilador.</p>
       </section>
       <section id="guide-generation" tabindex="-1">
         <h2>Archivos y datos</h2>
         <p>Abre <strong>Archivos y trazabilidad</strong> desde cualquier etapa para descargar lo generado o seguir cómo se transforma un elemento del CIM.</p>
         <ol>
           <li><strong>CIM:</strong> Descarga el modelo <code>.cim.json</code>, el diagrama vectorial <code>.svg</code> y la especificación <code>.cim.mmd</code> (Mermaid).</li>
-          <li><strong>PIM:</strong> Descarga el metamodelo estándar Eclipse EMF <code>.pim.ecore</code> (XMI), el archivo formal <code>.pim.ocl</code> y <code>.pim.json</code>.</li>
+          <li><strong>PIM:</strong> Inspecciona y descarga la representación <code>.pim.ecore</code> y las reglas <code>.pim.ocl</code>. También puedes descargar <code>.pim.json</code>.</li>
           <li><strong>PSM:</strong> Descarga el esquema relacional <code>.psm.sql</code> (con tablas y restricciones <code>CHECK</code> derivadas de OCL), <code>.psm.schema.json</code> y <code>.psm.json</code>.</li>
-          <li><strong>Aplicación.</strong> Desde <strong>Gestionar datos</strong>, guarda o restaura una copia <code>.db.json</code> y descarga un volcado SQL para SQLite. El guardado habitual usa el almacenamiento del navegador.</li>
+          <li><strong>Aplicación.</strong> Descarga el HTML desde <strong>Archivos y trazabilidad</strong>. En la aplicación, usa <strong>Gestionar datos</strong> para guardar o restaurar una copia <code>.db.json</code> y exportar un volcado para SQLite. La vista previa tiene datos temporales. Usa la aplicación en una pestaña independiente para conservar los cambios en el navegador.</li>
         </ol>
       </section>
     </article>

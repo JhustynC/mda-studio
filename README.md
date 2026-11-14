@@ -14,7 +14,7 @@ node generar.mjs
 node generar.mjs models/prestamos.cim.json generado
 ~~~
 
-El segundo comando permite indicar otro modelo y otro directorio de salida. Si el modelo es inválido, la generación aborta antes de escribir archivos. Los generados se pueden borrar y volver a crear con los modelos y el código fuente.
+El último comando permite indicar un modelo CIM y un directorio de salida. Si el modelo es inválido, la generación aborta antes de escribir archivos. Los generados se pueden borrar y volver a crear con los modelos y el código fuente.
 
 ## Trabajar con varios proyectos
 
@@ -22,22 +22,46 @@ Usa **Oscuro** o **Claro** en la barra superior para cambiar el tema. El Studio 
 
 Desde **Proyectos**, abre **Recursos del Studio** para consultar la **Guía de inicio** o explorar el **Metamodelo base**. La guía acompaña la creación de un primer proceso. El explorador muestra las estructuras de CIM, PIM y PSM y permite descargar el metamodelo en JSON.
 
-La pantalla **Proyectos** reúne los ejemplos y los proyectos locales que crees. El buscador encuentra proyectos por nombre, descripción o tipo. Las tarjetas identifican si se trata de un proceso, un catálogo CRUD o una integración de proceso e inventario. Abre uno para entrar al editor. Usa **Volver a proyectos** para regresar a la biblioteca. **Nuevo proyecto** permite partir de un proceso básico, un CRUD básico, una copia del último proyecto abierto o un ejemplo. El título de la aplicación se define en `nombre` dentro del CIM.
+La pantalla **Proyectos** reúne tus proyectos locales y los ejemplos. Busca por nombre, descripción o tipo. Usa **Volver a proyectos** desde el editor para regresar a la biblioteca.
 
-El Studio guarda cada borrador, incluso mientras el JSON está incompleto, en el almacenamiento de este navegador. Al cambiar de proyecto, restaura su CIM y calcula sus propias salidas. Abre **Archivos y trazabilidad** para descargar los artefactos de la etapa y consultar o exportar la matriz en CSV o JSON.
+En **Nuevo proyecto** puedes partir de tres estructuras editables.
 
-En el editor, **Proceso de negocio** y **Restricciones OCL** permiten agregar y editar actores, estados, transiciones y reglas OCL (`inv`, `pre`, `post`) directamente desde la vista estructurada. Las tablas de **Campos y negocio** agrupan los datos por entidad cuando el proyecto vincula un catálogo a un proceso y permiten añadir o editar campos con un clic.
+| Plantilla | Qué genera |
+| --- | --- |
+| **Proceso** | Solicitudes con estados, responsables y transiciones. |
+| **Catálogo CRUD** | Formulario y tabla para crear, buscar, editar y eliminar registros. |
+| **Proceso con catálogo** | Solicitudes vinculadas a un inventario, con salidas al entregar y entradas al devolver. |
 
-- **CIM.** Abre **Campos** para revisar y editar los datos, **Diagrama** para modelar el proceso o **Editar JSON** para trabajar con el DSL en CodeMirror. Pulsa Ctrl+Enter en el editor para validar y avanzar.
-- **PIM.** Empieza por **Campos y tipos**. **Clases** añade relaciones y permite desplegar sus atributos y operaciones. **Reglas OCL** permite abrir cada expresión y ver cómo la interpreta el compilador.
-- **PSM.** En **Interfaz** elige la lista de casos o el tablero y consulta su boceto. Abre **Mapeo** para seguir el paso de los campos a controles HTML y columnas SQL. **Datos y SQL** reúne la configuración de almacenamiento y el esquema SQLite.
-- **Aplicación.** Prueba el flujo en la vista previa o abre la aplicación en otra pestaña. El botón **Gestionar datos** reúne las copias JSON y las herramientas SQL.
+Las plantillas generan un CIM inicial con el nombre que ingreses y la aplicación arranca con tus tablas vacías. Los ejemplos se abren desde sus propias tarjetas. Para reutilizar un flujo como el de laboratorio en otro contexto, elige **Proceso con catálogo**, adapta los roles y pasos y configura el catálogo en `integracion.catalogo` dentro del JSON. Después de generar la aplicación puedes registrar tus artículos en **Inventario**.
 
-PIM y PSM incluyen una vista **JSON** de solo lectura. Los archivos JSON, SVG, Mermaid, Ecore, OCL, SQL y JSON Schema correspondientes se descargan desde **Archivos y trazabilidad**.
+El Studio guarda cada borrador en el navegador, incluso mientras el JSON está incompleto. Para trasladar el proyecto, descarga su CIM, crea un proyecto en el otro navegador y usa **Archivos y trazabilidad → Importar CIM (.json)**. El CIM lleva la definición del negocio. Los casos y registros de la aplicación se trasladan con una [copia JSON de sus datos](#persistencia-de-la-aplicación-web).
+
+## Recorrer el flujo MDA
+
+En el editor, sigue **Validar y ver PIM → Ver PSM → Generar aplicación**. Usa los pasos superiores o los botones para volver al modelo anterior. El compilador verifica el CIM y genera el PIM y el PSM a partir de la versión que pasa la validación.
+
+1. **CIM · Modelo de negocio.** En **Campos** puedes añadir y editar los datos de la entidad principal. Los campos del inventario se identifican con **Catálogo vinculado** y se editan en **Editar JSON**, en `integracion.catalogo`. Despliega **Proceso de negocio** y **Restricciones OCL** para trabajar con el flujo y sus reglas.
+2. **Diagrama y DSL del CIM.** En **Diagrama** puedes consultar y editar actores, datos, estados, transiciones y reglas. Usa la rueda para acercar o alejar, arrastra el fondo para desplazarte o pulsa **Ajustar**. En **Editar JSON**, CodeMirror ofrece búsqueda, formato y diagnósticos. Pulsa `Ctrl+Enter` para validar y avanzar al PIM.
+3. **PIM · Modelo lógico.** Empieza en **Campos y tipos** para comprobar las propiedades de negocio, sus tipos y multiplicidades. En **Clases** puedes desplegar atributos, operaciones y consultar relaciones. En **Reglas OCL** puedes revisar las expresiones que interpretó el compilador.
+4. **PSM · Modelo web.** En **Interfaz** puedes elegir entre **Lista de casos** y **Tablero por estado** y ver el boceto. **Mapeo** relaciona cada campo con su control web, su validación y su columna SQL. **Datos y SQL** reúne el almacenamiento previsto y el esquema SQLite. Los catálogos CRUD se muestran como una tabla.
+5. **Aplicación.** Prueba el flujo en el Studio o usa **Abrir en otra pestaña**. Desde **Gestionar datos** puedes guardar y restaurar copias JSON, consultar el SQL y descargarlo.
+
+PIM y PSM incluyen una vista **JSON** de solo lectura. Los cambios de negocio se realizan en el CIM.
+
+### Archivos y trazabilidad
+
+Abre **Archivos y trazabilidad** en la etapa que quieras revisar. Los formatos de salida son:
+
+| Etapa | Archivos |
+| --- | --- |
+| CIM | `.cim.json`, diagrama `.cim.svg` y Mermaid `.cim.mmd`. |
+| PIM | `.pim.json`, representación `.pim.ecore` y reglas `.pim.ocl`. Puedes inspeccionar Ecore y OCL en el mismo panel. |
+| PSM | `.psm.json`, esquema SQLite `.psm.sql` y `.psm.schema.json`. |
+| Aplicación | HTML autónomo con la interfaz, las operaciones y los validadores. |
+
+En la pestaña **Trazabilidad**, busca por elemento, filtra por tipo y recorre los resultados por páginas. Por ejemplo, busca `cantidad` para seguir el dato del CIM al tipo `EInt` del PIM y al control `number` del PSM. Puedes descargar la matriz completa en CSV o JSON.
 
 ## Las ocho etapas del proyecto
-
-En el editor, sigue **Validar y ver PIM → Ver PSM → Generar aplicación**. Los botones para volver y la barra de etapas permiten revisar todo el recorrido MDA.
 
 MDA Studio implementa el recorrido **CIM → PIM → PSM → aplicación** con un DSL, un metamodelo y un compilador propios. La propuesta de clase orienta las etapas. Esta implementación usa JavaScript y genera una aplicación web autónoma.
 
@@ -48,17 +72,19 @@ MDA Studio implementa el recorrido **CIM → PIM → PSM → aplicación** con u
 | 03 · Construcción del PIM | La transformación M2M (`CIM → PIM`) abstrae el dominio en clases UML/Ecore (`EString`, `EInt`, `EDate`, `EEnum`, `EBoolean`) con atributos de ciclo de vida sintetizados (`id «PK»`, `estado-actual`, `historial`), multiplicidades, relaciones y firmas de operaciones con guardas y efectos. | [PIM Ecore (XMI)](generado/prestamos-lab.pim.ecore) · [PIM JSON](generado/prestamos-lab.pim.json) |
 | 04 · Validación OCL | El motor OCL soporta invariantes (`inv`), precondiciones (`pre`) y postcondiciones (`post`) sobre `Entero`, `Texto`, `Seleccion`, `Booleano` y `Fecha`, comparación entre atributos (`self.a >= self.b`) y conectores `and`, `or` e `implies`, con constructor visual asistido. | [Reglas OCL formales](generado/prestamos-lab.pim.ocl) · [Compilador OCL](src/compiler.mjs) |
 | 05 · Diseño del PSM | La vista de arquitectura PSM explica y visualiza con un wireframe en vivo el patrón de interfaz (`Bandeja Maestro-Detalle` vs `Tablero Kanban por estado`), los atributos DOM derivados de OCL, el adaptador de persistencia y el esquema relacional SQL. | [Esquema SQL DDL](generado/prestamos-lab.psm.sql) · [JSON Schema](generado/prestamos-lab.psm.schema.json) |
-| 06 · Transformación M2M | Dos transformaciones automáticas convierten `CIM → PIM (Ecore/UML)` y `PIM → PSM (HTML5 + SQL DDL)`. Las invariantes OCL se transforman simultáneamente en validadores JS, atributos DOM (`min`, `max`, `minlength`) y restricciones `CHECK` en SQL. | [PSM de Préstamos](generado/prestamos-lab.psm.json) · [DDL de Laboratorio](generado/gestion-laboratorio.psm.sql) |
+| 06 · Transformación M2M | Dos transformaciones automáticas convierten `CIM → PIM (Ecore/UML)` y `PIM → PSM (HTML5 + SQL DDL)`. El compilador transforma las reglas en validadores JS. Las invariantes compatibles también se reflejan en atributos DOM (`min`, `max`, `minlength`) y restricciones `CHECK` de SQL. | [PSM de Préstamos](generado/prestamos-lab.psm.json) · [DDL de Laboratorio](generado/gestion-laboratorio.psm.sql) |
 | 07 · Generación M2T | El PSM alimenta la plantilla ejecutable generando HTML5, CSS, validadores JS ES2022, esquema SQL embebido y persistencia local mediante IndexedDB y localStorage. | [Plantilla](src/generated.html) · [HTML de Préstamos](generado/prestamos-lab.html) |
 | 08 · Ejecución y pruebas | La vista previa permite comprobar el flujo. La aplicación autónoma conserva los cambios en el navegador. Desde **Gestionar datos** puedes restaurar copias JSON o descargar un volcado SQL para SQLite. | [Trazabilidad CSV](generado/prestamos-lab.traza.csv) · [Guion para exponer](#guion-para-exponer) |
 
-La [trazabilidad](generado/prestamos-lab.traza.json) permite seguir cada campo, transición y regla desde el CIM hasta la aplicación. Cada proyecto puede definir un flujo, una entidad CRUD o un flujo con un catálogo vinculado. Las aplicaciones guardan los datos en el navegador. Los proyectos de procesos incluyen un selector para simular actores durante la demostración.
-
 ### Persistencia de la aplicación web
 
-IndexedDB y localStorage guardan los datos de esta aplicación en el navegador. La vista previa del Studio se ejecuta en una sesión aislada. Para trasladar sus datos, usa **Gestionar datos → Guardar copia JSON** y **Restaurar copia JSON** en la aplicación abierta por separado. Restaurar sustituye los datos de la sesión abierta.
+La aplicación abierta por separado usa **IndexedDB** y **localStorage** para conservar sus registros en ese navegador. La vista previa del Studio tiene una sesión aislada. Cambiar la presentación, volver a abrir el proyecto o recargar el Studio puede reiniciar sus datos de prueba.
 
-En los navegadores compatibles, **Guardar en archivo automáticamente** vincula una copia JSON durante la sesión. El esquema y el volcado SQL usan sintaxis SQLite y se ejecutan con un motor externo. La aplicación web sigue funcionando en el navegador con roles de demostración.
+- **Guardar copia JSON** descarga los datos de la sesión en un archivo `.db.json`. **Restaurar copia JSON** reemplaza los datos de esa aplicación con una copia compatible. Usa estas opciones para pasar los registros de la vista previa a la aplicación abierta por separado.
+- **Guardar en archivo automáticamente**, cuando está disponible en una pestaña independiente, vincula una copia JSON que el navegador actualiza durante esa sesión.
+- **Descargar SQL** exporta el esquema y los registros como sentencias para ejecutar en un motor SQLite externo. El esquema que se obtiene en el **PSM** contiene la estructura de las tablas. La aplicación web ejecutable guarda sus datos en el navegador.
+
+Los roles del proceso son simulados y las sesiones funcionan por navegador. El alcance actual es local, con un proceso y un catálogo vinculado por modelo integrado.
 
 ### Posible extensión para el equipo
 
@@ -66,14 +92,16 @@ Podemos añadir un segundo destino de generación que transforme el mismo PIM en
 
 ### DSL y restricciones
 
-- El CIM es un objeto JSON con `version`, `id`, `nombre`, `objetivo`, `entidad`, `actores`, `datos`, `inicio`, `estados`, `transiciones` y `ocl`.
-- Los datos se declaran con `Texto`, `Entero`, `Fecha`, `Seleccion` o `Booleano`. En `Seleccion`, declara una lista `opciones` de objetos con `id` y `nombre`. Cada transición indica quién actúa, de qué estado parte y adónde lleva. Abre **Manual** en el Studio para ver un tutorial y un ejemplo completo de campo.
-- El evaluador implementa un subconjunto de OCL. Admite invariantes `context Clase inv Nombre: ...` y precondiciones `context Clase::operacion() pre Nombre: ...`. Soporta comparaciones con enteros, `self.campo.size()` en texto y conjunciones con `and`. Una comparación sobre un campo ausente no se cumple. Una expresión fuera de este subconjunto produce un error de generación.
-- Las invariantes se verifican al crear el caso y antes de cada transición. La precondición `MotivoSuficiente` se comprueba al intentar aprobar. Su regla exige al menos ocho caracteres.
+- Un CIM de proceso declara `version`, `id`, `nombre`, `objetivo`, `entidad`, `actores`, `datos`, `inicio`, `estados`, `transiciones` y `ocl`. Un catálogo usa `tipo: "crud"`, `datos` y, opcionalmente, `unicos`, además de su identificación y sus reglas.
+- Los tipos de campo son `Texto`, `Entero`, `Fecha`, `Seleccion` y `Booleano`. En `Seleccion`, declara `opciones` con `id` y `nombre`. Las fechas se representan como `AAAA-MM-DD`. Cada transición indica el actor, el estado de origen y el estado de destino.
+- Para vincular un catálogo, declara `integracion.catalogo`, el campo de solicitud `referencia`, la `clave` única del catálogo, `existencias`, `cantidad` y `movimientos`. Cada movimiento apunta a una transición y declara `salida` o `entrada`.
+- El compilador admite un subconjunto de OCL con invariantes `context Clase inv Nombre: ...` y condiciones de operación `context Clase::operacion() pre Nombre: ...` y `post`. Admite comparaciones con literales o entre campos del mismo tipo, `size()` en texto o fecha y los conectores `and`, `or` e `implies`. La aplicación evalúa las invariantes al guardar y las reglas de una transición sobre los datos del caso antes de confirmar el cambio.
+
+Abre la **Guía de inicio** para consultar ejemplos de reglas y **Metamodelo base** para ver qué estructuras comprueba el compilador.
 
 ## Generar un CRUD
 
-Desde **Proyectos**, abre **Inventario de laboratorio** o crea un proyecto con **CRUD básico**. En **CIM → Estructura** puedes editar los campos y las reglas. En **CIM → Editar JSON** puedes consultar o modificar el modelo fuente.
+Desde **Proyectos**, abre **Inventario de laboratorio** o crea un **Catálogo CRUD**. Añade o edita campos en **CIM → Campos**, despliega **Restricciones OCL** para editar las reglas o consulta el modelo fuente en **Editar JSON**.
 
 El [CIM de inventario](models/inventario.cim.json) declara `tipo: "crud"`, la entidad `Producto`, sus datos, la unicidad de SKU y la invariante de stock no negativo. El [PIM](generado/inventario.pim.json) contiene las cuatro operaciones lógicas y el [PSM](generado/inventario.psm.json) incorpora la tabla web, los controles y el almacenamiento. La [aplicación generada](generado/inventario.html) permite buscar, crear, editar y eliminar registros. El stock se actualiza editando el registro y las reglas se comprueban al guardar.
 
@@ -90,17 +118,16 @@ Para probar el caso de dos solicitudes que compiten por las mismas unidades:
 1. En **Inventario**, crea un microscopio con SKU `MIC-01`, categoría Equipos y stock de **3**.
 2. En **Solicitudes**, como **Estudiante**, registra dos préstamos de **2** unidades para ese microscopio, uno a nombre de Ana y otro de Luis. Usa **3 días** y el motivo **Práctica de laboratorio** en ambos. Cambia a **Responsable** y aprueba los dos casos.
 3. Entrega el primero. El inventario queda en **1**. Intenta entregar el segundo. La aplicación indica que solo queda una unidad y mantiene el caso **Aprobado**. El stock se descuenta al entregar.
-4. Devuelve el primero como **Estudiante**. El inventario vuelve a **3** y en **Movimientos** puedes consultar el descuento y la reposición. Abre **Trazabilidad** en el Studio y elige **Integración** para ver cómo se generaron el selector y ambos movimientos.
+4. Devuelve el primero como **Estudiante**. El inventario vuelve a **3** y en **Movimientos** puedes consultar el descuento y la reposición. En el Studio abre **Archivos y trazabilidad → Trazabilidad** y elige **Integración** para ver cómo se generaron el selector y ambos movimientos.
 
-El compilador comprueba que las transiciones de entrada y salida estén correctamente ordenadas y que ningún camino termine con unidades pendientes de devolver. La aplicación guarda solicitudes, productos y movimientos juntos en el almacenamiento local de un navegador. El alcance es una demostración de una sola sesión, con roles simulados y un catálogo por flujo.
-
+El compilador comprueba que las transiciones de entrada y salida estén correctamente ordenadas y que ningún camino termine con unidades pendientes de devolver. La aplicación guarda solicitudes, productos y movimientos juntos en el almacenamiento local de un navegador.
 ## Guion para exponer
 
-1. Abre el Studio. Muestra el CIM, los actores y las ramas de aprobación y rechazo.
-2. Abre PIM y PSM. Señala cómo `cantidad` pasa de dato de negocio a propiedad lógica, luego a control HTML de tipo `number`. Muestra la misma fila en Trazabilidad.
-3. Pulsa **Generar aplicación**. Como Estudiante, intenta crear un caso con seis unidades y observa que `CantidadValida` lo bloquea. Usa dos unidades, cinco días y **Práctica de óptica** como motivo para crearlo.
-4. Cambia a Responsable, aprueba el caso y registra la entrega. Vuelve a Estudiante para registrar la devolución. Muestra el historial. La rama alternativa permite rechazar un caso pendiente.
-5. Vuelve al CIM y cambia el límite de unidades de `5` a `3`, o añade un campo `curso` de tipo `Texto`. Genera de nuevo y muestra el cambio en el formulario o en la validación. Descarga el HTML para demostrar que se ejecuta por separado.
+1. Abre **Gestión de laboratorio**. En el CIM muestra los actores y las ramas de aprobación y rechazo en **Diagrama**.
+2. En **PIM → Campos y tipos** localiza `cantidad` y su tipo `EInt`. En **PSM → Mapeo** muestra el control `number`. En **Archivos y trazabilidad → Trazabilidad** busca `cantidad` para conectar ambas vistas.
+3. Pulsa **Generar aplicación**. Como **Estudiante**, selecciona un artículo y prueba el límite de `CantidadValida` con seis unidades. Luego registra una solicitud válida de dos unidades, cinco días y el motivo **Práctica de óptica**.
+4. Como **Responsable**, aprueba el caso y registra la entrega. Vuelve a **Estudiante** para registrar su devolución. Comprueba el historial y los saldos en **Movimientos**.
+5. Vuelve al CIM y añade un campo `curso` de tipo `Texto`. Genera de nuevo y comprueba el cambio en el formulario. Descarga el HTML desde **Archivos y trazabilidad** o usa **Abrir en otra pestaña**. Si editas el CIM original del ejemplo, crea un artículo en el inventario de la nueva vista previa para hacer otra solicitud.
 
 El Studio usa una vista previa aislada cuyos casos se mantienen durante esa ejecución. El HTML autónomo guarda casos en el almacenamiento del navegador cuando está disponible. El selector de rol simula actores para la exposición. El alcance es un proceso por modelo en una aplicación web local, sin cuentas de usuario ni base de datos compartida.
 
