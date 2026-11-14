@@ -201,12 +201,11 @@
 
     if (catalog && shared.length) {
       const groupRow = make('tr', '', 'field-group');
-      const heading = make('td', catalog.entidad + ' · ' + shared.length + ' campos');
+      const heading = make('td', catalog.entidad + ' · Catálogo vinculado · ' + shared.length + ' campos');
       heading.colSpan = 6;
       groupRow.append(heading);
       rows.append(groupRow);
       for (const field of shared) {
-        const badge = make('span', 'Catálogo vinculado', 'muted-badge');
         const typeBadge = make('span', field.tipo, 'field-type');
         rows.append(tableRow(
           field.nombre,
@@ -214,7 +213,7 @@
           typeBadge,
           (field.requerido ? 'Obligatorio' : 'Opcional') + (catalog.unicos?.includes(field.id) ? ' · Único' : ''),
           field.opciones?.map(option => option.nombre).join(', ') ?? '—',
-          badge,
+          '—',
         ));
       }
     }

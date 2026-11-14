@@ -13,7 +13,7 @@
 :root[data-theme="dark"] :is(th,#fields-caption,.diagram-bar,.presentation-panel,.json-inspector .json-toolbar,.fields-toolbar,.deliverables-bar,.stage-explainer,.stage-artifact-details,.app-launch-bar,.ocl-assistant,.psm-wireframe){background:var(--dark-raised);color:var(--ink)}
 :root[data-theme="dark"] :is(.guide-index a,.guide-article a,.resource-arrow,.edge span,.arrow,.edge strong,#output-tree details>summary,#output-tree .json-key,.diagram-edge-label strong,.deliverables-label,.stage-box h3,.stage-item strong,.stage-item code,.stage-artifact-details summary,.artifact-code-head,.arch-dl dt,.app-launch-bar strong,.ocl-assistant strong){color:var(--dark-link)}
 :root[data-theme="dark"] :is(#output-tree details>summary:hover,.guide-index a:hover,.edge-btn:hover,.rule-edit-btn:hover){background:var(--dark-selected);border-color:var(--dark-selected-border)}
-:root[data-theme="dark"] :is(.resource-icon,.rule-type,.status,.json-inspector .json-mode,.muted-badge,.primary-subtle,.side-actions button){background:var(--dark-selected);color:var(--ink);border-color:var(--dark-selected-border)}
+:root[data-theme="dark"] :is(.resource-icon,.rule-type,.status,.json-inspector .json-mode,.primary-subtle,.side-actions button){background:var(--dark-selected);color:var(--ink);border-color:var(--dark-selected-border)}
 :root[data-theme="dark"] :is(.status[data-kind=dirty],.diagram-issue){background:#3c3020;color:var(--dark-warning)}
 :root[data-theme="dark"] :is(.status[data-kind=error],.error,.json-error){background:#422822;color:var(--dark-danger)}
 :root[data-theme="dark"] :is(.save-status[data-error=true],#diagram-remove){color:var(--dark-danger)}
