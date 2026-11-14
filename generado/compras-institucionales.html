@@ -15,7 +15,6 @@
 <style>:root{font-family:"Segoe UI",system-ui,sans-serif;color:#152e30;background:#eff5f3;font-synthesis:none}
 *{box-sizing:border-box}body{margin:0}main{max-width:1140px;margin:auto;padding:28px clamp(16px,4vw,48px)}
 header{display:flex;justify-content:space-between;align-items:end;gap:24px}h1{font-size:clamp(26px,5vw,40px);margin:6px 0}h2{font-size:17px;margin:0 0 14px}h3{font-size:21px;margin:0 0 8px}h4{margin:20px 0 8px}p{margin:0}.product{font-size:10px;letter-spacing:.14em;font-weight:750;color:#216a5b}.muted{color:#4d6664;font-size:13px}
-.db-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;padding:11px 15px;background:#eaf1ff;border:1px solid #c6d6f7;border-radius:11px}.db-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.db-badge{background:#3153a5;color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px}.db-badge[data-file=true]{background:#176453}.db-actions{display:flex;gap:6px;flex-wrap:wrap}.db-actions button{font-size:12px;padding:6px 10px}.primary-outline{border-color:#3153a5;color:#3153a5;background:#f4f7ff;font-weight:700}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}.column{display:grid;gap:16px}section{background:#fff;border:1px solid #d8e5e0;border-radius:13px;padding:18px;min-width:0;overflow-wrap:anywhere}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center}
 form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:end}label{display:grid;gap:5px;font-size:12px;font-weight:650}.role{min-width:155px}input,select{font:inherit;font-weight:400;width:100%;padding:8px 10px;border:1px solid #c2d3cd;border-radius:6px;background:#fafffd;color:inherit}
 button{cursor:pointer;font:inherit;font-size:13px;font-weight:650;padding:8px 12px;border:1px solid #b6cdc5;border-radius:7px;color:#18473e;background:#fff}.primary{background:#18584c;border-color:#18584c;color:white}.primary:hover{background:#123f37}.case{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;margin-bottom:5px}.case[aria-pressed=true]{background:#e5f4ee;border-color:#438372}
@@ -96,6 +95,15 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
 :root[data-theme="dark"] #app-notice{color:var(--teal)}
 :root[data-theme="dark"] #app-notice[data-error=true]{color:var(--dark-danger)}
 #app-cases-help{margin:-5px 0 12px}
+
+.data-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--app-line)}
+.data-footer p,.data-help,#db-status-text{font-size:13px;color:var(--app-sub);overflow-wrap:anywhere}
+#db-dialog .section-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.data-help,#db-status-text{margin-top:10px}
+.data-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.data-sql{margin-top:15px;padding-top:12px;border-top:1px solid var(--app-line)}
+.data-sql summary{cursor:pointer;font-size:13px;font-weight:650}
+.data-sql .db-code{max-height:40vh}
 </style>
 </head>
 <body>
@@ -105,20 +113,6 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
     <div><p class="product">MDA STUDIO · APLICACIÓN EJECUTABLE (M2T)</p><h1 id="app-title"></h1><p id="app-description" class="muted"></p></div>
     <label class="role">Rol de demostración<select id="app-role" aria-describedby="app-role-help"></select><small class="muted" id="app-role-help">Simula quién realiza la tarea.</small></label>
   </header>
-  <section id="db-bar" class="db-bar" aria-label="Conexión a Base de Datos y Archivo">
-    <div class="db-info">
-      <span id="db-badge" class="db-badge">BD IndexedDB activa</span>
-      <span id="db-status-text" class="muted">Sincronizado en base de datos local del navegador.</span>
-    </div>
-    <div class="db-actions">
-      <button type="button" id="db-connect-file" class="primary-outline">Conectar archivo (.db.json)</button>
-      <button type="button" id="db-import-btn">Importar BD (.json)</button>
-      <input type="file" id="db-import-input" accept=".json,application/json" hidden>
-      <button type="button" id="db-export-json">Guardar BD (.db.json)</button>
-      <button type="button" id="db-export-sql">Volcado SQL (.sql)</button>
-      <button type="button" id="db-inspect-btn">Ver tablas / SQL</button>
-    </div>
-  </section>
   <nav id="app-nav" aria-label="Módulos de la aplicación" hidden>
     <button type="button" data-module="requests" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19V5h14M5 12h8v6h6M16 3l3 2-3 2m0 9 3 2-3 2"/></svg>Solicitudes</button>
     <button type="button" data-module="catalog" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v13H4zM3 4h18v3M9 11h6m-6 5h6"/></svg>Inventario</button>
@@ -146,12 +140,28 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
     <h2 id="crud-delete-title">¿Eliminar el registro?</h2><p id="crud-delete-name"></p>
     <div class="action-bar"><button id="crud-delete-cancel" type="button" autofocus>Cancelar</button><button id="crud-delete-confirm" type="button" class="danger">Confirmar eliminación</button></div>
   </dialog>
+  <footer id="db-bar" class="data-footer">
+    <p id="db-badge" role="status"></p>
+    <button type="button" id="open-data-tools" aria-haspopup="dialog">Gestionar datos</button>
+  </footer>
   <dialog id="db-dialog" aria-labelledby="db-dialog-title">
     <div class="section-head">
-      <div><h2 id="db-dialog-title">Inspector de Base de Datos y Sentencias SQL</h2><p class="muted" id="db-dialog-subtitle"></p></div>
-      <button type="button" id="db-dialog-close">Cerrar</button>
+      <h2 id="db-dialog-title">Datos de la aplicación</h2>
+      <button type="button" id="db-dialog-close" autofocus>Cerrar</button>
     </div>
-    <pre id="db-dialog-sql" class="db-code"></pre>
+    <p id="db-status-text" class="muted"></p>
+    <p class="data-help">Usa una copia JSON para guardar los datos o restaurarlos en otra sesión. El archivo SQL sirve para llevar los datos a SQLite.</p>
+    <div class="data-actions">
+      <button type="button" id="db-export-json">Guardar copia JSON</button>
+      <button type="button" id="db-import-btn">Restaurar copia JSON</button>
+      <input type="file" id="db-import-input" accept=".json,application/json" hidden>
+      <button type="button" id="db-connect-file" hidden>Guardar en archivo automáticamente</button>
+      <button type="button" id="db-export-sql">Descargar SQL</button>
+    </div>
+    <details id="db-inspect-btn" class="data-sql">
+      <summary>Ver esquema y datos SQL</summary>
+      <pre id="db-dialog-sql" class="db-code" tabindex="0" aria-label="Código SQL"></pre>
+    </details>
   </dialog>
 </main>
 <script>
@@ -161,7 +171,7 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
       document.documentElement.dataset.theme = theme;
     }
   });
-  const model = {"id":"compras-institucionales","nombre":"Compras institucionales","objetivo":"Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.","entidad":"Compra","plataforma":"HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL","presentacion":"tablero","arquitectura":{"patronUi":"Tablero Kanban por Estado (State-Lane Board)","disposicion":"Grid horizontal de carriles agrupados por cada estado de la máquina de estados (16 columnas) + panel de formulario e inspector.","contenedores":["Cabecera con selector de Rol RBAC (Solicitante, Jefatura, Presupuesto, Compras, Jurídico, Comité, Bodega, Contabilidad, Tesorería)","Tablero Kanban con 16 carriles de estado: Revisión de jefatura | Ampliación pendiente | Control de presupuesto | Selección de modalidad | Revisión jurídica | Evaluación del comité | Adjudicada | Orden emitida | Incidencia de recepción | Recibida | Revisión contable | Pendiente de pago | Pagada | Cerrada [Final] | Rechazada [Final] | Cancelada [Final]","Formulario de creación para rol inicial (solicitante)","Inspector lateral de caso seleccionado + Botonera de transiciones + Historial","Barra de Persistencia en Base de Datos (IndexedDB + Archivo .db.json / .sql)"],"adaptadorDatos":"IndexedDB + Sincronización en vivo con Archivo de Base de Datos (.db.json / .sql) + Fallback localStorage","seguridad":"Control de acceso basado en roles (RBAC) para 9 actores y 12 validadores OCL compilados a ES2022"},"almacen":{"tipo":"IndexedDB + Archivo (.db.json / .sql) + localStorage","clave":"mda.casos.proyecto.example-compras.compras-institucionales"},"esquemaSql":{"motor":"SQL Estándar (PostgreSQL / SQLite3) + Almacén Transaccional IndexedDB","tablas":[{"nombre":"compra","descripcion":"Tabla principal de casos de proceso para Compra","columnas":[{"nombre":"id","tipo":"VARCHAR(64)","restricciones":"PRIMARY KEY NOT NULL"},{"nombre":"estado_actual","tipo":"VARCHAR(48)","restricciones":"NOT NULL DEFAULT 'solicitada'"},{"nombre":"referencia","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"unidad","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"objeto","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"justificacion","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"monto","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"cantidad","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"cotizaciones","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"plazo","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"proveedor","tipo":"VARCHAR(300)","restricciones":"NULL"},{"nombre":"partida","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"prioridad","tipo":"VARCHAR(64)","restricciones":"CHECK (prioridad IN ('normal', 'urgente', 'critica'))"},{"nombre":"fecha_necesaria","tipo":"DATE","restricciones":"NULL"},{"nombre":"documentacion","tipo":"BOOLEAN","restricciones":"NULL"}],"checks":["CONSTRAINT chk_compra_estado CHECK (estado_actual IN ('solicitada', 'observada', 'presupuesto', 'modalidad', 'juridica', 'comite', 'adjudicada', 'ordenada', 'incidencia', 'recibida', 'contabilidad', 'pago', 'pagada', 'cerrada', 'rechazada', 'cancelada'))","CONSTRAINT chk_montovalido CHECK (monto >= 1 AND monto \u003c= 250000)","CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad \u003c= 10000)","CONSTRAINT chk_plazovalido CHECK (plazo >= 1 AND plazo \u003c= 180)","CONSTRAINT chk_cotizacionesvalidas CHECK (cotizaciones >= 0 AND cotizaciones \u003c= 30)","CONSTRAINT chk_referenciavalida CHECK (CHAR_LENGTH(referencia) >= 4)"]},{"nombre":"compra_historial","descripcion":"Bitácora inmutable de auditoría de transiciones por rol","columnas":[{"nombre":"id_evento","tipo":"INTEGER","restricciones":"PRIMARY KEY AUTOINCREMENT"},{"nombre":"caso_id","tipo":"VARCHAR(64)","restricciones":"NOT NULL REFERENCES compra(id) ON DELETE CASCADE"},{"nombre":"accion","tipo":"VARCHAR(120)","restricciones":"NOT NULL"},{"nombre":"rol_actor","tipo":"VARCHAR(64)","restricciones":"NOT NULL"},{"nombre":"fecha_hora","tipo":"TIMESTAMP","restricciones":"NOT NULL DEFAULT CURRENT_TIMESTAMP"}],"checks":[]}]},"roles":[{"id":"solicitante","nombre":"Solicitante"},{"id":"jefatura","nombre":"Jefatura"},{"id":"presupuesto","nombre":"Presupuesto"},{"id":"compras","nombre":"Compras"},{"id":"juridico","nombre":"Jurídico"},{"id":"comite","nombre":"Comité"},{"id":"bodega","nombre":"Bodega"},{"id":"contabilidad","nombre":"Contabilidad"},{"id":"tesoreria","nombre":"Tesorería"}],"campos":[{"id":"referencia","nombre":"Referencia interna","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\"","minlength=\"4\""]},{"id":"unidad","nombre":"Unidad solicitante","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"objeto","nombre":"Objeto de la compra","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"justificacion","nombre":"Justificación","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"monto","nombre":"Monto estimado (USD)","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"250000\""]},{"id":"cantidad","nombre":"Unidades","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"10000\""]},{"id":"cotizaciones","nombre":"Cotizaciones disponibles","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"0\"","max=\"30\""]},{"id":"plazo","nombre":"Plazo de entrega (días)","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"180\""]},{"id":"proveedor","nombre":"Proveedor propuesto","control":"text","tipoSql":"VARCHAR(300)","requerido":false,"atributosHtml":["maxlength=\"300\""]},{"id":"partida","nombre":"Partida presupuestaria","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"prioridad","nombre":"Prioridad","control":"select","tipoSql":"VARCHAR(64)","requerido":false,"atributosHtml":[],"opciones":[{"nombre":"Normal","id":"normal"},{"nombre":"Urgente","id":"urgente"},{"nombre":"Crítica","id":"critica"}]},{"id":"fecha-necesaria","nombre":"Fecha en que se necesita","control":"date","tipoSql":"DATE","requerido":false,"atributosHtml":[]},{"id":"documentacion","nombre":"Documentación adjunta disponible","control":"checkbox","tipoSql":"BOOLEAN","requerido":false,"atributosHtml":[]}],"formulario":{"actor":"solicitante","estado":"solicitada","nombre":"Registrar solicitud"},"estados":[{"id":"solicitada","nombre":"Revisión de jefatura"},{"id":"observada","nombre":"Ampliación pendiente"},{"id":"presupuesto","nombre":"Control de presupuesto"},{"id":"modalidad","nombre":"Selección de modalidad"},{"id":"juridica","nombre":"Revisión jurídica"},{"id":"comite","nombre":"Evaluación del comité"},{"id":"adjudicada","nombre":"Adjudicada"},{"id":"ordenada","nombre":"Orden emitida"},{"id":"incidencia","nombre":"Incidencia de recepción"},{"id":"recibida","nombre":"Recibida"},{"id":"contabilidad","nombre":"Revisión contable"},{"id":"pago","nombre":"Pendiente de pago"},{"id":"pagada","nombre":"Pagada"},{"id":"cerrada","nombre":"Cerrada","final":true},{"id":"rechazada","nombre":"Rechazada","final":true},{"id":"cancelada","nombre":"Cancelada","final":true}],"acciones":[{"id":"avalar","nombre":"Enviar a presupuesto","actor":"jefatura","desde":"solicitada","hasta":"presupuesto"},{"id":"observar","nombre":"Solicitar ampliación","actor":"jefatura","desde":"solicitada","hasta":"observada"},{"id":"justificar","nombre":"Registrar ampliación externa","actor":"solicitante","desde":"observada","hasta":"solicitada"},{"id":"retirar","nombre":"Retirar solicitud","actor":"solicitante","desde":"observada","hasta":"cancelada"},{"id":"denegar","nombre":"Rechazar solicitud","actor":"jefatura","desde":"solicitada","hasta":"rechazada"},{"id":"certificar","nombre":"Certificar disponibilidad","actor":"presupuesto","desde":"presupuesto","hasta":"modalidad"},{"id":"sinfondos","nombre":"Rechazar por falta de fondos","actor":"presupuesto","desde":"presupuesto","hasta":"rechazada"},{"id":"directa","nombre":"Adjudicar compra directa","actor":"compras","desde":"modalidad","hasta":"adjudicada"},{"id":"competitiva","nombre":"Enviar a revisión jurídica","actor":"compras","desde":"modalidad","hasta":"juridica"},{"id":"cancelar","nombre":"Cancelar trámite","actor":"compras","desde":"modalidad","hasta":"cancelada"},{"id":"dictamen","nombre":"Emitir dictamen favorable","actor":"juridico","desde":"juridica","hasta":"comite"},{"id":"devolver","nombre":"Devolver a compras","actor":"juridico","desde":"juridica","hasta":"modalidad"},{"id":"objecion","nombre":"Rechazar por objeción jurídica","actor":"juridico","desde":"juridica","hasta":"rechazada"},{"id":"adjudicar","nombre":"Adjudicar por comité","actor":"comite","desde":"comite","hasta":"adjudicada"},{"id":"desierta","nombre":"Declarar proceso desierto","actor":"comite","desde":"comite","hasta":"cancelada"},{"id":"emitir","nombre":"Emitir orden de compra","actor":"compras","desde":"adjudicada","hasta":"ordenada"},{"id":"recibir","nombre":"Confirmar recepción conforme","actor":"bodega","desde":"ordenada","hasta":"recibida"},{"id":"incidencia","nombre":"Registrar recepción no conforme","actor":"bodega","desde":"ordenada","hasta":"incidencia"},{"id":"subsanar","nombre":"Registrar subsanación del proveedor","actor":"compras","desde":"incidencia","hasta":"ordenada"},{"id":"anular","nombre":"Anular orden","actor":"compras","desde":"incidencia","hasta":"cancelada"},{"id":"enviarcontable","nombre":"Enviar expediente a contabilidad","actor":"compras","desde":"recibida","hasta":"contabilidad"},{"id":"contabilizar","nombre":"Autorizar contabilización","actor":"contabilidad","desde":"contabilidad","hasta":"pago"},{"id":"revisar","nombre":"Devolver expediente","actor":"contabilidad","desde":"contabilidad","hasta":"recibida"},{"id":"pagar","nombre":"Registrar pago","actor":"tesoreria","desde":"pago","hasta":"pagada"},{"id":"cerrar","nombre":"Cerrar expediente","actor":"compras","desde":"pagada","hasta":"cerrada"}],"validadores":[{"id":"MontoValido","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"monto","acceso":"value","operador":">=","valor":1},{"campo":"monto","acceso":"value","operador":"\u003c=","conector":"and","valor":250000}],"fuente":"context Compra inv MontoValido: self.monto >= 1 and self.monto \u003c= 250000"},{"id":"CantidadValida","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"cantidad","acceso":"value","operador":">=","valor":1},{"campo":"cantidad","acceso":"value","operador":"\u003c=","conector":"and","valor":10000}],"fuente":"context Compra inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 10000"},{"id":"PlazoValido","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"plazo","acceso":"value","operador":">=","valor":1},{"campo":"plazo","acceso":"value","operador":"\u003c=","conector":"and","valor":180}],"fuente":"context Compra inv PlazoValido: self.plazo >= 1 and self.plazo \u003c= 180"},{"id":"CotizacionesValidas","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"cotizaciones","acceso":"value","operador":">=","valor":0},{"campo":"cotizaciones","acceso":"value","operador":"\u003c=","conector":"and","valor":30}],"fuente":"context Compra inv CotizacionesValidas: self.cotizaciones >= 0 and self.cotizaciones \u003c= 30"},{"id":"ReferenciaValida","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"referencia","acceso":"size","operador":">=","valor":4}],"fuente":"context Compra inv ReferenciaValida: self.referencia.size() >= 4"},{"id":"JustificacionSuficiente","clase":"Compra","tipo":"pre","operacion":"avalar","expresion":[{"campo":"justificacion","acceso":"size","operador":">=","valor":20}],"fuente":"context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() >= 20"},{"id":"PartidaIdentificada","clase":"Compra","tipo":"pre","operacion":"certificar","expresion":[{"campo":"partida","acceso":"size","operador":">=","valor":4}],"fuente":"context Compra::certificar() pre PartidaIdentificada: self.partida.size() >= 4"},{"id":"MontoCompraDirecta","clase":"Compra","tipo":"pre","operacion":"directa","expresion":[{"campo":"monto","acceso":"value","operador":"\u003c","valor":10000},{"campo":"cotizaciones","acceso":"value","operador":">=","conector":"and","valor":1}],"fuente":"context Compra::directa() pre MontoCompraDirecta: self.monto \u003c 10000 and self.cotizaciones >= 1"},{"id":"UmbralCompetitivo","clase":"Compra","tipo":"pre","operacion":"competitiva","expresion":[{"campo":"monto","acceso":"value","operador":">=","valor":10000},{"campo":"cotizaciones","acceso":"value","operador":">=","conector":"and","valor":3}],"fuente":"context Compra::competitiva() pre UmbralCompetitivo: self.monto >= 10000 and self.cotizaciones >= 3"},{"id":"CotizacionesComite","clase":"Compra","tipo":"pre","operacion":"adjudicar","expresion":[{"campo":"cotizaciones","acceso":"value","operador":">=","valor":3}],"fuente":"context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones >= 3"},{"id":"ProveedorIdentificado","clase":"Compra","tipo":"pre","operacion":"emitir","expresion":[{"campo":"proveedor","acceso":"size","operador":">=","valor":3}],"fuente":"context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() >= 3"},{"id":"ReferenciaContable","clase":"Compra","tipo":"pre","operacion":"contabilizar","expresion":[{"campo":"referencia","acceso":"size","operador":">=","valor":6}],"fuente":"context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() >= 6"}]};
+  const model = {"id":"compras-institucionales","nombre":"Compras institucionales","objetivo":"Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.","entidad":"Compra","plataforma":"HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL","presentacion":"tablero","arquitectura":{"patronUi":"Tablero Kanban por Estado (State-Lane Board)","disposicion":"Grid horizontal de carriles agrupados por cada estado de la máquina de estados (16 columnas) + panel de formulario e inspector.","contenedores":["Cabecera con selector de rol de demostración (Solicitante, Jefatura, Presupuesto, Compras, Jurídico, Comité, Bodega, Contabilidad, Tesorería)","Tablero Kanban con 16 carriles de estado: Revisión de jefatura | Ampliación pendiente | Control de presupuesto | Selección de modalidad | Revisión jurídica | Evaluación del comité | Adjudicada | Orden emitida | Incidencia de recepción | Recibida | Revisión contable | Pendiente de pago | Pagada | Cerrada [Final] | Rechazada [Final] | Cancelada [Final]","Formulario de creación para rol inicial (solicitante)","Inspector lateral de caso seleccionado + Botonera de transiciones + Historial","Gestión de datos y exportación"],"adaptadorDatos":"IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.","seguridad":"Simulación de roles en cliente para 9 actores y 12 validadores OCL compilados a ES2022"},"almacen":{"tipo":"IndexedDB + localStorage","clave":"mda.casos.proyecto.example-compras.compras-institucionales"},"esquemaSql":{"motor":"SQLite 3","tablas":[{"nombre":"compra","descripcion":"Tabla principal de casos de proceso para Compra","columnas":[{"nombre":"id","tipo":"VARCHAR(64)","restricciones":"PRIMARY KEY NOT NULL"},{"nombre":"estado_actual","tipo":"VARCHAR(48)","restricciones":"NOT NULL DEFAULT 'solicitada'"},{"nombre":"referencia","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"unidad","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"objeto","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"justificacion","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"monto","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"cantidad","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"cotizaciones","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"plazo","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"proveedor","tipo":"VARCHAR(300)","restricciones":"NULL"},{"nombre":"partida","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"prioridad","tipo":"VARCHAR(64)","restricciones":"CHECK (prioridad IN ('normal', 'urgente', 'critica'))"},{"nombre":"fecha_necesaria","tipo":"DATE","restricciones":"NULL"},{"nombre":"documentacion","tipo":"BOOLEAN","restricciones":"NULL"}],"checks":["CONSTRAINT chk_compra_estado CHECK (estado_actual IN ('solicitada', 'observada', 'presupuesto', 'modalidad', 'juridica', 'comite', 'adjudicada', 'ordenada', 'incidencia', 'recibida', 'contabilidad', 'pago', 'pagada', 'cerrada', 'rechazada', 'cancelada'))","CONSTRAINT chk_montovalido CHECK (monto >= 1 AND monto \u003c= 250000)","CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad \u003c= 10000)","CONSTRAINT chk_plazovalido CHECK (plazo >= 1 AND plazo \u003c= 180)","CONSTRAINT chk_cotizacionesvalidas CHECK (cotizaciones >= 0 AND cotizaciones \u003c= 30)","CONSTRAINT chk_referenciavalida CHECK (CHAR_LENGTH(referencia) >= 4)"]},{"nombre":"compra_historial","descripcion":"Bitácora inmutable de auditoría de transiciones por rol","columnas":[{"nombre":"id_evento","tipo":"INTEGER","restricciones":"PRIMARY KEY AUTOINCREMENT"},{"nombre":"caso_id","tipo":"VARCHAR(64)","restricciones":"NOT NULL REFERENCES compra(id) ON DELETE CASCADE"},{"nombre":"accion","tipo":"VARCHAR(120)","restricciones":"NOT NULL"},{"nombre":"rol_actor","tipo":"VARCHAR(64)","restricciones":"NOT NULL"},{"nombre":"fecha_hora","tipo":"TIMESTAMP","restricciones":"NOT NULL DEFAULT CURRENT_TIMESTAMP"}],"checks":[]}]},"roles":[{"id":"solicitante","nombre":"Solicitante"},{"id":"jefatura","nombre":"Jefatura"},{"id":"presupuesto","nombre":"Presupuesto"},{"id":"compras","nombre":"Compras"},{"id":"juridico","nombre":"Jurídico"},{"id":"comite","nombre":"Comité"},{"id":"bodega","nombre":"Bodega"},{"id":"contabilidad","nombre":"Contabilidad"},{"id":"tesoreria","nombre":"Tesorería"}],"campos":[{"id":"referencia","nombre":"Referencia interna","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\"","minlength=\"4\""]},{"id":"unidad","nombre":"Unidad solicitante","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"objeto","nombre":"Objeto de la compra","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"justificacion","nombre":"Justificación","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"monto","nombre":"Monto estimado (USD)","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"250000\""]},{"id":"cantidad","nombre":"Unidades","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"10000\""]},{"id":"cotizaciones","nombre":"Cotizaciones disponibles","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"0\"","max=\"30\""]},{"id":"plazo","nombre":"Plazo de entrega (días)","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"180\""]},{"id":"proveedor","nombre":"Proveedor propuesto","control":"text","tipoSql":"VARCHAR(300)","requerido":false,"atributosHtml":["maxlength=\"300\""]},{"id":"partida","nombre":"Partida presupuestaria","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"prioridad","nombre":"Prioridad","control":"select","tipoSql":"VARCHAR(64)","requerido":false,"atributosHtml":[],"opciones":[{"nombre":"Normal","id":"normal"},{"nombre":"Urgente","id":"urgente"},{"nombre":"Crítica","id":"critica"}]},{"id":"fecha-necesaria","nombre":"Fecha en que se necesita","control":"date","tipoSql":"DATE","requerido":false,"atributosHtml":[]},{"id":"documentacion","nombre":"Documentación adjunta disponible","control":"checkbox","tipoSql":"BOOLEAN","requerido":false,"atributosHtml":[]}],"formulario":{"actor":"solicitante","estado":"solicitada","nombre":"Registrar solicitud"},"estados":[{"id":"solicitada","nombre":"Revisión de jefatura"},{"id":"observada","nombre":"Ampliación pendiente"},{"id":"presupuesto","nombre":"Control de presupuesto"},{"id":"modalidad","nombre":"Selección de modalidad"},{"id":"juridica","nombre":"Revisión jurídica"},{"id":"comite","nombre":"Evaluación del comité"},{"id":"adjudicada","nombre":"Adjudicada"},{"id":"ordenada","nombre":"Orden emitida"},{"id":"incidencia","nombre":"Incidencia de recepción"},{"id":"recibida","nombre":"Recibida"},{"id":"contabilidad","nombre":"Revisión contable"},{"id":"pago","nombre":"Pendiente de pago"},{"id":"pagada","nombre":"Pagada"},{"id":"cerrada","nombre":"Cerrada","final":true},{"id":"rechazada","nombre":"Rechazada","final":true},{"id":"cancelada","nombre":"Cancelada","final":true}],"acciones":[{"id":"avalar","nombre":"Enviar a presupuesto","actor":"jefatura","desde":"solicitada","hasta":"presupuesto"},{"id":"observar","nombre":"Solicitar ampliación","actor":"jefatura","desde":"solicitada","hasta":"observada"},{"id":"justificar","nombre":"Registrar ampliación externa","actor":"solicitante","desde":"observada","hasta":"solicitada"},{"id":"retirar","nombre":"Retirar solicitud","actor":"solicitante","desde":"observada","hasta":"cancelada"},{"id":"denegar","nombre":"Rechazar solicitud","actor":"jefatura","desde":"solicitada","hasta":"rechazada"},{"id":"certificar","nombre":"Certificar disponibilidad","actor":"presupuesto","desde":"presupuesto","hasta":"modalidad"},{"id":"sinfondos","nombre":"Rechazar por falta de fondos","actor":"presupuesto","desde":"presupuesto","hasta":"rechazada"},{"id":"directa","nombre":"Adjudicar compra directa","actor":"compras","desde":"modalidad","hasta":"adjudicada"},{"id":"competitiva","nombre":"Enviar a revisión jurídica","actor":"compras","desde":"modalidad","hasta":"juridica"},{"id":"cancelar","nombre":"Cancelar trámite","actor":"compras","desde":"modalidad","hasta":"cancelada"},{"id":"dictamen","nombre":"Emitir dictamen favorable","actor":"juridico","desde":"juridica","hasta":"comite"},{"id":"devolver","nombre":"Devolver a compras","actor":"juridico","desde":"juridica","hasta":"modalidad"},{"id":"objecion","nombre":"Rechazar por objeción jurídica","actor":"juridico","desde":"juridica","hasta":"rechazada"},{"id":"adjudicar","nombre":"Adjudicar por comité","actor":"comite","desde":"comite","hasta":"adjudicada"},{"id":"desierta","nombre":"Declarar proceso desierto","actor":"comite","desde":"comite","hasta":"cancelada"},{"id":"emitir","nombre":"Emitir orden de compra","actor":"compras","desde":"adjudicada","hasta":"ordenada"},{"id":"recibir","nombre":"Confirmar recepción conforme","actor":"bodega","desde":"ordenada","hasta":"recibida"},{"id":"incidencia","nombre":"Registrar recepción no conforme","actor":"bodega","desde":"ordenada","hasta":"incidencia"},{"id":"subsanar","nombre":"Registrar subsanación del proveedor","actor":"compras","desde":"incidencia","hasta":"ordenada"},{"id":"anular","nombre":"Anular orden","actor":"compras","desde":"incidencia","hasta":"cancelada"},{"id":"enviarcontable","nombre":"Enviar expediente a contabilidad","actor":"compras","desde":"recibida","hasta":"contabilidad"},{"id":"contabilizar","nombre":"Autorizar contabilización","actor":"contabilidad","desde":"contabilidad","hasta":"pago"},{"id":"revisar","nombre":"Devolver expediente","actor":"contabilidad","desde":"contabilidad","hasta":"recibida"},{"id":"pagar","nombre":"Registrar pago","actor":"tesoreria","desde":"pago","hasta":"pagada"},{"id":"cerrar","nombre":"Cerrar expediente","actor":"compras","desde":"pagada","hasta":"cerrada"}],"validadores":[{"id":"MontoValido","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"monto","acceso":"value","operador":">=","valor":1},{"campo":"monto","acceso":"value","operador":"\u003c=","conector":"and","valor":250000}],"fuente":"context Compra inv MontoValido: self.monto >= 1 and self.monto \u003c= 250000"},{"id":"CantidadValida","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"cantidad","acceso":"value","operador":">=","valor":1},{"campo":"cantidad","acceso":"value","operador":"\u003c=","conector":"and","valor":10000}],"fuente":"context Compra inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 10000"},{"id":"PlazoValido","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"plazo","acceso":"value","operador":">=","valor":1},{"campo":"plazo","acceso":"value","operador":"\u003c=","conector":"and","valor":180}],"fuente":"context Compra inv PlazoValido: self.plazo >= 1 and self.plazo \u003c= 180"},{"id":"CotizacionesValidas","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"cotizaciones","acceso":"value","operador":">=","valor":0},{"campo":"cotizaciones","acceso":"value","operador":"\u003c=","conector":"and","valor":30}],"fuente":"context Compra inv CotizacionesValidas: self.cotizaciones >= 0 and self.cotizaciones \u003c= 30"},{"id":"ReferenciaValida","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"referencia","acceso":"size","operador":">=","valor":4}],"fuente":"context Compra inv ReferenciaValida: self.referencia.size() >= 4"},{"id":"JustificacionSuficiente","clase":"Compra","tipo":"pre","operacion":"avalar","expresion":[{"campo":"justificacion","acceso":"size","operador":">=","valor":20}],"fuente":"context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() >= 20"},{"id":"PartidaIdentificada","clase":"Compra","tipo":"pre","operacion":"certificar","expresion":[{"campo":"partida","acceso":"size","operador":">=","valor":4}],"fuente":"context Compra::certificar() pre PartidaIdentificada: self.partida.size() >= 4"},{"id":"MontoCompraDirecta","clase":"Compra","tipo":"pre","operacion":"directa","expresion":[{"campo":"monto","acceso":"value","operador":"\u003c","valor":10000},{"campo":"cotizaciones","acceso":"value","operador":">=","conector":"and","valor":1}],"fuente":"context Compra::directa() pre MontoCompraDirecta: self.monto \u003c 10000 and self.cotizaciones >= 1"},{"id":"UmbralCompetitivo","clase":"Compra","tipo":"pre","operacion":"competitiva","expresion":[{"campo":"monto","acceso":"value","operador":">=","valor":10000},{"campo":"cotizaciones","acceso":"value","operador":">=","conector":"and","valor":3}],"fuente":"context Compra::competitiva() pre UmbralCompetitivo: self.monto >= 10000 and self.cotizaciones >= 3"},{"id":"CotizacionesComite","clase":"Compra","tipo":"pre","operacion":"adjudicar","expresion":[{"campo":"cotizaciones","acceso":"value","operador":">=","valor":3}],"fuente":"context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones >= 3"},{"id":"ProveedorIdentificado","clase":"Compra","tipo":"pre","operacion":"emitir","expresion":[{"campo":"proveedor","acceso":"size","operador":">=","valor":3}],"fuente":"context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() >= 3"},{"id":"ReferenciaContable","clase":"Compra","tipo":"pre","operacion":"contabilizar","expresion":[{"campo":"referencia","acceso":"size","operador":">=","valor":6}],"fuente":"context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() >= 6"}]};
 const sqlSchemaDdl = "-- Esquema Relacional SQL (PSM) generado automáticamente por MDA Studio\n-- Aplicación: Compras institucionales (compras-institucionales)\n-- Plataforma destino: HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL\n\n-- Tabla principal de casos de proceso para Compra\nCREATE TABLE IF NOT EXISTS compra (\n  id VARCHAR(64) PRIMARY KEY NOT NULL,\n  estado_actual VARCHAR(48) NOT NULL DEFAULT 'solicitada',\n  referencia VARCHAR(300) NOT NULL,\n  unidad VARCHAR(300) NOT NULL,\n  objeto VARCHAR(300) NOT NULL,\n  justificacion VARCHAR(300) NOT NULL,\n  monto INTEGER NOT NULL,\n  cantidad INTEGER NOT NULL,\n  cotizaciones INTEGER NOT NULL,\n  plazo INTEGER NOT NULL,\n  proveedor VARCHAR(300) NULL,\n  partida VARCHAR(300) NOT NULL,\n  prioridad VARCHAR(64) CHECK (prioridad IN ('normal', 'urgente', 'critica')),\n  fecha_necesaria DATE NULL,\n  documentacion BOOLEAN NULL,\n  CONSTRAINT chk_compra_estado CHECK (estado_actual IN ('solicitada', 'observada', 'presupuesto', 'modalidad', 'juridica', 'comite', 'adjudicada', 'ordenada', 'incidencia', 'recibida', 'contabilidad', 'pago', 'pagada', 'cerrada', 'rechazada', 'cancelada')),\n  CONSTRAINT chk_montovalido CHECK (monto >= 1 AND monto \u003c= 250000),\n  CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad \u003c= 10000),\n  CONSTRAINT chk_plazovalido CHECK (plazo >= 1 AND plazo \u003c= 180),\n  CONSTRAINT chk_cotizacionesvalidas CHECK (cotizaciones >= 0 AND cotizaciones \u003c= 30),\n  CONSTRAINT chk_referenciavalida CHECK (CHAR_LENGTH(referencia) >= 4)\n);\n\n-- Bitácora inmutable de auditoría de transiciones por rol\nCREATE TABLE IF NOT EXISTS compra_historial (\n  id_evento INTEGER PRIMARY KEY AUTOINCREMENT,\n  caso_id VARCHAR(64) NOT NULL REFERENCES compra(id) ON DELETE CASCADE,\n  accion VARCHAR(120) NOT NULL,\n  rol_actor VARCHAR(64) NOT NULL,\n  fecha_hora TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n);\n";
 const validators = {
   "MontoValido": (values) => ((values["monto"] != null && values["monto"] >= 1) && (values["monto"] != null && values["monto"] <= 250000)),
@@ -197,6 +207,8 @@ const catalogValidators = {};
   let durable = true;
   let fileHandle = null;
   let idbDatabase = null;
+  let hasLocalSnapshot = false;
+  let pendingFileWrite = Promise.resolve();
 
   function filterValidRecords(list) {
     if (!Array.isArray(list)) return [];
@@ -205,7 +217,7 @@ const catalogValidators = {};
   }
 
   function applyStoredPayload(stored) {
-    if (!stored) return;
+    if (!stored) return false;
     if (link && Array.isArray(stored.records) && Array.isArray(stored.products) && Array.isArray(stored.movements)) {
       products = stored.products;
       movements = stored.movements;
@@ -214,12 +226,13 @@ const catalogValidators = {};
       records = filterValidRecords(stored.records);
     } else if (Array.isArray(stored)) {
       records = filterValidRecords(stored);
-    }
+    } else return false;
+    return true;
   }
 
   try {
     const stored = JSON.parse(localStorage.getItem(model.almacen.clave) ?? 'null');
-    applyStoredPayload(stored);
+    hasLocalSnapshot = applyStoredPayload(stored);
   } catch {
     durable = false;
   }
@@ -235,31 +248,21 @@ const catalogValidators = {};
     };
   }
 
-  function updateDbStatus(extra = '') {
+  function updateDbStatus() {
     const badge = $('#db-badge');
     const text = $('#db-status-text');
-    if (!badge || !text) return;
-    const countText = crud
-      ? records.length + ' registros'
-      : records.length + ' casos' + (link ? ' · ' + products.length + ' productos · ' + movements.length + ' movimientos' : '');
-    if (fileHandle) {
-      badge.textContent = 'Archivo BD conectado: ' + fileHandle.name;
-      badge.dataset.file = 'true';
-      text.textContent = 'Sincronización automática en disco + IndexedDB (' + countText + ').' + extra;
-    } else if (idbDatabase) {
-      badge.textContent = 'BD IndexedDB activa';
-      badge.dataset.file = 'false';
-      text.textContent = 'Almacén transaccional IndexedDB (' + countText + ').' + extra;
-    } else {
-      badge.textContent = durable ? 'Almacén Local' : 'Memoria de sesión';
-      badge.dataset.file = 'false';
-      text.textContent = 'Persistencia en navegador (' + countText + ').' + extra;
-    }
+    const count = crud ? records.length + ' registros' :
+      records.length + ' solicitudes' + (link ? ' · ' + products.length + ' artículos · ' + movements.length + ' movimientos' : '');
+    const mode = idbDatabase ? 'Guardado en el navegador (IndexedDB)' :
+      durable ? 'Guardado en el navegador' : 'Sesión temporal';
+    badge.textContent = fileHandle ? 'Archivo vinculado · ' + fileHandle.name : mode;
+    text.textContent = mode + ' · ' + count + '.';
+    if (fileHandle) text.textContent += ' Los cambios también se escriben en «' + fileHandle.name + '» durante esta sesión.';
   }
 
   function initIndexedDb() {
-    if (!globalThis.indexedDB) return;
     try {
+      if (!globalThis.indexedDB) return;
       const request = indexedDB.open('mda_studio_runtime_db', 1);
       request.onupgradeneeded = event => {
         const db = event.target.result;
@@ -273,10 +276,9 @@ const catalogValidators = {};
         const store = tx.objectStore('models_data');
         const getReq = store.get(model.almacen.clave);
         getReq.onsuccess = () => {
-          if (getReq.result?.payload && !records.length && !products.length) {
-            applyStoredPayload(getReq.result.payload);
+          if (!hasLocalSnapshot && applyStoredPayload(getReq.result?.payload)) {
             refreshCurrentView();
-          } else if (records.length || products.length) {
+          } else if (hasLocalSnapshot || records.length || products.length) {
             writeIndexedDb(currentPayload());
           }
           updateDbStatus();
@@ -297,16 +299,21 @@ const catalogValidators = {};
     }
   }
 
-  async function syncFileHandle(payload) {
-    if (!fileHandle) return;
-    try {
-      const writable = await fileHandle.createWritable();
-      await writable.write(JSON.stringify(payload, null, 2) + '\n');
-      await writable.close();
-      updateDbStatus(' Guardado en archivo.');
-    } catch {
-      notify('No se pudo escribir automáticamente en el archivo conectado.', true);
-    }
+  function syncFileHandle(payload) {
+    const handle = fileHandle;
+    if (!handle) return pendingFileWrite;
+    pendingFileWrite = pendingFileWrite.then(async () => {
+      try {
+        const writable = await handle.createWritable();
+        await writable.write(JSON.stringify(payload, null, 2) + '\n');
+        await writable.close();
+      } catch {
+        if (fileHandle === handle) fileHandle = null;
+        updateDbStatus();
+        notify('No se pudo escribir en el archivo vinculado.', true);
+      }
+    });
+    return pendingFileWrite;
   }
 
   function element(tag, label, className) {
@@ -324,6 +331,7 @@ const catalogValidators = {};
 
   function persist(next, nextProducts = products, nextMovements = movements) {
     const payload = currentPayload(next, nextProducts, nextMovements);
+    hasLocalSnapshot = true;
     if (durable) {
       try {
         localStorage.setItem(model.almacen.clave, JSON.stringify(link ? { records: next, products: nextProducts, movements: nextMovements } : next));
@@ -337,7 +345,7 @@ const catalogValidators = {};
     writeIndexedDb(payload);
     syncFileHandle(payload);
     updateDbStatus();
-    return fileHandle ? ' Sincronizado en ' + fileHandle.name + '.' : durable ? '' : ' Los cambios se conservan en esta pestaña.';
+    return durable || idbDatabase ? '' : ' Los cambios se conservan en esta pestaña.';
   }
 
   function sqlLiteral(val) {
@@ -784,22 +792,31 @@ const catalogValidators = {};
     if (durable) notify('');
   }
 
-  $('#db-connect-file').onclick = async () => {
-    if (typeof window.showSaveFilePicker === 'function') {
-      try {
-        fileHandle = await window.showSaveFilePicker({
-          suggestedName: model.id + '.db.json',
-          types: [{ description: 'Base de datos JSON MDA', accept: { 'application/json': ['.json'] } }],
-        });
-        await syncFileHandle(currentPayload());
-        notify('Archivo de base de datos «' + fileHandle.name + '» conectado en vivo.');
-        return;
-      } catch (err) {
-        if (err?.name === 'AbortError') return;
+  const dataDialog = $('#db-dialog');
+  $('#open-data-tools').onclick = () => {
+    $('#db-inspect-btn').open = false;
+    dataDialog.showModal();
+  };
+  const connectFile = $('#db-connect-file');
+  connectFile.hidden = window.top !== window || typeof window.showSaveFilePicker !== 'function';
+  connectFile.onclick = async () => {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: model.id + '.db.json',
+        types: [{ description: 'Copia de datos JSON', accept: { 'application/json': ['.json'] } }],
+      });
+      fileHandle = handle;
+      dataDialog.close();
+      await syncFileHandle(currentPayload());
+      if (fileHandle === handle) {
+        updateDbStatus();
+        notify('Copia vinculada a «' + handle.name + '».');
       }
+    } catch (error) {
+      if (error?.name === 'AbortError') return;
+      dataDialog.close();
+      notify('El navegador no pudo vincular el archivo. Puedes descargar una copia JSON.', true);
     }
-    downloadFile(JSON.stringify(currentPayload(), null, 2) + '\n', model.id + '.db.json', 'application/json');
-    notify('Base de datos descargada como ' + model.id + '.db.json (abre la app en una pestaña nueva para conexión directa en disco).');
   };
 
   $('#db-import-btn').onclick = () => $('#db-import-input').click();
@@ -808,13 +825,18 @@ const catalogValidators = {};
     if (!file) return;
     try {
       const parsed = JSON.parse(await file.text());
-      applyStoredPayload(parsed);
+      if (!parsed || (parsed.modelId && parsed.modelId !== model.id) ||
+          (link && (!Array.isArray(parsed.records) || !Array.isArray(parsed.products) || !Array.isArray(parsed.movements))) ||
+          !applyStoredPayload(parsed)) {
+        throw new Error('Copia incompatible');
+      }
       persist(records, products, movements);
       refreshCurrentView();
-      notify('Base de datos importada desde «' + file.name + '».');
+      notify('Datos restaurados desde «' + file.name + '».');
     } catch {
-      notify('El archivo seleccionado no es una base de datos JSON válida.', true);
+      notify('El archivo seleccionado no contiene una copia JSON válida para esta aplicación.', true);
     } finally {
+      dataDialog.close();
       event.target.value = '';
     }
   };
@@ -829,12 +851,10 @@ const catalogValidators = {};
     notify('Volcado SQL DDL + INSERT guardado (' + model.id + '.datos.sql).');
   };
 
-  $('#db-inspect-btn').onclick = () => {
-    $('#db-dialog-subtitle').textContent = 'Esquema relacional DDL y sentencias INSERT en tiempo real para ' + model.nombre;
-    $('#db-dialog-sql').textContent = generateSqlDump();
-    $('#db-dialog').showModal();
+  $('#db-inspect-btn').ontoggle = event => {
+    if (event.currentTarget.open) $('#db-dialog-sql').textContent = generateSqlDump();
   };
-  $('#db-dialog-close').onclick = () => $('#db-dialog').close();
+  $('#db-dialog-close').onclick = () => dataDialog.close();
 
   $('#app-title').textContent = model.nombre;
   root.dataset.presentation = board ? 'tablero' : 'bandeja';
@@ -843,7 +863,6 @@ const catalogValidators = {};
   document.title = model.nombre;
   $('#app-description').textContent = model.objetivo;
   if (!link && !crud) renderForm($('#app-form'));
-  if (!durable) notify('El almacenamiento local no está disponible. Los cambios se conservan en esta pestaña.');
   if (crud || link) {
     for (const name of [...catalog.campos.map(field => field.nombre), 'Acciones']) {
       const cell = element('th', name);

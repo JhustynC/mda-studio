@@ -9,21 +9,21 @@
     "patronUi": "Tablero Kanban por Estado (State-Lane Board)",
     "disposicion": "Grid horizontal de carriles agrupados por cada estado de la máquina de estados (16 columnas) + panel de formulario e inspector.",
     "contenedores": [
-      "Cabecera con selector de Rol RBAC (Solicitante, Jefatura, Presupuesto, Compras, Jurídico, Comité, Bodega, Contabilidad, Tesorería)",
+      "Cabecera con selector de rol de demostración (Solicitante, Jefatura, Presupuesto, Compras, Jurídico, Comité, Bodega, Contabilidad, Tesorería)",
       "Tablero Kanban con 16 carriles de estado: Revisión de jefatura | Ampliación pendiente | Control de presupuesto | Selección de modalidad | Revisión jurídica | Evaluación del comité | Adjudicada | Orden emitida | Incidencia de recepción | Recibida | Revisión contable | Pendiente de pago | Pagada | Cerrada [Final] | Rechazada [Final] | Cancelada [Final]",
       "Formulario de creación para rol inicial (solicitante)",
       "Inspector lateral de caso seleccionado + Botonera de transiciones + Historial",
-      "Barra de Persistencia en Base de Datos (IndexedDB + Archivo .db.json / .sql)"
+      "Gestión de datos y exportación"
     ],
-    "adaptadorDatos": "IndexedDB + Sincronización en vivo con Archivo de Base de Datos (.db.json / .sql) + Fallback localStorage",
-    "seguridad": "Control de acceso basado en roles (RBAC) para 9 actores y 12 validadores OCL compilados a ES2022"
+    "adaptadorDatos": "IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.",
+    "seguridad": "Simulación de roles en cliente para 9 actores y 12 validadores OCL compilados a ES2022"
   },
   "almacen": {
-    "tipo": "IndexedDB + Archivo (.db.json / .sql) + localStorage",
+    "tipo": "IndexedDB + localStorage",
     "clave": "mda.casos.proyecto.example-compras.compras-institucionales"
   },
   "esquemaSql": {
-    "motor": "SQL Estándar (PostgreSQL / SQLite3) + Almacén Transaccional IndexedDB",
+    "motor": "SQLite 3",
     "tablas": [
       {
         "nombre": "compra",

@@ -230,6 +230,66 @@ dialog .project-template{display:flex;align-items:flex-start;gap:10px;border:1px
 .project-template:has(:checked){border-color:var(--sub)}
 .project-template input{flex:none;margin:3px 0 0;accent-color:var(--primary)}
 .project-template small{display:block;margin-top:2px;color:var(--sub);font-size:12px;font-weight:400;line-height:1.4}
+
+.work-card{min-width:0;background:var(--surface)}
+.work-card .section-head{gap:10px 16px}
+#open-stage-resources{margin-left:auto;color:var(--sub)}
+.model-format{gap:4px;padding-bottom:12px}
+#model-format button{border-color:transparent;background:transparent;color:var(--sub);font-weight:650;min-height:36px}
+#model-format button[aria-pressed=true],:root[data-theme="dark"] #model-format button[aria-pressed=true]{color:var(--stage-accent);background:var(--stage-bg);border-color:var(--stage-accent)}
+#model-format button:not([aria-pressed=true]):hover{background:var(--stripe)}
+.stage-panel{min-width:0}
+.stage-scroll{max-height:clamp(290px,52vh,480px);overflow:auto;scrollbar-gutter:stable;min-width:0;padding:1px}
+.stage-scroll:focus-visible,.stage-code:focus-visible{outline:2px solid var(--stage-accent);outline-offset:2px}
+.table-wrap.stage-scroll{border:1px solid var(--line);border-radius:8px;padding:0}
+.stage-table{font:12px system-ui,sans-serif}
+.stage-table thead th{position:sticky;top:0;z-index:1}
+.stage-table .entity-group th{background:var(--stripe);color:var(--ink)}
+.stage-table td code{overflow-wrap:anywhere}
+.stage-relations{margin-top:10px}
+.uml-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));align-items:start;gap:10px}
+.uml-class-card{border:1px solid var(--line);box-shadow:none;min-width:0}
+.uml-class-head{padding:9px 13px;background:var(--stage-bg);color:var(--stage-accent)}
+.uml-class-head h3{font-size:15px;overflow-wrap:anywhere}
+.uml-compartment{border-color:var(--line);padding:9px 13px}
+.uml-compartment summary,.rule-detail summary{cursor:pointer;font-size:13px;font-weight:650;color:var(--ink);overflow-wrap:anywhere}
+.uml-compartment .uml-list{margin-top:6px;padding-left:0;list-style:none}
+.uml-list li+li{border-top:1px solid var(--line)}
+.uml-list code,.uml-list small,.stage-item small,.stage-item strong,.arch-dl dd{overflow-wrap:anywhere}
+.rule-detail code,.rule-detail small{display:block;margin-top:6px}
+.stage-box,.stage-item{background:var(--surface);border-color:var(--line)}
+.stage-box h3,.stage-item strong,.stage-item code{color:var(--ink)}
+#psm-layout{max-height:clamp(290px,47vh,435px);overflow:auto}
+#psm-layout .psm-wireframe{overflow-wrap:anywhere}
+#psm-data .stage-code{max-height:240px}
+.app-launch-bar{margin:0 12px 12px;background:var(--stripe);border-color:var(--line)}
+.app-launch-bar p{margin:0;color:var(--sub);font-size:13px;flex:1 1 270px}
+.app-launch-bar .generate{margin-left:0}
+#stage-resources{width:min(860px,calc(100% - 24px));max-height:calc(100dvh - 24px);padding:0;background:var(--surface)}
+#stage-resources .section-head{gap:8px 15px}
+#stage-resources .section-head h3{margin:0;font-size:15px}
+#stage-exports{padding:0 14px 16px}
+#exports-caption{color:var(--sub);font-size:13px;margin:0 0 8px}
+#stage-resources .deliverables-bar{margin:0;padding:0;background:none;border:0;gap:8px}
+#stage-resources .deliverable-btn{padding:8px 11px;font-size:12px}
+#cim-file-actions{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+#stage-trace{margin:0;border:0;border-top:1px solid var(--line);border-radius:0}
+#stage-trace .table-wrap{max-height:42vh}
+#stage-trace thead th{position:sticky;top:0}
+#stage-trace .trace-controls>div{min-width:0;max-width:100%}
+@media(min-width:801px){#editor:is([data-stage="pim"],[data-stage="psm"]) .work-card{min-height:390px}}
+@media(max-width:530px){#open-stage-resources{margin-left:0}#model-format{padding-inline:10px}#model-format button{padding-inline:9px}#stage-resources .section-head{padding-inline:12px}#stage-trace td{min-width:112px}}
+
+#editor .intro{margin-block:14px}
+#editor .intro h1{font-size:clamp(24px,3.3vw,38px)}
+#editor .pipeline button{min-height:56px;padding-block:9px}
+#editor .stage-navigation{padding-block:8px}
+#editor .stage-context{flex:1 1 auto}
+#presentation-panel{margin:0}
+#pim-file-previews{display:grid;gap:8px;margin-top:12px}
+#pim-file-previews details{padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+#pim-file-previews summary{cursor:pointer;font-size:13px;font-weight:650}
+#pim-file-previews pre{margin-top:8px}
 </style>
 </head>
 <body>
@@ -237,7 +297,6 @@ dialog .project-template{display:flex;align-items:flex-start;gap:10px;border:1px
   <div class="brand"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span>MDA Studio</div>
   <span class="context">Nuevos paradigmas de programación · Flujo CIM → PIM → PSM → M2T</span>
   <div class="top-actions">
-    <button class="open-tab-btn" id="open-new-tab-top" type="button" hidden>Abrir app en pestaña ↗</button>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Tema oscuro" aria-pressed="false" title="Cambiar tema">
       <svg class="theme-moon" viewBox="0 0 24 24" role="presentation" aria-hidden="true"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"/></svg>
       <svg class="theme-sun" viewBox="0 0 24 24" role="presentation" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
@@ -253,7 +312,7 @@ dialog .project-template{display:flex;align-items:flex-start;gap:10px;border:1px
       <a href="#guide-dsl">Estructura del CIM</a>
       <a href="#guide-fields">Tipos de campo</a>
       <a href="#guide-ocl">Reglas OCL</a>
-      <a href="#guide-generation">Entregables y BD</a>
+      <a href="#guide-generation">Archivos y datos</a>
     </nav>
     <article class="guide-article">
       <section id="guide-start" tabindex="-1">
@@ -261,9 +320,9 @@ dialog .project-template{display:flex;align-items:flex-start;gap:10px;border:1px
         <ol>
           <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso básico</strong>.</li>
           <li>En <strong>CIM → Campos y negocio</strong>, usa <strong>+ Añadir campo</strong> directamente en la tabla para agregar atributos sin tocar el JSON, o usa los botones <strong>+ Actor</strong>, <strong>+ Estado</strong>, <strong>+ Transición</strong> y <strong>+ Regla OCL</strong> del panel lateral.</li>
-          <li>Pulsa <strong>Validar y ver PIM</strong> para inspeccionar el modelo lógico independiente de plataforma (clases UML/Ecore, tipos <code>EString</code>/<code>EInt</code>, multiplicidades, firmas de operaciones y archivo <code>.ecore</code>).</li>
-          <li>Sigue con <strong>Ver PSM</strong> para elegir entre <strong>Lista de casos (bandeja)</strong> y <strong>Tablero por estado</strong> viendo cómo cambia la arquitectura visual, los controles HTML5 y el esquema relacional SQL (<code>.sql</code>).</li>
-          <li>Pulsa <strong>Generar aplicación</strong> o <strong>Abrir app en pestaña ↗</strong> para ejecutar la aplicación con persistencia en Base de Datos (IndexedDB) y conexión directa a archivo (<code>.db.json</code> / <code>.sql</code>).</li>
+          <li>Pulsa <strong>Validar y ver PIM</strong>. Comprueba los datos en <strong>Campos y tipos</strong>. Consulta las relaciones en <strong>Clases</strong> y las restricciones en <strong>Reglas OCL</strong>.</li>
+          <li>Sigue con <strong>Ver PSM</strong>. En <strong>Interfaz</strong> elige una lista o un tablero. <strong>Mapeo</strong> muestra qué control se genera por campo y <strong>Datos y SQL</strong> reúne el almacenamiento y el esquema.</li>
+          <li>Pulsa <strong>Generar aplicación</strong> para probar el flujo. Usa <strong>Abrir en otra pestaña</strong> cuando quieras conservar los cambios en el navegador.</li>
         </ol>
         <button id="guide-new-project" class="generate" type="button">Crear un proyecto</button>
       </section>
@@ -298,12 +357,13 @@ context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8
 context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self.documentado = true</code></pre>
       </section>
       <section id="guide-generation" tabindex="-1">
-        <h2>Entregables por etapa y Base de Datos</h2>
+        <h2>Archivos y datos</h2>
+        <p>Abre <strong>Archivos y trazabilidad</strong> desde cualquier etapa para descargar lo generado o seguir cómo se transforma un elemento del CIM.</p>
         <ol>
           <li><strong>CIM:</strong> Descarga el modelo <code>.cim.json</code>, el diagrama vectorial <code>.svg</code> y la especificación <code>.cim.mmd</code> (Mermaid).</li>
           <li><strong>PIM:</strong> Descarga el metamodelo estándar Eclipse EMF <code>.pim.ecore</code> (XMI), el archivo formal <code>.pim.ocl</code> y <code>.pim.json</code>.</li>
           <li><strong>PSM:</strong> Descarga el esquema relacional <code>.psm.sql</code> (con tablas y restricciones <code>CHECK</code> derivadas de OCL), <code>.psm.schema.json</code> y <code>.psm.json</code>.</li>
-          <li><strong>Aplicación (M2T):</strong> Ábrela en una pestaña dedicada, conéctala a un archivo local <code>.db.json</code> o exporta/importa volcados <code>.sql</code> y <code>.db.json</code> respaldados en <code>IndexedDB</code>.</li>
+          <li><strong>Aplicación.</strong> Desde <strong>Gestionar datos</strong>, guarda o restaura una copia <code>.db.json</code> y descarga un volcado SQL para SQLite. El guardado habitual usa el almacenamiento del navegador.</li>
         </ol>
       </section>
     </article>
@@ -384,20 +444,20 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
   </form>
 </dialog>
 <main id="editor" hidden>
-  <div class="editor-nav"><button class="back-link" id="back-projects" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6m-6-6h16"/></svg>Volver a proyectos</button><span id="project-caption"></span><p id="project-status" class="save-status" role="status"></p></div>
-  <div class="intro"><div><p class="eyebrow">FLUJO DIRIGIDO POR MODELOS (MDA)</p><h1 id="title">Préstamos de laboratorio</h1><p id="description"></p></div>
+  <div class="editor-nav"><button class="back-link" id="back-projects" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6m-6-6h16"/></svg>Volver a proyectos</button><p id="project-status" class="save-status" role="status"></p></div>
+  <div class="intro"><div><h1 id="title">Préstamos de laboratorio</h1><p id="description"></p></div>
   <span id="build-status" class="status" role="status"></span></div>
   <div class="pipeline" role="group" aria-label="Etapas del flujo MDA">
-    <button type="button" data-view="model" aria-pressed="true"><b><span class="step-symbol" aria-hidden="true">◇</span>01 · CIM</b><small>Dominio, BPM y Reglas (.cim / .svg)</small></button>
+    <button type="button" data-view="model" aria-pressed="true"><b><span class="step-symbol" aria-hidden="true">◇</span>01 · CIM</b><small>Modelo de negocio</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="pim" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▤</span>02 · PIM</b><small>Clases UML, Ecore y AST (.ecore / .ocl)</small></button>
+    <button type="button" data-view="pim" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▤</span>02 · PIM</b><small>Modelo lógico</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="psm" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▥</span>03 · PSM</b><small>Arquitectura Web y DDL (.sql / .schema)</small></button>
+    <button type="button" data-view="psm" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▥</span>03 · PSM</b><small>Modelo web</small></button>
     <span class="arrow" aria-hidden="true">M2T →</span>
-    <button type="button" data-view="app" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">↗</span>04 · Aplicación</b><small>Ejecutable + Base de Datos (.html / .db)</small></button>
+    <button type="button" data-view="app" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">↗</span>04 · Aplicación</b><small>Prueba del sistema</small></button>
   </div>
   <nav class="stage-navigation" aria-label="Navegación entre etapas">
-    <div class="stage-context"><p id="stage-progress"></p><p id="stage-description"></p></div>
+    <div class="stage-context"><p id="stage-progress"></p></div>
     <div class="stage-actions">
       <button id="stage-back" type="button" hidden><span aria-hidden="true">←</span><span id="stage-back-label"></span></button>
       <button class="generate" id="stage-next" type="button"><span id="stage-next-label"></span><span aria-hidden="true">→</span></button>
@@ -407,41 +467,15 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
     <section class="work-card">
       <div class="section-head">
         <div><h2 id="view-title" tabindex="-1">Modelo de negocio (CIM)</h2><p id="view-subtitle"></p></div>
-        <div class="tools">
-          <button id="reset" type="button">Restaurar ejemplo</button>
-          <button id="load-button" type="button">Importar CIM (.json)</button>
-          <input id="load" type="file" accept=".json,application/json" hidden>
-          <button id="download" type="button" hidden>Descargar principal</button>
-        </div>
-      </div>
-      <div id="deliverables-bar" class="deliverables-bar" aria-label="Entregables de la etapa actual"></div>
-      <fieldset id="presentation-panel" class="presentation-panel" aria-describedby="presentation-help" hidden>
-        <legend>¿Cómo se mostrarán los casos en la plataforma web (PSM)?</legend>
-        <p id="presentation-help">Elige cómo organizar los mismos casos. El wireframe de arquitectura PSM y la aplicación generada se actualizan automáticamente.</p>
-        <div class="presentation-options">
-          <label class="presentation-option">
-            <span class="presentation-option-heading"><input type="radio" name="presentation" value="bandeja" checked><strong>Lista de casos <small>(bandeja maestro-detalle)</small></strong></span>
-            <span class="layout-example list-example" aria-hidden="true"><span><b>Préstamo de Ana</b><i>En revisión</i></span><span><b>Préstamo de Luis</b><i>Aprobado</i></span></span>
-            <span class="presentation-description">Todos los casos en una sola lista junto a su estado e inspector lateral. Útil para revisar uno a la vez.</span>
-          </label>
-          <label class="presentation-option">
-            <span class="presentation-option-heading"><input type="radio" name="presentation" value="tablero"><strong>Tablero Kanban por estado</strong></span>
-            <span class="layout-example board-example" aria-hidden="true"><span><i>En revisión</i><b>Préstamo de Ana</b></span><span><i>Aprobado</i><b>Préstamo de Luis</b></span></span>
-            <span class="presentation-description">Los casos se agrupan en columnas por cada estado del proceso. Útil para visualizar el flujo completo de un vistazo.</span>
-          </label>
-        </div>
-        <p id="presentation-summary" class="presentation-summary"></p>
-        <p id="presentation-reset" hidden>Cambiar la vista reiniciará la vista previa la próxima vez que abras la etapa Aplicación.</p>
-      </fieldset>
-      <div id="presentation-current" class="presentation-current" hidden>
-        <div><strong id="presentation-current-name"></strong><p id="presentation-current-description"></p></div>
-        <button id="change-presentation" type="button">Cambiar vista en PSM</button>
+        <button id="open-stage-resources" type="button" aria-haspopup="dialog">Archivos y trazabilidad</button>
       </div>
       <div id="error" class="error" role="alert" tabindex="-1" hidden></div>
       <div id="model-format" class="model-format" role="group" aria-label="Vista del modelo">
-        <button id="show-fields" type="button" aria-pressed="true">Vista estructurada</button>
-        <button id="show-diagram" type="button" aria-pressed="false">Diagrama interactivo</button>
-        <button id="show-json" type="button" aria-pressed="false">Editar JSON</button>
+        <button id="show-fields" data-format="fields" type="button" aria-pressed="true">Campos</button>
+        <button id="show-diagram" data-format="diagram" type="button" aria-pressed="false">Diagrama</button>
+        <button id="show-secondary" data-format="secondary" type="button" aria-pressed="false" hidden></button>
+        <button id="show-tertiary" data-format="tertiary" type="button" aria-pressed="false" hidden></button>
+        <button id="show-json" data-format="json" type="button" aria-pressed="false">Editar JSON</button>
       </div>
 
       <div id="fields-panel">
@@ -449,8 +483,6 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
           <p id="fields-caption"></p>
           <div class="tools" id="cim-quick-actions">
             <button id="add-field-btn" type="button" class="primary-subtle">+ Añadir campo</button>
-            <button id="add-transition-btn" type="button">+ Añadir transición</button>
-            <button id="add-ocl-btn" type="button">+ Añadir regla OCL</button>
           </div>
         </div>
         <div class="table-wrap" id="fields-table">
@@ -471,71 +503,45 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
       </div>
 
       <section id="pim-panel" class="stage-panel" aria-label="Modelo Independiente de la Plataforma (PIM)" hidden>
-        <div class="stage-explainer">
-          <strong>Transformación M2M (CIM → PIM):</strong> El compilador abstrae los datos del negocio en una <strong>Clase de Dominio Ecore/UML</strong> independiente de tecnología, sintetizando atributos de identidad y ciclo de vida (<code>id: EString «PK»</code>, <code>estado-actual: EEnum</code>, <code>historial: EList</code>), tipado formal EMF, firmas de operaciones con pre/postcondiciones y el árbol sintáctico (AST) de reglas OCL.
+        <div id="pim-fields" class="table-wrap stage-scroll" tabindex="0" role="region" aria-label="Campos lógicos">
+          <table id="pim-fields-table" class="stage-table"><thead><tr><th scope="col">Campo</th><th scope="col">Identificador</th><th scope="col">Tipo lógico</th><th scope="col">Multiplicidad</th></tr></thead></table>
         </div>
-        <div id="pim-uml-grid" class="uml-grid"></div>
-        <div class="pim-subgrid">
-          <div class="stage-box">
-            <h3>Relaciones y Asociaciones UML</h3>
-            <div id="pim-relations-list" class="stage-list"></div>
-          </div>
-          <div class="stage-box">
-            <h3>Árbol Sintáctico de Reglas OCL (AST Validado)</h3>
-            <div id="pim-ocl-ast" class="stage-list"></div>
-          </div>
+        <div id="pim-classes" class="stage-scroll" tabindex="0" role="region" aria-label="Clases y relaciones" hidden>
+          <div id="pim-uml-grid" class="uml-grid"></div>
+          <section class="stage-box stage-relations"><h3>Relaciones</h3><div id="pim-relations-list" class="stage-list"></div></section>
         </div>
-        <details class="stage-artifact-details">
-          <summary><strong>Inspeccionar entregable estándar Eclipse EMF (<code>.pim.ecore</code>) y especificación (<code>.pim.ocl</code>)</strong></summary>
-          <div class="artifact-code-grid">
-            <div>
-              <div class="artifact-code-head"><span id="pim-ecore-name">modelo.pim.ecore</span><button type="button" id="btn-dl-ecore">Descargar .ecore</button></div>
-              <pre id="pim-ecore-code" class="stage-code"></pre>
-            </div>
-            <div>
-              <div class="artifact-code-head"><span id="pim-ocl-name">modelo.pim.ocl</span><button type="button" id="btn-dl-ocl">Descargar .ocl</button></div>
-              <pre id="pim-ocl-code" class="stage-code"></pre>
-            </div>
-          </div>
-        </details>
+        <div id="pim-rules" class="stage-scroll" tabindex="0" role="region" aria-label="Reglas OCL" hidden>
+          <div id="pim-ocl-ast" class="stage-list"></div>
+        </div>
       </section>
 
       <section id="psm-panel" class="stage-panel" aria-label="Modelo Específico de la Plataforma (PSM)" hidden>
-        <div class="stage-explainer">
-          <strong>Transformación M2M (PIM → PSM):</strong> Aterriza el modelo lógico sobre la arquitectura tecnológica destino: <strong>Interfaz Web HTML5/CSS Grid</strong> (conmutable en vivo entre <em>Bandeja Maestro-Detalle</em> y <em>Tablero Kanban por Estado</em>), <strong>Validadores JS ES2022</strong>, <strong>Persistencia Transaccional (IndexedDB + Archivo local)</strong> y <strong>Esquema Relacional SQL DDL</strong> con restricciones <code>CHECK</code> derivadas de OCL.
+        <fieldset id="presentation-panel" class="presentation-panel" hidden>
+          <legend>Presentación de los casos</legend>
+          <div class="presentation-options">
+            <label class="presentation-option">
+              <span class="presentation-option-heading"><input type="radio" name="presentation" value="bandeja" checked><strong>Lista de casos</strong></span>
+              <span class="presentation-description">Revisa cada caso y su detalle en una misma pantalla.</span>
+            </label>
+            <label class="presentation-option">
+              <span class="presentation-option-heading"><input type="radio" name="presentation" value="tablero"><strong>Tablero por estado</strong></span>
+              <span class="presentation-description">Consulta qué casos están en cada estado.</span>
+            </label>
+          </div>
+          <p id="presentation-reset" hidden>Cambiar la vista reiniciará la vista previa la próxima vez que abras la etapa Aplicación.</p>
+        </fieldset>
+        <div id="psm-layout" class="stage-box">
+          <h3 id="psm-wireframe-title">Distribución de la interfaz</h3>
+          <div id="psm-wireframe" class="psm-wireframe"></div>
         </div>
-        <div class="psm-arch-grid">
-          <div class="stage-box">
-            <h3>Especificación de Arquitectura de Plataforma</h3>
-            <dl id="psm-arch-dl" class="arch-dl"></dl>
-          </div>
-          <div class="stage-box">
-            <h3 id="psm-wireframe-title">Disposición Visual Generada (Wireframe en vivo)</h3>
-            <div id="psm-wireframe" class="psm-wireframe"></div>
-          </div>
+        <div id="psm-controls" class="table-wrap stage-scroll" tabindex="0" role="region" aria-label="Mapeo de campos y controles" hidden>
+          <table class="stage-table"><thead><tr><th scope="col">Campo lógico</th><th scope="col">Control web</th><th scope="col">Validación web</th><th scope="col">Columna SQL</th></tr></thead>
+            <tbody id="psm-controls-rows"></tbody>
+          </table>
         </div>
-        <div class="stage-box">
-          <h3>Mapeo de Controles Web HTML5, Restricciones DOM y Columnas SQL</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Propiedad PIM</th>
-                  <th scope="col">Componente HTML5</th>
-                  <th scope="col">Atributos DOM derivados (OCL / Metamodelo)</th>
-                  <th scope="col">Columna Relacional SQL</th>
-                </tr>
-              </thead>
-              <tbody id="psm-controls-rows"></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="stage-box">
-          <div class="artifact-code-head">
-            <h3>Esquema Relacional de Base de Datos Generado (<code>.psm.sql</code>)</h3>
-            <button type="button" id="btn-dl-sql">Descargar esquema .sql</button>
-          </div>
-          <pre id="psm-sql-code" class="stage-code"></pre>
+        <div id="psm-data" class="stage-scroll" tabindex="0" role="region" aria-label="Almacenamiento y esquema SQL" hidden>
+          <section class="stage-box"><h3>Destino web</h3><dl id="psm-arch-dl" class="arch-dl"></dl></section>
+          <section class="stage-box stage-relations"><h3>Esquema SQL para SQLite</h3><pre id="psm-sql-code" class="stage-code" tabindex="0" aria-label="Código SQL"></pre></section>
         </div>
       </section>
 
@@ -582,14 +588,8 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
 
       <div id="app-panel" hidden>
         <div class="app-launch-bar">
-          <div>
-            <strong>Ejecución M2T de la Aplicación Generada</strong>
-            <p>La aplicación incluye conexión a Base de Datos <code>IndexedDB</code> y sincronización con archivo físico <code>.db.json</code> / exportación <code>.sql</code>. Ábrela en una pestaña nueva para trabajar a pantalla completa.</p>
-          </div>
-          <div class="tools">
-            <button id="open-app-tab" type="button" class="generate">Abrir en pestaña nueva ↗</button>
-            <button id="download-app-html" type="button">Descargar App (.html)</button>
-          </div>
+          <p>Prueba el flujo en la vista previa. Abre la aplicación en otra pestaña para guardar cambios en el navegador.</p>
+          <button id="open-app-tab" type="button" class="generate">Abrir en otra pestaña ↗</button>
         </div>
         <iframe id="preview" title="Aplicación generada" sandbox="allow-scripts allow-forms allow-modals allow-downloads"></iframe>
       </div>
@@ -597,7 +597,7 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
 
     <aside id="model-summary">
       <section id="integration-card" class="side-card" hidden><h2>Inventario compartido</h2><p id="integration-link" class="flow-start"></p><ul id="integration-movements"></ul></section>
-      <details class="side-card" id="flow-card" open>
+      <details class="side-card" id="flow-card">
         <summary><strong>Proceso de negocio</strong><span id="flow-count"></span></summary>
         <div class="side-actions">
           <button type="button" id="side-add-actor">+ Actor</button>
@@ -610,7 +610,7 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
         <select id="flow-role"></select>
         <div id="flow" class="side-list" tabindex="0" aria-label="Transiciones"></div>
       </details>
-      <details class="side-card" id="rules-card" open>
+      <details class="side-card" id="rules-card">
         <summary><strong>Restricciones OCL</strong><span id="rules-count"></span></summary>
         <div class="side-actions">
           <button type="button" id="side-add-rule">+ Nueva regla OCL (inv / pre / post)</button>
@@ -635,22 +635,42 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
     </form>
   </dialog>
 
-  <section class="trace-card" aria-labelledby="trace-title">
-    <div class="section-head">
-      <div><h2 id="trace-title">Matriz de Trazabilidad MDA</h2><p>Correspondencia formal desde los elementos de negocio (CIM), pasando por Ecore/UML (PIM) y Web/SQL (PSM), hasta el código ejecutable.</p></div>
-      <div class="tools">
-        <button id="trace-download-csv" type="button">Descargar CSV (.csv)</button>
-        <button id="trace-download" type="button">Descargar JSON (.traza.json)</button>
+  <dialog id="stage-resources" aria-labelledby="stage-resources-title">
+    <div class="section-head"><h2 id="stage-resources-title">Archivos y trazabilidad</h2><button id="close-stage-resources" type="button" autofocus>Cerrar</button></div>
+    <div class="model-format" role="group" aria-label="Recursos de la etapa">
+      <button id="show-exports" type="button" aria-pressed="true">Archivos</button>
+      <button id="show-trace" type="button" aria-pressed="false">Trazabilidad</button>
+    </div>
+    <section id="stage-exports" aria-label="Archivos de la etapa">
+      <p id="exports-caption"></p>
+      <div id="deliverables-bar" class="deliverables-bar"></div>
+      <div id="pim-file-previews" hidden>
+        <details><summary>Ver Ecore</summary><pre id="pim-ecore-code" class="stage-code" tabindex="0" aria-label="Código Ecore"></pre></details>
+        <details><summary>Ver OCL</summary><pre id="pim-ocl-code" class="stage-code" tabindex="0" aria-label="Código OCL"></pre></details>
       </div>
-    </div>
-    <div class="trace-controls">
-      <div><label for="trace-search">Buscar en la trazabilidad</label><input id="trace-search" type="search" placeholder="Ej. CantidadValida, EInt, CHECK"></div>
-      <div><label for="trace-kind">Tipo de elemento</label><select id="trace-kind"><option value="">Todos</option><option value="datos">Campos / Atributos</option><option value="transiciones">Transiciones / Operaciones</option><option value="tipo">Operaciones CRUD</option><option value="unicos">Unicidad</option><option value="integracion">Integración</option><option value="ocl">Reglas OCL</option></select></div>
-    </div>
-    <p id="trace-empty" class="trace-empty" hidden></p>
-    <div class="table-wrap" id="trace-table"><table><thead><tr><th>01 · CIM (Negocio)</th><th>02 · PIM (Ecore / UML)</th><th>03 · PSM (Web / SQL)</th><th>04 · Aplicación (M2T)</th></tr></thead><tbody id="trace"></tbody></table></div>
-    <div class="trace-footer"><p id="trace-count" role="status"></p><div class="tools"><button id="trace-prev" type="button">Anterior</button><button id="trace-next" type="button">Siguiente</button></div></div>
-  </section>
+      <div id="cim-file-actions" class="tools">
+        <button id="load-button" type="button">Importar CIM (.json)</button>
+        <input id="load" type="file" accept=".json,application/json" hidden>
+        <button id="reset" type="button">Restaurar ejemplo</button>
+      </div>
+    </section>
+    <section class="trace-card" id="stage-trace" aria-labelledby="trace-title" hidden>
+      <div class="section-head">
+        <div><h3 id="trace-title">Del modelo al código</h3><p>Busca un campo, una transición o una regla para seguir cómo se transforma.</p></div>
+        <div class="tools">
+          <button id="trace-download-csv" type="button">Descargar CSV (.csv)</button>
+          <button id="trace-download" type="button">Descargar JSON (.traza.json)</button>
+        </div>
+      </div>
+      <div class="trace-controls">
+        <div><label for="trace-search">Buscar en la trazabilidad</label><input id="trace-search" type="search" placeholder="Ej. CantidadValida, EInt, CHECK"></div>
+        <div><label for="trace-kind">Tipo de elemento</label><select id="trace-kind"><option value="">Todos</option><option value="datos">Campos / Atributos</option><option value="transiciones">Transiciones / Operaciones</option><option value="tipo">Operaciones CRUD</option><option value="unicos">Unicidad</option><option value="integracion">Integración</option><option value="ocl">Reglas OCL</option></select></div>
+      </div>
+      <p id="trace-empty" class="trace-empty" hidden></p>
+      <div class="table-wrap" id="trace-table"><table><thead><tr><th>01 · CIM (Negocio)</th><th>02 · PIM (Ecore / UML)</th><th>03 · PSM (Web / SQL)</th><th>04 · Aplicación (M2T)</th></tr></thead><tbody id="trace"></tbody></table></div>
+      <div class="trace-footer"><p id="trace-count" role="status"></p><div class="tools"><button id="trace-prev" type="button">Anterior</button><button id="trace-next" type="button">Siguiente</button></div></div>
+    </section>
+  </dialog>
 </main>
 <script>var MdaJsonEditor=(()=>{var Yr=Object.defineProperty;var og=Object.getOwnPropertyDescriptor;var lg=Object.getOwnPropertyNames;var ag=Object.prototype.hasOwnProperty;var hg=(i,e)=>{for(var t in e)Yr(i,t,{get:e[t],enumerable:!0})},cg=(i,e,t,n)=>{if(e&&typeof e=="object"||typeof e=="function")for(let s of lg(e))!ag.call(i,s)&&s!==t&&Yr(i,s,{get:()=>e[s],enumerable:!(n=og(e,s))||n.enumerable});return i};var fg=i=>cg(Yr({},"__esModule",{value:!0}),i);var Tv={};hg(Tv,{createDiagram:()=>rg,createJsonEditor:()=>Ev});var Xr=[],bh=[];(()=>{let i="lc,34,7n,7,7b,19,,,,2,,2,,,20,b,1c,l,g,,2t,7,2,6,2,2,,4,z,,u,r,2j,b,1m,9,9,,o,4,,9,,3,,5,17,3,1n,9,16,o,,x,1i,3,,i,,7,a,2,t,3,1k,,,7,2,2,2,3,9,,a,2,q,,2,3,1k,,,5,4,2,2,3,3,,u,2,3,,b,3,1k,,,8,,3,,3,k,2,m,6,,3,1k,,,7,2,2,2,3,7,3,a,2,u,,1n,5,3,3,,4,9,,14,5,1j,,,7,,3,,4,7,2,b,2,t,3,1k,,,7,,3,,4,7,2,b,2,f,,c,4,1j,2,,7,,3,,4,9,,a,2,t,3,1y,,4,6,,,,8,i,2,1p,,,8,c,8,2q,,,a,b,7,21,2,r,,,,,,4,2,1d,k,,2,5,b,,10,9,,2u,b,,6,n,4,4,3,g,4,d,,,3,6,,f,,jj,3,qa,4,s,3,t,2,u,2,1s,w,9,,19,3,,,39,2,y,,3a,c,4,c,63,5,1l,a,,,,,2,o,2,,1c,1a,2,c,k,5,1b,h,12,9,c,3,u,d,1k,e,1c,k,48,3,,l,4,,6,,2,3,5i,1s,ek,,5f,x,2da,3,3x,,2o,w,fe,6,2x,2,n9w,4,,a,w,2,28,2,7k,,3,,4,,n,5,4,,2b,2,1e,i,q,i,d,,12,8,p,d,18,4,1b,e,10,,1v,e,c,,8,2,1a,,1f,,,3,2,2,5,2,,,15,5,5,2,6k,8,,2,fn4,,kh,g,g,g,a6,2,gt,,6a,,45,5,1ae,3,,2,5,4,14,3,4,,4l,2,fx,4,1t,5,8t,2,25,6,1y,b,1d,4,3e,3,1h,f,15,,2,2,a,4,19,b,7,,1p,3,10,e,g,2,18,,c,3,1c,e,8,4,,2,2k,c,6,,2,,4d,c,l,4,1j,2,,7,2,2,2,3,9,,a,2,2,7,3,5,1v,9,,,2,,,4,,5,,,e,2,2a,i,n,,29,k,6j,7,2,9,r,2,2a,h,2y,d,2t,3,2,a,74,f,6t,6,,2,2,4,,,,2,3x,7,2,7,3,,s,a,14,7,,4,8,,9,b,1a,g,5i,8,5j,8,,8,2a,m,,e,3e,6,3,,,2,,7,,,1u,5,,2,,5,9n,4,9,2,,,1c,7,3,5,n,,44l,,6,f,8ug,i,1xc,5,1n,7,t4,,,1j,7,4,29,,b,2,f57,2,3mp,1a,2,n,f2,5,3,6,8,8,2,7,u,4,44,3,1iz,1j,4,1e,8,,e,,m,5,,f,11s,7,,h,2,7,,2,,5,2s,,4g,7,af,,1p,4,e4,4,72,2,6r,,2,,7,2,5,,d6,7,31,7,240,5".split(",").map(e=>e?parseInt(e,36):1);for(let e=0,t=0;e<i.length;e++)(e%2?bh:Xr).push(t=t+i[e])})();function ug(i){if(i<768)return!1;for(let e=0,t=Xr.length;;){let n=e+t>>1;if(i<Xr[n])t=n;else if(i>=bh[n])e=n+1;else return!0;if(e==t)return!1}}function ph(i){return i>=127462&&i<=127487}var gh=8205;function yh(i,e,t=!0,n=!0){return(t?wh:dg)(i,e,n)}function wh(i,e,t){if(e==i.length)return e;e&&xh(i.charCodeAt(e))&&vh(i.charCodeAt(e-1))&&e--;let n=Gr(i,e);for(e+=mh(n);e<i.length;){let s=Gr(i,e);if(n==gh||s==gh||t&&ug(s))e+=mh(s),n=s;else if(ph(s)){let r=0,o=e-2;for(;o>=0&&ph(Gr(i,o));)r++,o-=2;if(r%2==0)break;e+=2}else break}return e}function dg(i,e,t){for(;e>1;){let n=wh(i,e-2,t);if(n<e)return n;e--}return 0}function Gr(i,e){let t=i.charCodeAt(e);if(!vh(t)||e+1==i.length)return t;let n=i.charCodeAt(e+1);return xh(n)?(t-55296<<10)+(n-56320)+65536:t}function xh(i){return i>=56320&&i<57344}function vh(i){return i>=55296&&i<56320}function mh(i){return i<65536?1:2}var ee=class i{lineAt(e){if(e<0||e>this.length)throw new RangeError(`Invalid position ${e} in document of length ${this.length}`);return this.lineInner(e,!1,1,0)}line(e){if(e<1||e>this.lines)throw new RangeError(`Invalid line number ${e} in ${this.lines}-line document`);return this.lineInner(e,!0,1,0)}replace(e,t,n){[e,t]=Ei(this,e,t);let s=[];return this.decompose(0,e,s,2),n.length&&n.decompose(0,n.length,s,3),this.decompose(t,this.length,s,1),Ai.from(s,this.length-(t-e)+n.length)}append(e){return this.replace(this.length,this.length,e)}slice(e,t=this.length){[e,t]=Ei(this,e,t);let n=[];return this.decompose(e,t,n,0),Ai.from(n,t-e)}eq(e){if(e==this)return!0;if(e.length!=this.length||e.lines!=this.lines)return!1;let t=this.scanIdentical(e,1),n=this.length-this.scanIdentical(e,-1),s=new ni(this),r=new ni(e);for(let o=t,l=t;;){if(s.next(o),r.next(o),o=0,s.lineBreak!=r.lineBreak||s.done!=r.done||s.value!=r.value)return!1;if(l+=s.value.length,s.done||l>=n)return!0}}iter(e=1){return new ni(this,e)}iterRange(e,t=this.length){return new ns(this,e,t)}iterLines(e,t){let n;if(e==null)n=this.iter();else{t==null&&(t=this.lines+1);let s=this.line(e).from;n=this.iterRange(s,Math.max(s,t==this.lines+1?this.length:t<=1?0:this.line(t-1).to))}return new ss(n)}toString(){return this.sliceString(0)}toJSON(){let e=[];return this.flatten(e),e}constructor(){}static of(e){if(e.length==0)throw new RangeError("A document must have at least one line");return e.length==1&&!e[0]?i.empty:e.length<=32?new Ue(e):Ai.from(Ue.split(e,[]))}},Ue=class i extends ee{constructor(e,t=pg(e)){super(),this.text=e,this.length=t}get lines(){return this.text.length}get children(){return null}lineInner(e,t,n,s){for(let r=0;;r++){let o=this.text[r],l=s+o.length;if((t?n:l)>=e)return new Jr(s,l,n,o);s=l+1,n++}}decompose(e,t,n,s){let r=e<=0&&t>=this.length?this:new i(kh(this.text,e,t),Math.min(t,this.length)-Math.max(0,e));if(s&1){let o=n.pop(),l=is(r.text,o.text.slice(),0,r.length);if(l.length<=32)n.push(new i(l,o.length+r.length));else{let a=l.length>>1;n.push(new i(l.slice(0,a)),new i(l.slice(a)))}}else n.push(r)}replace(e,t,n){if(!(n instanceof i))return super.replace(e,t,n);[e,t]=Ei(this,e,t);let s=is(this.text,is(n.text,kh(this.text,0,e)),t),r=this.length+n.length-(t-e);return s.length<=32?new i(s,r):Ai.from(i.split(s,[]),r)}sliceString(e,t=this.length,n=`
 `){[e,t]=Ei(this,e,t);let s="";for(let r=0,o=0;r<=t&&o<this.text.length;o++){let l=this.text[o],a=r+l.length;r>e&&o&&(s+=n),e<a&&t>r&&(s+=l.slice(Math.max(0,e-r),t-r)),r=a+1}return s}flatten(e){for(let t of this.text)e.push(t)}scanIdentical(){return 0}static split(e,t){let n=[],s=-1;for(let r of e)n.push(r),s+=r.length+1,n.length==32&&(t.push(new i(n,s)),n=[],s=-1);return s>-1&&t.push(new i(n,s)),t}},Ai=class i extends ee{constructor(e,t){super(),this.children=e,this.length=t,this.lines=0;for(let n of e)this.lines+=n.lines}lineInner(e,t,n,s){for(let r=0;;r++){let o=this.children[r],l=s+o.length,a=n+o.lines-1;if((t?a:l)>=e)return o.lineInner(e,t,n,s);s=l+1,n=a+1}}decompose(e,t,n,s){for(let r=0,o=0;o<=t&&r<this.children.length;r++){let l=this.children[r],a=o+l.length;if(e<=a&&t>=o){let h=s&((o<=e?1:0)|(a>=t?2:0));o>=e&&a<=t&&!h?n.push(l):l.decompose(e-o,t-o,n,h)}o=a+1}}replace(e,t,n){if([e,t]=Ei(this,e,t),n.lines<this.lines)for(let s=0,r=0;s<this.children.length;s++){let o=this.children[s],l=r+o.length;if(e>=r&&t<=l){let a=o.replace(e-r,t-r,n),h=this.lines-o.lines+a.lines;if(a.lines<h>>4&&a.lines>h>>6){let c=this.children.slice();return c[s]=a,new i(c,this.length-(t-e)+n.length)}return super.replace(r,l,a)}r=l+1}return super.replace(e,t,n)}sliceString(e,t=this.length,n=`
@@ -686,9 +706,9 @@ urgente | Urgente`}),G=()=>{K.parentElement.hidden=_.value!=="Seleccion",K.requi
   (*! For license information please see dagre.esm.js.LEGAL.txt *)
 */
 
-const TEMPLATES = {"html":"\u003c!doctype html>\n\u003chtml lang=\"es\">\n\u003chead>\n\u003cmeta charset=\"utf-8\">\n\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\u003ctitle>Aplicación generada\u003c/title>\n\u003cscript>\n  if (!document.documentElement.dataset.theme) {\n    const preference = matchMedia('(prefers-color-scheme: dark)');\n    const apply = () => { document.documentElement.dataset.theme = preference.matches ? 'dark' : 'light'; };\n    apply();\n    preference.addEventListener('change', apply);\n  }\n\u003c/script>\n\u003cstyle>{{CSS}}\u003c/style>\n\u003c/head>\n\u003cbody>\n\u003cmain id=\"application\">\n  \u003cheader>\n    \u003csvg class=\"app-decoration\" viewBox=\"0 0 350 175\" preserveAspectRatio=\"xMidYMid slice\" fill=\"none\" aria-hidden=\"true\">\u003cg stroke=\"#a4bcf4\" stroke-width=\"1.2\">\u003cpath d=\"M80 139h58q12 0 12-12V68q0-12 12-12h69m-81 54h109m-28-54h26q12 0 12 12v70h41\"/>\u003crect x=\"32\" y=\"118\" width=\"49\" height=\"43\" rx=\"9\" fill=\"#38568c\"/>\u003crect x=\"230\" y=\"33\" width=\"53\" height=\"45\" rx=\"10\" fill=\"#3d5587\"/>\u003crect x=\"255\" y=\"94\" width=\"48\" height=\"34\" rx=\"8\" fill=\"#476397\"/>\u003crect x=\"305\" y=\"121\" width=\"43\" height=\"35\" rx=\"8\" fill=\"#45678e\"/>\u003c/g>\u003cpath d=\"M46 134h20m-20 10h13m196-99v22m-11-11h22m1 55h23m24 27h18\" stroke=\"#c9dbff\" stroke-linecap=\"round\" stroke-width=\"2\"/>\u003c/svg>\n    \u003cdiv>\u003cp class=\"product\">MDA STUDIO · APLICACIÓN EJECUTABLE (M2T)\u003c/p>\u003ch1 id=\"app-title\">\u003c/h1>\u003cp id=\"app-description\" class=\"muted\">\u003c/p>\u003c/div>\n    \u003clabel class=\"role\">Rol de demostración\u003cselect id=\"app-role\" aria-describedby=\"app-role-help\">\u003c/select>\u003csmall class=\"muted\" id=\"app-role-help\">Simula quién realiza la tarea.\u003c/small>\u003c/label>\n  \u003c/header>\n  \u003csection id=\"db-bar\" class=\"db-bar\" aria-label=\"Conexión a Base de Datos y Archivo\">\n    \u003cdiv class=\"db-info\">\n      \u003cspan id=\"db-badge\" class=\"db-badge\">BD IndexedDB activa\u003c/span>\n      \u003cspan id=\"db-status-text\" class=\"muted\">Sincronizado en base de datos local del navegador.\u003c/span>\n    \u003c/div>\n    \u003cdiv class=\"db-actions\">\n      \u003cbutton type=\"button\" id=\"db-connect-file\" class=\"primary-outline\">Conectar archivo (.db.json)\u003c/button>\n      \u003cbutton type=\"button\" id=\"db-import-btn\">Importar BD (.json)\u003c/button>\n      \u003cinput type=\"file\" id=\"db-import-input\" accept=\".json,application/json\" hidden>\n      \u003cbutton type=\"button\" id=\"db-export-json\">Guardar BD (.db.json)\u003c/button>\n      \u003cbutton type=\"button\" id=\"db-export-sql\">Volcado SQL (.sql)\u003c/button>\n      \u003cbutton type=\"button\" id=\"db-inspect-btn\">Ver tablas / SQL\u003c/button>\n    \u003c/div>\n  \u003c/section>\n  \u003cnav id=\"app-nav\" aria-label=\"Módulos de la aplicación\" hidden>\n    \u003cbutton type=\"button\" data-module=\"requests\" aria-pressed=\"true\">\u003csvg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M5 19V5h14M5 12h8v6h6M16 3l3 2-3 2m0 9 3 2-3 2\"/>\u003c/svg>Solicitudes\u003c/button>\n    \u003cbutton type=\"button\" data-module=\"catalog\" aria-pressed=\"false\">\u003csvg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M4 7h16v13H4zM3 4h18v3M9 11h6m-6 5h6\"/>\u003c/svg>Inventario\u003c/button>\n    \u003cbutton type=\"button\" data-module=\"ledger\" aria-pressed=\"false\">\u003csvg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M4 7h16M4 12h16M4 17h10m-9-12v4m0 1v4m0 1v4\"/>\u003c/svg>Movimientos\u003c/button>\n  \u003c/nav>\n  \u003cp id=\"app-notice\" role=\"status\" aria-live=\"polite\">\u003c/p>\n  \u003cdiv class=\"layout\">\n    \u003cdiv class=\"column\">\n      \u003csection id=\"app-create\">\u003ch2 id=\"app-form-title\">\u003c/h2>\u003cform id=\"app-form\">\u003c/form>\u003c/section>\n      \u003csection id=\"app-cases\">\u003cdiv class=\"section-head\">\u003ch2 id=\"app-cases-title\">Casos\u003c/h2>\u003cspan id=\"app-count\" class=\"muted\">\u003c/span>\u003c/div>\u003cp id=\"app-cases-help\" class=\"muted\">\u003c/p>\u003cdiv id=\"app-inbox\">\u003c/div>\u003c/section>\n    \u003c/div>\n    \u003csection id=\"app-detail\" tabindex=\"-1\">\u003c/section>\n  \u003c/div>\n  \u003csection id=\"crud-catalog\" class=\"crud-catalog\" hidden aria-labelledby=\"crud-title\">\n    \u003cdiv class=\"crud-toolbar\">\u003cdiv>\u003ch2 id=\"crud-title\">Registros\u003c/h2>\u003cp id=\"crud-count\" class=\"muted\" aria-live=\"polite\">\u003c/p>\u003c/div>\n      \u003clabel>Buscar registros\u003cinput id=\"crud-search\" type=\"search\" placeholder=\"Escribe un valor…\">\u003c/label>\n    \u003c/div>\n    \u003cdiv class=\"crud-table\" tabindex=\"0\" role=\"region\" aria-label=\"Tabla de registros\">\u003ctable>\u003cthead>\u003ctr id=\"crud-columns\">\u003c/tr>\u003c/thead>\u003ctbody id=\"crud-rows\">\u003c/tbody>\u003c/table>\u003c/div>\n    \u003cp id=\"crud-empty\" class=\"muted\">\u003c/p>\n  \u003c/section>\n  \u003csection id=\"stock-ledger\" aria-labelledby=\"stock-title\" hidden>\u003ch2 id=\"stock-title\">Movimientos de inventario\u003c/h2>\n    \u003cp id=\"stock-empty\" class=\"muted\">Todavía no hay entregas ni devoluciones registradas.\u003c/p>\u003col id=\"stock-movements\">\u003c/ol>\n  \u003c/section>\n  \u003cdialog id=\"crud-delete\" aria-labelledby=\"crud-delete-title\">\n    \u003ch2 id=\"crud-delete-title\">¿Eliminar el registro?\u003c/h2>\u003cp id=\"crud-delete-name\">\u003c/p>\n    \u003cdiv class=\"action-bar\">\u003cbutton id=\"crud-delete-cancel\" type=\"button\" autofocus>Cancelar\u003c/button>\u003cbutton id=\"crud-delete-confirm\" type=\"button\" class=\"danger\">Confirmar eliminación\u003c/button>\u003c/div>\n  \u003c/dialog>\n  \u003cdialog id=\"db-dialog\" aria-labelledby=\"db-dialog-title\">\n    \u003cdiv class=\"section-head\">\n      \u003cdiv>\u003ch2 id=\"db-dialog-title\">Inspector de Base de Datos y Sentencias SQL\u003c/h2>\u003cp class=\"muted\" id=\"db-dialog-subtitle\">\u003c/p>\u003c/div>\n      \u003cbutton type=\"button\" id=\"db-dialog-close\">Cerrar\u003c/button>\n    \u003c/div>\n    \u003cpre id=\"db-dialog-sql\" class=\"db-code\">\u003c/pre>\n  \u003c/dialog>\n\u003c/main>\n\u003cscript>\n  if (window.parent !== window) window.addEventListener('message', event => {\n    const { type, theme } = event.data ?? {};\n    if (event.source === window.parent && type === 'mda-preview-theme' && (theme === 'dark' || theme === 'light')) {\n      document.documentElement.dataset.theme = theme;\n    }\n  });\n  {{SCRIPT}}\n\u003c/script>\n\u003c/body>\n\u003c/html>\n","css":":root{font-family:\"Segoe UI\",system-ui,sans-serif;color:#152e30;background:#eff5f3;font-synthesis:none}\n*{box-sizing:border-box}body{margin:0}main{max-width:1140px;margin:auto;padding:28px clamp(16px,4vw,48px)}\nheader{display:flex;justify-content:space-between;align-items:end;gap:24px}h1{font-size:clamp(26px,5vw,40px);margin:6px 0}h2{font-size:17px;margin:0 0 14px}h3{font-size:21px;margin:0 0 8px}h4{margin:20px 0 8px}p{margin:0}.product{font-size:10px;letter-spacing:.14em;font-weight:750;color:#216a5b}.muted{color:#4d6664;font-size:13px}\n.db-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;padding:11px 15px;background:#eaf1ff;border:1px solid #c6d6f7;border-radius:11px}.db-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.db-badge{background:#3153a5;color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px}.db-badge[data-file=true]{background:#176453}.db-actions{display:flex;gap:6px;flex-wrap:wrap}.db-actions button{font-size:12px;padding:6px 10px}.primary-outline{border-color:#3153a5;color:#3153a5;background:#f4f7ff;font-weight:700}\n.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}.column{display:grid;gap:16px}section{background:#fff;border:1px solid #d8e5e0;border-radius:13px;padding:18px;min-width:0;overflow-wrap:anywhere}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center}\nform{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:end}label{display:grid;gap:5px;font-size:12px;font-weight:650}.role{min-width:155px}input,select{font:inherit;font-weight:400;width:100%;padding:8px 10px;border:1px solid #c2d3cd;border-radius:6px;background:#fafffd;color:inherit}\nbutton{cursor:pointer;font:inherit;font-size:13px;font-weight:650;padding:8px 12px;border:1px solid #b6cdc5;border-radius:7px;color:#18473e;background:#fff}.primary{background:#18584c;border-color:#18584c;color:white}.primary:hover{background:#123f37}.case{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;margin-bottom:5px}.case[aria-pressed=true]{background:#e5f4ee;border-color:#438372}\n.state{border-radius:4px;padding:3px 7px;background:#e4f3ed;color:#215549;font-size:11px;font-weight:700;display:inline-block}#app-notice{min-height:22px;margin:10px 0;color:#216250;font-size:13px}#app-notice[data-error=true]{color:#a62d25;font-weight:650}dl{display:grid;grid-template-columns:1fr 1.5fr;gap:7px;font-size:13px}dt{color:#4d6664}dd{margin:0}.action-bar{display:flex;flex-wrap:wrap;gap:8px}ol{padding-left:18px;font-size:12px;color:#4d6664;line-height:1.7}\n:focus-visible{outline:2px solid #16816d;outline-offset:2px}[hidden]{display:none!important}@media(max-width:580px){.layout{grid-template-columns:1fr}header{align-items:start;flex-direction:column;gap:12px}}\n[data-presentation=tablero]{--board-accent:#2c537c}\n[data-presentation=tablero] header{border-bottom:2px solid #cbdceb;padding:0 0 18px}\n[data-presentation=tablero] .product{color:var(--board-accent)}\n[data-presentation=tablero] .layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}\n[data-presentation=tablero] .column{display:contents}\n[data-presentation=tablero] #app-cases{grid-column:1/-1;grid-row:1;background:#edf3f9;border-color:#cedbe9}\n[data-presentation=tablero] #app-detail{grid-column:2}\n[data-presentation=tablero] #app-inbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));gap:10px}\n[data-presentation=tablero] .board-lane{min-width:0;padding:10px;background:#f8fbff;border:1px solid #cfdeec;border-radius:8px}\n[data-presentation=tablero] .board-lane h3{font-size:12px;color:#274867;margin-bottom:8px}\n[data-presentation=tablero] .primary{background:#2c537c;border-color:#2c537c}\n[data-presentation=tablero] .case[aria-pressed=true]{background:#dfeefb;border-color:#6284a8}\n@media(max-width:700px){[data-presentation=tablero] .layout{grid-template-columns:1fr}[data-presentation=tablero] #app-detail{grid-column:1}}\nform .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}form input[type=checkbox]{width:auto;flex:none;accent-color:#18584c}\n[data-presentation=tabla] .layout{display:block}\n[data-presentation=tabla] #app-form{grid-template-columns:repeat(3,minmax(0,1fr))}\n.crud-catalog{margin-top:16px}.crud-toolbar{display:flex;align-items:end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.crud-toolbar h2{margin-bottom:4px}.crud-toolbar label{min-width:min(100%,235px)}\n.crud-table{overflow:auto;border:1px solid #d8e5e0;border-radius:8px}.crud-table table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}.crud-table th{background:#eaf4ef;color:#315a51;white-space:nowrap}.crud-table th,.crud-table td{padding:10px 12px;border-bottom:1px solid #e5eee9}.crud-table td{min-width:80px;overflow-wrap:anywhere}.crud-table tr:last-child td{border-bottom:0}.crud-actions{white-space:nowrap}.crud-actions button+button{margin-left:6px}#crud-empty{margin-top:10px}\n.danger{border-color:#dbc0ba;color:#8f352a}.danger:hover{background:#fff1ed}#crud-delete,#db-dialog{width:min(760px,calc(100% - 24px));border:1px solid #c2d3cd;border-radius:12px;padding:20px;color:inherit;background:#fff}#crud-delete{width:min(420px,calc(100% - 24px))}#crud-delete::backdrop,#db-dialog::backdrop{background:#132e2b66}#crud-delete .action-bar{margin-top:15px;justify-content:end}\n.db-code{margin:12px 0 0;padding:13px;background:#142b29;color:#e1f6ec;border-radius:8px;font:12px/1.5 \"Cascadia Code\",Consolas,monospace;max-height:55vh;overflow:auto;white-space:pre-wrap}\n@media(max-width:700px){[data-presentation=tabla] #app-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:430px){[data-presentation=tabla] #app-form{grid-template-columns:1fr}}\n#app-nav{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}#app-nav button[aria-pressed=true]{background:#18584c;color:#fff;border-color:#18584c}#stock-movements{margin:0;font-variant-numeric:tabular-nums}#stock-movements li{padding:6px 0}\n\n:root[data-theme=\"dark\"]{--ink:#e5f0ea;--sub:#a9c0b6;--line:#345148;--teal:#94d8bb;--dark-bg:#101b19;--dark-panel:#172622;--dark-raised:#20332d;--dark-input:#121f1b;--dark-selected:#28473d;--dark-selected-border:#5c9b84;--dark-link:#a4dec6;--dark-danger:#ffc0b4;--dark-warning:#f2d098;color:var(--ink);background:var(--dark-bg);color-scheme:dark;}\n:root[data-theme=\"dark\"] :is(section,#crud-delete,#db-dialog){background:var(--dark-panel);border-color:var(--line);color:var(--ink)}\n:root[data-theme=\"dark\"] :is(.muted,dt,ol){color:var(--sub)}\n:root[data-theme=\"dark\"] .product,#app-notice{color:var(--teal)}\n:root[data-theme=\"dark\"] #app-notice[data-error=true]{color:var(--dark-danger)}\n:root[data-theme=\"dark\"] :is(input,select){background:var(--dark-input);border-color:#5c8576}\n:root[data-theme=\"dark\"] button{background:var(--dark-raised);color:var(--ink);border-color:var(--line)}\n:root[data-theme=\"dark\"] :is(.primary,#app-nav button[aria-pressed=true],[data-presentation=tablero] .primary,.db-badge){background:#9adbc0;color:#102d25;border-color:#9adbc0}\n:root[data-theme=\"dark\"] .primary:hover{background:#b8ead4;color:#102d25}\n:root[data-theme=\"dark\"] :is(.case[aria-pressed=true],[data-presentation=tablero] .case[aria-pressed=true],.state){background:var(--dark-selected);border-color:var(--dark-selected-border);color:var(--ink)}\n:root[data-theme=\"dark\"] .crud-table,.crud-table th,.crud-table td,[data-presentation=tablero] header{border-color:var(--line)}\n:root[data-theme=\"dark\"] :is(.crud-table th,[data-presentation=tablero] #app-cases,[data-presentation=tablero] .board-lane){background:var(--dark-raised);color:var(--ink);border-color:var(--line)}\n:root[data-theme=\"dark\"] [data-presentation=tablero] :is(.product,.board-lane h3){color:var(--teal)}\n:root[data-theme=\"dark\"] .danger{color:var(--dark-danger);border-color:#8a514a}:root[data-theme=\"dark\"] .danger:hover{background:#422822}\n:root{font-family:\"Inter\",\"Segoe UI\",system-ui,sans-serif;background:#f1f4fa;color:#182342;--app-line:#d9e2ee;--app-sub:#52627d;--app-stripe:#f5f7fc;--app-panel:#fff;--app-tint:#eaf1ff;--app-accent:#3459ac}\n:root[data-theme=\"dark\"]{--ink:#edf1fc;--sub:#b5c0d8;--line:#374661;--dark-bg:#101625;--dark-panel:#192235;--dark-raised:#24334f;--dark-input:#141d2f;--dark-selected:#2d4165;--dark-selected-border:#758ebd;--teal:#b4c9ff;--app-line:var(--line);--app-sub:var(--sub);--app-stripe:#202c42;--app-panel:var(--dark-panel);--app-tint:#283b60;--app-accent:#bed0ff}\n#application>header{position:relative;overflow:hidden;isolation:isolate;padding:28px clamp(17px,4vw,34px);border-radius:15px;background:linear-gradient(114deg,#18264d,#263b68);color:#f6f8ff;align-items:center;border:0}\n#application>header .product{color:#b4c9ff}\n#application>header h1{font-size:clamp(27px,5vw,42px);margin:0 0 8px;letter-spacing:-.035em;line-height:1.08}\n#application>header .muted{color:#dbe5fc;line-height:1.55}\n#application>header .role{position:relative;flex:none;background:#324875;border-radius:9px;padding:10px 12px;color:#fff}\n#application>header .role select{background:#1b2b50;color:#eef4ff;border-color:#8297c1}#application>header .role small{font-size:11px}\n.app-decoration{position:absolute;z-index:-1;right:0;top:0;width:min(44%,360px);height:100%;opacity:.55;pointer-events:none}\n#app-nav{gap:0;border-bottom:1px solid var(--app-line);margin-top:14px}\n#app-nav button,:root[data-theme=\"dark\"] #app-nav button{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--app-sub);padding:12px 16px;display:inline-flex;gap:7px;align-items:center}\n#app-nav button[aria-pressed=true],:root[data-theme=\"dark\"] #app-nav button[aria-pressed=true]{color:var(--app-accent);background:var(--app-tint);border-color:var(--app-accent);border-radius:7px 7px 0 0}\n#app-nav svg{width:17px;height:17px}\n#app-create,#app-cases,#app-detail,#crud-catalog,#stock-ledger,#db-bar{border-color:var(--app-line)}\n#app-create{border-top:3px solid var(--app-accent)}\n#app-detail{border-top:3px solid #8972bc}\n#app-form-title,#crud-title,#stock-title{font-size:18px}#crud-catalog,#stock-ledger{background:var(--app-panel)}\n.crud-table{border-color:var(--app-line)}.crud-table th,:root[data-theme=\"dark\"] .crud-table th{background:var(--app-tint);color:var(--app-accent);border-color:var(--app-line);font-size:12px}\n.crud-table td{border-color:var(--app-line)}.crud-table tbody tr:nth-child(even){background:var(--app-stripe)}\n.crud-table td:first-child{font-weight:650}.crud-table td[data-stock]{font-variant-numeric:tabular-nums;color:var(--app-accent);font-weight:750}\n#crud-empty,#stock-empty,.app-empty{padding:13px 12px;border:1px dashed var(--app-line);border-radius:8px;background:var(--app-stripe);color:var(--app-sub);line-height:1.5}\n#stock-movements{list-style:none;padding:0;display:grid;gap:0}\n#stock-movements .movement{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;border-bottom:1px solid var(--app-line);padding:12px 4px}\n.movement:last-child{border-bottom:0!important}.movement-direction{display:grid;place-items:center;width:33px;height:33px;border-radius:50%;font-size:16px;font-weight:750;background:var(--app-tint);color:var(--app-accent)}\n.movement-copy{display:grid;gap:3px;min-width:0}.movement-copy strong{font-size:14px;color:var(--ink,#182342)}.movement-copy span,.movement-totals span{font-size:11px;color:var(--app-sub)}.movement-totals{display:grid;text-align:right;gap:3px}.movement-totals strong{font-size:15px;color:var(--app-accent)}\n:root:not([data-theme=\"dark\"]) .primary{background:#3153a5;border-color:#3153a5;color:#fff}\n:root[data-theme=\"dark\"] .primary{background:#a9bfff;border-color:#a9bfff;color:#16264a}\n@media(prefers-reduced-motion:no-preference){.module-enter{animation:module-enter .2s ease-out both}}\n@keyframes module-enter{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}\n@media(max-width:550px){#application>header{align-items:start}.app-decoration{opacity:.23}#app-nav button,:root[data-theme=\"dark\"] #app-nav button{padding:10px 8px;gap:5px;font-size:12px}}\n.movement[data-direction=\"out\"] .movement-direction{background:#fff0d9;color:#81531f}\n.movement[data-direction=\"in\"] .movement-direction{background:#e0f3ea;color:#175d4c}\n:root[data-theme=\"dark\"] .movement[data-direction=\"out\"] .movement-direction{background:#443520;color:#f4ce91}\n:root[data-theme=\"dark\"] .movement[data-direction=\"in\"] .movement-direction{background:#234237;color:#a6e9cb}\n#app-notice{color:#235c49}\n:root[data-theme=\"dark\"] #app-notice{color:var(--teal)}\n:root[data-theme=\"dark\"] #app-notice[data-error=true]{color:var(--dark-danger)}\n#app-cases-help{margin:-5px 0 12px}\n"};
-const DEMO = "{\n  \"version\": 1,\n  \"id\": \"prestamos-lab\",\n  \"nombre\": \"Préstamos de laboratorio\",\n  \"objetivo\": \"Solicitar, aprobar y devolver equipos del laboratorio universitario.\",\n  \"entidad\": \"Prestamo\",\n  \"actores\": [\n    {\n      \"id\": \"estudiante\",\n      \"nombre\": \"Estudiante\"\n    },\n    {\n      \"id\": \"responsable\",\n      \"nombre\": \"Responsable\"\n    }\n  ],\n  \"datos\": [\n    {\n      \"id\": \"solicitante\",\n      \"nombre\": \"Solicitante\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"equipo\",\n      \"nombre\": \"Equipo\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"cantidad\",\n      \"nombre\": \"Cantidad\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"dias\",\n      \"nombre\": \"Días de préstamo\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"motivo\",\n      \"nombre\": \"Motivo\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    }\n  ],\n  \"inicio\": {\n    \"actor\": \"estudiante\",\n    \"estado\": \"solicitado\",\n    \"nombre\": \"Nueva solicitud\"\n  },\n  \"estados\": [\n    {\n      \"id\": \"solicitado\",\n      \"nombre\": \"En revisión\"\n    },\n    {\n      \"id\": \"aprobado\",\n      \"nombre\": \"Aprobado\"\n    },\n    {\n      \"id\": \"entregado\",\n      \"nombre\": \"Entregado\"\n    },\n    {\n      \"id\": \"devuelto\",\n      \"nombre\": \"Devuelto\",\n      \"final\": true\n    },\n    {\n      \"id\": \"rechazado\",\n      \"nombre\": \"Rechazado\",\n      \"final\": true\n    }\n  ],\n  \"transiciones\": [\n    {\n      \"id\": \"aprobar\",\n      \"nombre\": \"Aprobar\",\n      \"actor\": \"responsable\",\n      \"desde\": \"solicitado\",\n      \"hasta\": \"aprobado\"\n    },\n    {\n      \"id\": \"rechazar\",\n      \"nombre\": \"Rechazar\",\n      \"actor\": \"responsable\",\n      \"desde\": \"solicitado\",\n      \"hasta\": \"rechazado\"\n    },\n    {\n      \"id\": \"entregar\",\n      \"nombre\": \"Registrar entrega\",\n      \"actor\": \"responsable\",\n      \"desde\": \"aprobado\",\n      \"hasta\": \"entregado\"\n    },\n    {\n      \"id\": \"devolver\",\n      \"nombre\": \"Registrar devolución\",\n      \"actor\": \"estudiante\",\n      \"desde\": \"entregado\",\n      \"hasta\": \"devuelto\"\n    }\n  ],\n  \"ocl\": [\n    \"context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 5\",\n    \"context Prestamo inv PlazoValido: self.dias >= 1 and self.dias \u003c= 30\",\n    \"context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8\"\n  ]\n}";
-const ADVANCED = "{\n  \"version\": 1,\n  \"id\": \"compras-institucionales\",\n  \"nombre\": \"Compras institucionales\",\n  \"objetivo\": \"Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.\",\n  \"entidad\": \"Compra\",\n  \"actores\": [\n    {\n      \"id\": \"solicitante\",\n      \"nombre\": \"Solicitante\"\n    },\n    {\n      \"id\": \"jefatura\",\n      \"nombre\": \"Jefatura\"\n    },\n    {\n      \"id\": \"presupuesto\",\n      \"nombre\": \"Presupuesto\"\n    },\n    {\n      \"id\": \"compras\",\n      \"nombre\": \"Compras\"\n    },\n    {\n      \"id\": \"juridico\",\n      \"nombre\": \"Jurídico\"\n    },\n    {\n      \"id\": \"comite\",\n      \"nombre\": \"Comité\"\n    },\n    {\n      \"id\": \"bodega\",\n      \"nombre\": \"Bodega\"\n    },\n    {\n      \"id\": \"contabilidad\",\n      \"nombre\": \"Contabilidad\"\n    },\n    {\n      \"id\": \"tesoreria\",\n      \"nombre\": \"Tesorería\"\n    }\n  ],\n  \"datos\": [\n    {\n      \"id\": \"referencia\",\n      \"nombre\": \"Referencia interna\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"unidad\",\n      \"nombre\": \"Unidad solicitante\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"objeto\",\n      \"nombre\": \"Objeto de la compra\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"justificacion\",\n      \"nombre\": \"Justificación\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"monto\",\n      \"nombre\": \"Monto estimado (USD)\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"cantidad\",\n      \"nombre\": \"Unidades\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"cotizaciones\",\n      \"nombre\": \"Cotizaciones disponibles\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"plazo\",\n      \"nombre\": \"Plazo de entrega (días)\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"proveedor\",\n      \"nombre\": \"Proveedor propuesto\",\n      \"tipo\": \"Texto\",\n      \"requerido\": false\n    },\n    {\n      \"id\": \"partida\",\n      \"nombre\": \"Partida presupuestaria\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"prioridad\",\n      \"tipo\": \"Seleccion\",\n      \"opciones\": [\n        {\n          \"nombre\": \"Normal\",\n          \"id\": \"normal\"\n        },\n        {\n          \"nombre\": \"Urgente\",\n          \"id\": \"urgente\"\n        },\n        {\n          \"nombre\": \"Crítica\",\n          \"id\": \"critica\"\n        }\n      ],\n      \"requerido\": false,\n      \"nombre\": \"Prioridad\"\n    },\n    {\n      \"id\": \"fecha-necesaria\",\n      \"tipo\": \"Fecha\",\n      \"requerido\": false,\n      \"nombre\": \"Fecha en que se necesita\"\n    },\n    {\n      \"id\": \"documentacion\",\n      \"tipo\": \"Booleano\",\n      \"requerido\": false,\n      \"nombre\": \"Documentación adjunta disponible\"\n    }\n  ],\n  \"inicio\": {\n    \"actor\": \"solicitante\",\n    \"estado\": \"solicitada\",\n    \"nombre\": \"Registrar solicitud\"\n  },\n  \"estados\": [\n    {\n      \"id\": \"solicitada\",\n      \"nombre\": \"Revisión de jefatura\"\n    },\n    {\n      \"id\": \"observada\",\n      \"nombre\": \"Ampliación pendiente\"\n    },\n    {\n      \"id\": \"presupuesto\",\n      \"nombre\": \"Control de presupuesto\"\n    },\n    {\n      \"id\": \"modalidad\",\n      \"nombre\": \"Selección de modalidad\"\n    },\n    {\n      \"id\": \"juridica\",\n      \"nombre\": \"Revisión jurídica\"\n    },\n    {\n      \"id\": \"comite\",\n      \"nombre\": \"Evaluación del comité\"\n    },\n    {\n      \"id\": \"adjudicada\",\n      \"nombre\": \"Adjudicada\"\n    },\n    {\n      \"id\": \"ordenada\",\n      \"nombre\": \"Orden emitida\"\n    },\n    {\n      \"id\": \"incidencia\",\n      \"nombre\": \"Incidencia de recepción\"\n    },\n    {\n      \"id\": \"recibida\",\n      \"nombre\": \"Recibida\"\n    },\n    {\n      \"id\": \"contabilidad\",\n      \"nombre\": \"Revisión contable\"\n    },\n    {\n      \"id\": \"pago\",\n      \"nombre\": \"Pendiente de pago\"\n    },\n    {\n      \"id\": \"pagada\",\n      \"nombre\": \"Pagada\"\n    },\n    {\n      \"id\": \"cerrada\",\n      \"nombre\": \"Cerrada\",\n      \"final\": true\n    },\n    {\n      \"id\": \"rechazada\",\n      \"nombre\": \"Rechazada\",\n      \"final\": true\n    },\n    {\n      \"id\": \"cancelada\",\n      \"nombre\": \"Cancelada\",\n      \"final\": true\n    }\n  ],\n  \"transiciones\": [\n    {\n      \"id\": \"avalar\",\n      \"nombre\": \"Enviar a presupuesto\",\n      \"actor\": \"jefatura\",\n      \"desde\": \"solicitada\",\n      \"hasta\": \"presupuesto\"\n    },\n    {\n      \"id\": \"observar\",\n      \"nombre\": \"Solicitar ampliación\",\n      \"actor\": \"jefatura\",\n      \"desde\": \"solicitada\",\n      \"hasta\": \"observada\"\n    },\n    {\n      \"id\": \"justificar\",\n      \"nombre\": \"Registrar ampliación externa\",\n      \"actor\": \"solicitante\",\n      \"desde\": \"observada\",\n      \"hasta\": \"solicitada\"\n    },\n    {\n      \"id\": \"retirar\",\n      \"nombre\": \"Retirar solicitud\",\n      \"actor\": \"solicitante\",\n      \"desde\": \"observada\",\n      \"hasta\": \"cancelada\"\n    },\n    {\n      \"id\": \"denegar\",\n      \"nombre\": \"Rechazar solicitud\",\n      \"actor\": \"jefatura\",\n      \"desde\": \"solicitada\",\n      \"hasta\": \"rechazada\"\n    },\n    {\n      \"id\": \"certificar\",\n      \"nombre\": \"Certificar disponibilidad\",\n      \"actor\": \"presupuesto\",\n      \"desde\": \"presupuesto\",\n      \"hasta\": \"modalidad\"\n    },\n    {\n      \"id\": \"sinfondos\",\n      \"nombre\": \"Rechazar por falta de fondos\",\n      \"actor\": \"presupuesto\",\n      \"desde\": \"presupuesto\",\n      \"hasta\": \"rechazada\"\n    },\n    {\n      \"id\": \"directa\",\n      \"nombre\": \"Adjudicar compra directa\",\n      \"actor\": \"compras\",\n      \"desde\": \"modalidad\",\n      \"hasta\": \"adjudicada\"\n    },\n    {\n      \"id\": \"competitiva\",\n      \"nombre\": \"Enviar a revisión jurídica\",\n      \"actor\": \"compras\",\n      \"desde\": \"modalidad\",\n      \"hasta\": \"juridica\"\n    },\n    {\n      \"id\": \"cancelar\",\n      \"nombre\": \"Cancelar trámite\",\n      \"actor\": \"compras\",\n      \"desde\": \"modalidad\",\n      \"hasta\": \"cancelada\"\n    },\n    {\n      \"id\": \"dictamen\",\n      \"nombre\": \"Emitir dictamen favorable\",\n      \"actor\": \"juridico\",\n      \"desde\": \"juridica\",\n      \"hasta\": \"comite\"\n    },\n    {\n      \"id\": \"devolver\",\n      \"nombre\": \"Devolver a compras\",\n      \"actor\": \"juridico\",\n      \"desde\": \"juridica\",\n      \"hasta\": \"modalidad\"\n    },\n    {\n      \"id\": \"objecion\",\n      \"nombre\": \"Rechazar por objeción jurídica\",\n      \"actor\": \"juridico\",\n      \"desde\": \"juridica\",\n      \"hasta\": \"rechazada\"\n    },\n    {\n      \"id\": \"adjudicar\",\n      \"nombre\": \"Adjudicar por comité\",\n      \"actor\": \"comite\",\n      \"desde\": \"comite\",\n      \"hasta\": \"adjudicada\"\n    },\n    {\n      \"id\": \"desierta\",\n      \"nombre\": \"Declarar proceso desierto\",\n      \"actor\": \"comite\",\n      \"desde\": \"comite\",\n      \"hasta\": \"cancelada\"\n    },\n    {\n      \"id\": \"emitir\",\n      \"nombre\": \"Emitir orden de compra\",\n      \"actor\": \"compras\",\n      \"desde\": \"adjudicada\",\n      \"hasta\": \"ordenada\"\n    },\n    {\n      \"id\": \"recibir\",\n      \"nombre\": \"Confirmar recepción conforme\",\n      \"actor\": \"bodega\",\n      \"desde\": \"ordenada\",\n      \"hasta\": \"recibida\"\n    },\n    {\n      \"id\": \"incidencia\",\n      \"nombre\": \"Registrar recepción no conforme\",\n      \"actor\": \"bodega\",\n      \"desde\": \"ordenada\",\n      \"hasta\": \"incidencia\"\n    },\n    {\n      \"id\": \"subsanar\",\n      \"nombre\": \"Registrar subsanación del proveedor\",\n      \"actor\": \"compras\",\n      \"desde\": \"incidencia\",\n      \"hasta\": \"ordenada\"\n    },\n    {\n      \"id\": \"anular\",\n      \"nombre\": \"Anular orden\",\n      \"actor\": \"compras\",\n      \"desde\": \"incidencia\",\n      \"hasta\": \"cancelada\"\n    },\n    {\n      \"id\": \"enviarcontable\",\n      \"nombre\": \"Enviar expediente a contabilidad\",\n      \"actor\": \"compras\",\n      \"desde\": \"recibida\",\n      \"hasta\": \"contabilidad\"\n    },\n    {\n      \"id\": \"contabilizar\",\n      \"nombre\": \"Autorizar contabilización\",\n      \"actor\": \"contabilidad\",\n      \"desde\": \"contabilidad\",\n      \"hasta\": \"pago\"\n    },\n    {\n      \"id\": \"revisar\",\n      \"nombre\": \"Devolver expediente\",\n      \"actor\": \"contabilidad\",\n      \"desde\": \"contabilidad\",\n      \"hasta\": \"recibida\"\n    },\n    {\n      \"id\": \"pagar\",\n      \"nombre\": \"Registrar pago\",\n      \"actor\": \"tesoreria\",\n      \"desde\": \"pago\",\n      \"hasta\": \"pagada\"\n    },\n    {\n      \"id\": \"cerrar\",\n      \"nombre\": \"Cerrar expediente\",\n      \"actor\": \"compras\",\n      \"desde\": \"pagada\",\n      \"hasta\": \"cerrada\"\n    }\n  ],\n  \"ocl\": [\n    \"context Compra inv MontoValido: self.monto >= 1 and self.monto \u003c= 250000\",\n    \"context Compra inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 10000\",\n    \"context Compra inv PlazoValido: self.plazo >= 1 and self.plazo \u003c= 180\",\n    \"context Compra inv CotizacionesValidas: self.cotizaciones >= 0 and self.cotizaciones \u003c= 30\",\n    \"context Compra inv ReferenciaValida: self.referencia.size() >= 4\",\n    \"context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() >= 20\",\n    \"context Compra::certificar() pre PartidaIdentificada: self.partida.size() >= 4\",\n    \"context Compra::directa() pre MontoCompraDirecta: self.monto \u003c 10000 and self.cotizaciones >= 1\",\n    \"context Compra::competitiva() pre UmbralCompetitivo: self.monto >= 10000 and self.cotizaciones >= 3\",\n    \"context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones >= 3\",\n    \"context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() >= 3\",\n    \"context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() >= 6\"\n  ]\n}";
+const TEMPLATES = {"html":"\u003c!doctype html>\r\n\u003chtml lang=\"es\">\r\n\u003chead>\r\n\u003cmeta charset=\"utf-8\">\r\n\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n\u003ctitle>Aplicación generada\u003c/title>\r\n\u003cscript>\r\n  if (!document.documentElement.dataset.theme) {\r\n    const preference = matchMedia('(prefers-color-scheme: dark)');\r\n    const apply = () => { document.documentElement.dataset.theme = preference.matches ? 'dark' : 'light'; };\r\n    apply();\r\n    preference.addEventListener('change', apply);\r\n  }\r\n\u003c/script>\r\n\u003cstyle>{{CSS}}\u003c/style>\r\n\u003c/head>\r\n\u003cbody>\r\n\u003cmain id=\"application\">\r\n  \u003cheader>\r\n    \u003csvg class=\"app-decoration\" viewBox=\"0 0 350 175\" preserveAspectRatio=\"xMidYMid slice\" fill=\"none\" aria-hidden=\"true\">\u003cg stroke=\"#a4bcf4\" stroke-width=\"1.2\">\u003cpath d=\"M80 139h58q12 0 12-12V68q0-12 12-12h69m-81 54h109m-28-54h26q12 0 12 12v70h41\"/>\u003crect x=\"32\" y=\"118\" width=\"49\" height=\"43\" rx=\"9\" fill=\"#38568c\"/>\u003crect x=\"230\" y=\"33\" width=\"53\" height=\"45\" rx=\"10\" fill=\"#3d5587\"/>\u003crect x=\"255\" y=\"94\" width=\"48\" height=\"34\" rx=\"8\" fill=\"#476397\"/>\u003crect x=\"305\" y=\"121\" width=\"43\" height=\"35\" rx=\"8\" fill=\"#45678e\"/>\u003c/g>\u003cpath d=\"M46 134h20m-20 10h13m196-99v22m-11-11h22m1 55h23m24 27h18\" stroke=\"#c9dbff\" stroke-linecap=\"round\" stroke-width=\"2\"/>\u003c/svg>\r\n    \u003cdiv>\u003cp class=\"product\">MDA STUDIO · APLICACIÓN EJECUTABLE (M2T)\u003c/p>\u003ch1 id=\"app-title\">\u003c/h1>\u003cp id=\"app-description\" class=\"muted\">\u003c/p>\u003c/div>\r\n    \u003clabel class=\"role\">Rol de demostración\u003cselect id=\"app-role\" aria-describedby=\"app-role-help\">\u003c/select>\u003csmall class=\"muted\" id=\"app-role-help\">Simula quién realiza la tarea.\u003c/small>\u003c/label>\r\n  \u003c/header>\r\n  \u003cnav id=\"app-nav\" aria-label=\"Módulos de la aplicación\" hidden>\r\n    \u003cbutton type=\"button\" data-module=\"requests\" aria-pressed=\"true\">\u003csvg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M5 19V5h14M5 12h8v6h6M16 3l3 2-3 2m0 9 3 2-3 2\"/>\u003c/svg>Solicitudes\u003c/button>\r\n    \u003cbutton type=\"button\" data-module=\"catalog\" aria-pressed=\"false\">\u003csvg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M4 7h16v13H4zM3 4h18v3M9 11h6m-6 5h6\"/>\u003c/svg>Inventario\u003c/button>\r\n    \u003cbutton type=\"button\" data-module=\"ledger\" aria-pressed=\"false\">\u003csvg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M4 7h16M4 12h16M4 17h10m-9-12v4m0 1v4m0 1v4\"/>\u003c/svg>Movimientos\u003c/button>\r\n  \u003c/nav>\r\n  \u003cp id=\"app-notice\" role=\"status\" aria-live=\"polite\">\u003c/p>\r\n  \u003cdiv class=\"layout\">\r\n    \u003cdiv class=\"column\">\r\n      \u003csection id=\"app-create\">\u003ch2 id=\"app-form-title\">\u003c/h2>\u003cform id=\"app-form\">\u003c/form>\u003c/section>\r\n      \u003csection id=\"app-cases\">\u003cdiv class=\"section-head\">\u003ch2 id=\"app-cases-title\">Casos\u003c/h2>\u003cspan id=\"app-count\" class=\"muted\">\u003c/span>\u003c/div>\u003cp id=\"app-cases-help\" class=\"muted\">\u003c/p>\u003cdiv id=\"app-inbox\">\u003c/div>\u003c/section>\r\n    \u003c/div>\r\n    \u003csection id=\"app-detail\" tabindex=\"-1\">\u003c/section>\r\n  \u003c/div>\r\n  \u003csection id=\"crud-catalog\" class=\"crud-catalog\" hidden aria-labelledby=\"crud-title\">\r\n    \u003cdiv class=\"crud-toolbar\">\u003cdiv>\u003ch2 id=\"crud-title\">Registros\u003c/h2>\u003cp id=\"crud-count\" class=\"muted\" aria-live=\"polite\">\u003c/p>\u003c/div>\r\n      \u003clabel>Buscar registros\u003cinput id=\"crud-search\" type=\"search\" placeholder=\"Escribe un valor…\">\u003c/label>\r\n    \u003c/div>\r\n    \u003cdiv class=\"crud-table\" tabindex=\"0\" role=\"region\" aria-label=\"Tabla de registros\">\u003ctable>\u003cthead>\u003ctr id=\"crud-columns\">\u003c/tr>\u003c/thead>\u003ctbody id=\"crud-rows\">\u003c/tbody>\u003c/table>\u003c/div>\r\n    \u003cp id=\"crud-empty\" class=\"muted\">\u003c/p>\r\n  \u003c/section>\r\n  \u003csection id=\"stock-ledger\" aria-labelledby=\"stock-title\" hidden>\u003ch2 id=\"stock-title\">Movimientos de inventario\u003c/h2>\r\n    \u003cp id=\"stock-empty\" class=\"muted\">Todavía no hay entregas ni devoluciones registradas.\u003c/p>\u003col id=\"stock-movements\">\u003c/ol>\r\n  \u003c/section>\r\n  \u003cdialog id=\"crud-delete\" aria-labelledby=\"crud-delete-title\">\r\n    \u003ch2 id=\"crud-delete-title\">¿Eliminar el registro?\u003c/h2>\u003cp id=\"crud-delete-name\">\u003c/p>\r\n    \u003cdiv class=\"action-bar\">\u003cbutton id=\"crud-delete-cancel\" type=\"button\" autofocus>Cancelar\u003c/button>\u003cbutton id=\"crud-delete-confirm\" type=\"button\" class=\"danger\">Confirmar eliminación\u003c/button>\u003c/div>\r\n  \u003c/dialog>\r\n  \u003cfooter id=\"db-bar\" class=\"data-footer\">\r\n    \u003cp id=\"db-badge\" role=\"status\">\u003c/p>\r\n    \u003cbutton type=\"button\" id=\"open-data-tools\" aria-haspopup=\"dialog\">Gestionar datos\u003c/button>\r\n  \u003c/footer>\r\n  \u003cdialog id=\"db-dialog\" aria-labelledby=\"db-dialog-title\">\r\n    \u003cdiv class=\"section-head\">\r\n      \u003ch2 id=\"db-dialog-title\">Datos de la aplicación\u003c/h2>\r\n      \u003cbutton type=\"button\" id=\"db-dialog-close\" autofocus>Cerrar\u003c/button>\r\n    \u003c/div>\r\n    \u003cp id=\"db-status-text\" class=\"muted\">\u003c/p>\r\n    \u003cp class=\"data-help\">Usa una copia JSON para guardar los datos o restaurarlos en otra sesión. El archivo SQL sirve para llevar los datos a SQLite.\u003c/p>\r\n    \u003cdiv class=\"data-actions\">\r\n      \u003cbutton type=\"button\" id=\"db-export-json\">Guardar copia JSON\u003c/button>\r\n      \u003cbutton type=\"button\" id=\"db-import-btn\">Restaurar copia JSON\u003c/button>\r\n      \u003cinput type=\"file\" id=\"db-import-input\" accept=\".json,application/json\" hidden>\r\n      \u003cbutton type=\"button\" id=\"db-connect-file\" hidden>Guardar en archivo automáticamente\u003c/button>\r\n      \u003cbutton type=\"button\" id=\"db-export-sql\">Descargar SQL\u003c/button>\r\n    \u003c/div>\r\n    \u003cdetails id=\"db-inspect-btn\" class=\"data-sql\">\r\n      \u003csummary>Ver esquema y datos SQL\u003c/summary>\r\n      \u003cpre id=\"db-dialog-sql\" class=\"db-code\" tabindex=\"0\" aria-label=\"Código SQL\">\u003c/pre>\r\n    \u003c/details>\r\n  \u003c/dialog>\r\n\u003c/main>\r\n\u003cscript>\r\n  if (window.parent !== window) window.addEventListener('message', event => {\r\n    const { type, theme } = event.data ?? {};\r\n    if (event.source === window.parent && type === 'mda-preview-theme' && (theme === 'dark' || theme === 'light')) {\r\n      document.documentElement.dataset.theme = theme;\r\n    }\r\n  });\r\n  {{SCRIPT}}\r\n\u003c/script>\r\n\u003c/body>\r\n\u003c/html>\r\n","css":":root{font-family:\"Segoe UI\",system-ui,sans-serif;color:#152e30;background:#eff5f3;font-synthesis:none}\r\n*{box-sizing:border-box}body{margin:0}main{max-width:1140px;margin:auto;padding:28px clamp(16px,4vw,48px)}\r\nheader{display:flex;justify-content:space-between;align-items:end;gap:24px}h1{font-size:clamp(26px,5vw,40px);margin:6px 0}h2{font-size:17px;margin:0 0 14px}h3{font-size:21px;margin:0 0 8px}h4{margin:20px 0 8px}p{margin:0}.product{font-size:10px;letter-spacing:.14em;font-weight:750;color:#216a5b}.muted{color:#4d6664;font-size:13px}\r\n.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}.column{display:grid;gap:16px}section{background:#fff;border:1px solid #d8e5e0;border-radius:13px;padding:18px;min-width:0;overflow-wrap:anywhere}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center}\r\nform{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:end}label{display:grid;gap:5px;font-size:12px;font-weight:650}.role{min-width:155px}input,select{font:inherit;font-weight:400;width:100%;padding:8px 10px;border:1px solid #c2d3cd;border-radius:6px;background:#fafffd;color:inherit}\r\nbutton{cursor:pointer;font:inherit;font-size:13px;font-weight:650;padding:8px 12px;border:1px solid #b6cdc5;border-radius:7px;color:#18473e;background:#fff}.primary{background:#18584c;border-color:#18584c;color:white}.primary:hover{background:#123f37}.case{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;margin-bottom:5px}.case[aria-pressed=true]{background:#e5f4ee;border-color:#438372}\r\n.state{border-radius:4px;padding:3px 7px;background:#e4f3ed;color:#215549;font-size:11px;font-weight:700;display:inline-block}#app-notice{min-height:22px;margin:10px 0;color:#216250;font-size:13px}#app-notice[data-error=true]{color:#a62d25;font-weight:650}dl{display:grid;grid-template-columns:1fr 1.5fr;gap:7px;font-size:13px}dt{color:#4d6664}dd{margin:0}.action-bar{display:flex;flex-wrap:wrap;gap:8px}ol{padding-left:18px;font-size:12px;color:#4d6664;line-height:1.7}\r\n:focus-visible{outline:2px solid #16816d;outline-offset:2px}[hidden]{display:none!important}@media(max-width:580px){.layout{grid-template-columns:1fr}header{align-items:start;flex-direction:column;gap:12px}}\r\n[data-presentation=tablero]{--board-accent:#2c537c}\r\n[data-presentation=tablero] header{border-bottom:2px solid #cbdceb;padding:0 0 18px}\r\n[data-presentation=tablero] .product{color:var(--board-accent)}\r\n[data-presentation=tablero] .layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}\r\n[data-presentation=tablero] .column{display:contents}\r\n[data-presentation=tablero] #app-cases{grid-column:1/-1;grid-row:1;background:#edf3f9;border-color:#cedbe9}\r\n[data-presentation=tablero] #app-detail{grid-column:2}\r\n[data-presentation=tablero] #app-inbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));gap:10px}\r\n[data-presentation=tablero] .board-lane{min-width:0;padding:10px;background:#f8fbff;border:1px solid #cfdeec;border-radius:8px}\r\n[data-presentation=tablero] .board-lane h3{font-size:12px;color:#274867;margin-bottom:8px}\r\n[data-presentation=tablero] .primary{background:#2c537c;border-color:#2c537c}\r\n[data-presentation=tablero] .case[aria-pressed=true]{background:#dfeefb;border-color:#6284a8}\r\n@media(max-width:700px){[data-presentation=tablero] .layout{grid-template-columns:1fr}[data-presentation=tablero] #app-detail{grid-column:1}}\r\nform .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}form input[type=checkbox]{width:auto;flex:none;accent-color:#18584c}\r\n[data-presentation=tabla] .layout{display:block}\r\n[data-presentation=tabla] #app-form{grid-template-columns:repeat(3,minmax(0,1fr))}\r\n.crud-catalog{margin-top:16px}.crud-toolbar{display:flex;align-items:end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.crud-toolbar h2{margin-bottom:4px}.crud-toolbar label{min-width:min(100%,235px)}\r\n.crud-table{overflow:auto;border:1px solid #d8e5e0;border-radius:8px}.crud-table table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}.crud-table th{background:#eaf4ef;color:#315a51;white-space:nowrap}.crud-table th,.crud-table td{padding:10px 12px;border-bottom:1px solid #e5eee9}.crud-table td{min-width:80px;overflow-wrap:anywhere}.crud-table tr:last-child td{border-bottom:0}.crud-actions{white-space:nowrap}.crud-actions button+button{margin-left:6px}#crud-empty{margin-top:10px}\r\n.danger{border-color:#dbc0ba;color:#8f352a}.danger:hover{background:#fff1ed}#crud-delete,#db-dialog{width:min(760px,calc(100% - 24px));border:1px solid #c2d3cd;border-radius:12px;padding:20px;color:inherit;background:#fff}#crud-delete{width:min(420px,calc(100% - 24px))}#crud-delete::backdrop,#db-dialog::backdrop{background:#132e2b66}#crud-delete .action-bar{margin-top:15px;justify-content:end}\r\n.db-code{margin:12px 0 0;padding:13px;background:#142b29;color:#e1f6ec;border-radius:8px;font:12px/1.5 \"Cascadia Code\",Consolas,monospace;max-height:55vh;overflow:auto;white-space:pre-wrap}\r\n@media(max-width:700px){[data-presentation=tabla] #app-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:430px){[data-presentation=tabla] #app-form{grid-template-columns:1fr}}\r\n#app-nav{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}#app-nav button[aria-pressed=true]{background:#18584c;color:#fff;border-color:#18584c}#stock-movements{margin:0;font-variant-numeric:tabular-nums}#stock-movements li{padding:6px 0}\r\n\r\n:root[data-theme=\"dark\"]{--ink:#e5f0ea;--sub:#a9c0b6;--line:#345148;--teal:#94d8bb;--dark-bg:#101b19;--dark-panel:#172622;--dark-raised:#20332d;--dark-input:#121f1b;--dark-selected:#28473d;--dark-selected-border:#5c9b84;--dark-link:#a4dec6;--dark-danger:#ffc0b4;--dark-warning:#f2d098;color:var(--ink);background:var(--dark-bg);color-scheme:dark;}\r\n:root[data-theme=\"dark\"] :is(section,#crud-delete,#db-dialog){background:var(--dark-panel);border-color:var(--line);color:var(--ink)}\r\n:root[data-theme=\"dark\"] :is(.muted,dt,ol){color:var(--sub)}\r\n:root[data-theme=\"dark\"] .product,#app-notice{color:var(--teal)}\r\n:root[data-theme=\"dark\"] #app-notice[data-error=true]{color:var(--dark-danger)}\r\n:root[data-theme=\"dark\"] :is(input,select){background:var(--dark-input);border-color:#5c8576}\r\n:root[data-theme=\"dark\"] button{background:var(--dark-raised);color:var(--ink);border-color:var(--line)}\r\n:root[data-theme=\"dark\"] :is(.primary,#app-nav button[aria-pressed=true],[data-presentation=tablero] .primary,.db-badge){background:#9adbc0;color:#102d25;border-color:#9adbc0}\r\n:root[data-theme=\"dark\"] .primary:hover{background:#b8ead4;color:#102d25}\r\n:root[data-theme=\"dark\"] :is(.case[aria-pressed=true],[data-presentation=tablero] .case[aria-pressed=true],.state){background:var(--dark-selected);border-color:var(--dark-selected-border);color:var(--ink)}\r\n:root[data-theme=\"dark\"] .crud-table,.crud-table th,.crud-table td,[data-presentation=tablero] header{border-color:var(--line)}\r\n:root[data-theme=\"dark\"] :is(.crud-table th,[data-presentation=tablero] #app-cases,[data-presentation=tablero] .board-lane){background:var(--dark-raised);color:var(--ink);border-color:var(--line)}\r\n:root[data-theme=\"dark\"] [data-presentation=tablero] :is(.product,.board-lane h3){color:var(--teal)}\r\n:root[data-theme=\"dark\"] .danger{color:var(--dark-danger);border-color:#8a514a}:root[data-theme=\"dark\"] .danger:hover{background:#422822}\r\n:root{font-family:\"Inter\",\"Segoe UI\",system-ui,sans-serif;background:#f1f4fa;color:#182342;--app-line:#d9e2ee;--app-sub:#52627d;--app-stripe:#f5f7fc;--app-panel:#fff;--app-tint:#eaf1ff;--app-accent:#3459ac}\r\n:root[data-theme=\"dark\"]{--ink:#edf1fc;--sub:#b5c0d8;--line:#374661;--dark-bg:#101625;--dark-panel:#192235;--dark-raised:#24334f;--dark-input:#141d2f;--dark-selected:#2d4165;--dark-selected-border:#758ebd;--teal:#b4c9ff;--app-line:var(--line);--app-sub:var(--sub);--app-stripe:#202c42;--app-panel:var(--dark-panel);--app-tint:#283b60;--app-accent:#bed0ff}\r\n#application>header{position:relative;overflow:hidden;isolation:isolate;padding:28px clamp(17px,4vw,34px);border-radius:15px;background:linear-gradient(114deg,#18264d,#263b68);color:#f6f8ff;align-items:center;border:0}\r\n#application>header .product{color:#b4c9ff}\r\n#application>header h1{font-size:clamp(27px,5vw,42px);margin:0 0 8px;letter-spacing:-.035em;line-height:1.08}\r\n#application>header .muted{color:#dbe5fc;line-height:1.55}\r\n#application>header .role{position:relative;flex:none;background:#324875;border-radius:9px;padding:10px 12px;color:#fff}\r\n#application>header .role select{background:#1b2b50;color:#eef4ff;border-color:#8297c1}#application>header .role small{font-size:11px}\r\n.app-decoration{position:absolute;z-index:-1;right:0;top:0;width:min(44%,360px);height:100%;opacity:.55;pointer-events:none}\r\n#app-nav{gap:0;border-bottom:1px solid var(--app-line);margin-top:14px}\r\n#app-nav button,:root[data-theme=\"dark\"] #app-nav button{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--app-sub);padding:12px 16px;display:inline-flex;gap:7px;align-items:center}\r\n#app-nav button[aria-pressed=true],:root[data-theme=\"dark\"] #app-nav button[aria-pressed=true]{color:var(--app-accent);background:var(--app-tint);border-color:var(--app-accent);border-radius:7px 7px 0 0}\r\n#app-nav svg{width:17px;height:17px}\r\n#app-create,#app-cases,#app-detail,#crud-catalog,#stock-ledger,#db-bar{border-color:var(--app-line)}\r\n#app-create{border-top:3px solid var(--app-accent)}\r\n#app-detail{border-top:3px solid #8972bc}\r\n#app-form-title,#crud-title,#stock-title{font-size:18px}#crud-catalog,#stock-ledger{background:var(--app-panel)}\r\n.crud-table{border-color:var(--app-line)}.crud-table th,:root[data-theme=\"dark\"] .crud-table th{background:var(--app-tint);color:var(--app-accent);border-color:var(--app-line);font-size:12px}\r\n.crud-table td{border-color:var(--app-line)}.crud-table tbody tr:nth-child(even){background:var(--app-stripe)}\r\n.crud-table td:first-child{font-weight:650}.crud-table td[data-stock]{font-variant-numeric:tabular-nums;color:var(--app-accent);font-weight:750}\r\n#crud-empty,#stock-empty,.app-empty{padding:13px 12px;border:1px dashed var(--app-line);border-radius:8px;background:var(--app-stripe);color:var(--app-sub);line-height:1.5}\r\n#stock-movements{list-style:none;padding:0;display:grid;gap:0}\r\n#stock-movements .movement{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;border-bottom:1px solid var(--app-line);padding:12px 4px}\r\n.movement:last-child{border-bottom:0!important}.movement-direction{display:grid;place-items:center;width:33px;height:33px;border-radius:50%;font-size:16px;font-weight:750;background:var(--app-tint);color:var(--app-accent)}\r\n.movement-copy{display:grid;gap:3px;min-width:0}.movement-copy strong{font-size:14px;color:var(--ink,#182342)}.movement-copy span,.movement-totals span{font-size:11px;color:var(--app-sub)}.movement-totals{display:grid;text-align:right;gap:3px}.movement-totals strong{font-size:15px;color:var(--app-accent)}\r\n:root:not([data-theme=\"dark\"]) .primary{background:#3153a5;border-color:#3153a5;color:#fff}\r\n:root[data-theme=\"dark\"] .primary{background:#a9bfff;border-color:#a9bfff;color:#16264a}\r\n@media(prefers-reduced-motion:no-preference){.module-enter{animation:module-enter .2s ease-out both}}\r\n@keyframes module-enter{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}\r\n@media(max-width:550px){#application>header{align-items:start}.app-decoration{opacity:.23}#app-nav button,:root[data-theme=\"dark\"] #app-nav button{padding:10px 8px;gap:5px;font-size:12px}}\r\n.movement[data-direction=\"out\"] .movement-direction{background:#fff0d9;color:#81531f}\r\n.movement[data-direction=\"in\"] .movement-direction{background:#e0f3ea;color:#175d4c}\r\n:root[data-theme=\"dark\"] .movement[data-direction=\"out\"] .movement-direction{background:#443520;color:#f4ce91}\r\n:root[data-theme=\"dark\"] .movement[data-direction=\"in\"] .movement-direction{background:#234237;color:#a6e9cb}\r\n#app-notice{color:#235c49}\r\n:root[data-theme=\"dark\"] #app-notice{color:var(--teal)}\r\n:root[data-theme=\"dark\"] #app-notice[data-error=true]{color:var(--dark-danger)}\r\n#app-cases-help{margin:-5px 0 12px}\r\n\r\n.data-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--app-line)}\r\n.data-footer p,.data-help,#db-status-text{font-size:13px;color:var(--app-sub);overflow-wrap:anywhere}\r\n#db-dialog .section-head{display:flex;align-items:center;justify-content:space-between;gap:8px}\r\n.data-help,#db-status-text{margin-top:10px}\r\n.data-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}\r\n.data-sql{margin-top:15px;padding-top:12px;border-top:1px solid var(--app-line)}\r\n.data-sql summary{cursor:pointer;font-size:13px;font-weight:650}\r\n.data-sql .db-code{max-height:40vh}\r\n"};
+const DEMO = "{\r\n  \"version\": 1,\r\n  \"id\": \"prestamos-lab\",\r\n  \"nombre\": \"Préstamos de laboratorio\",\r\n  \"objetivo\": \"Solicitar, aprobar y devolver equipos del laboratorio universitario.\",\r\n  \"entidad\": \"Prestamo\",\r\n  \"actores\": [\r\n    {\r\n      \"id\": \"estudiante\",\r\n      \"nombre\": \"Estudiante\"\r\n    },\r\n    {\r\n      \"id\": \"responsable\",\r\n      \"nombre\": \"Responsable\"\r\n    }\r\n  ],\r\n  \"datos\": [\r\n    {\r\n      \"id\": \"solicitante\",\r\n      \"nombre\": \"Solicitante\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"equipo\",\r\n      \"nombre\": \"Equipo\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"cantidad\",\r\n      \"nombre\": \"Cantidad\",\r\n      \"tipo\": \"Entero\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"dias\",\r\n      \"nombre\": \"Días de préstamo\",\r\n      \"tipo\": \"Entero\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"motivo\",\r\n      \"nombre\": \"Motivo\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    }\r\n  ],\r\n  \"inicio\": {\r\n    \"actor\": \"estudiante\",\r\n    \"estado\": \"solicitado\",\r\n    \"nombre\": \"Nueva solicitud\"\r\n  },\r\n  \"estados\": [\r\n    {\r\n      \"id\": \"solicitado\",\r\n      \"nombre\": \"En revisión\"\r\n    },\r\n    {\r\n      \"id\": \"aprobado\",\r\n      \"nombre\": \"Aprobado\"\r\n    },\r\n    {\r\n      \"id\": \"entregado\",\r\n      \"nombre\": \"Entregado\"\r\n    },\r\n    {\r\n      \"id\": \"devuelto\",\r\n      \"nombre\": \"Devuelto\",\r\n      \"final\": true\r\n    },\r\n    {\r\n      \"id\": \"rechazado\",\r\n      \"nombre\": \"Rechazado\",\r\n      \"final\": true\r\n    }\r\n  ],\r\n  \"transiciones\": [\r\n    {\r\n      \"id\": \"aprobar\",\r\n      \"nombre\": \"Aprobar\",\r\n      \"actor\": \"responsable\",\r\n      \"desde\": \"solicitado\",\r\n      \"hasta\": \"aprobado\"\r\n    },\r\n    {\r\n      \"id\": \"rechazar\",\r\n      \"nombre\": \"Rechazar\",\r\n      \"actor\": \"responsable\",\r\n      \"desde\": \"solicitado\",\r\n      \"hasta\": \"rechazado\"\r\n    },\r\n    {\r\n      \"id\": \"entregar\",\r\n      \"nombre\": \"Registrar entrega\",\r\n      \"actor\": \"responsable\",\r\n      \"desde\": \"aprobado\",\r\n      \"hasta\": \"entregado\"\r\n    },\r\n    {\r\n      \"id\": \"devolver\",\r\n      \"nombre\": \"Registrar devolución\",\r\n      \"actor\": \"estudiante\",\r\n      \"desde\": \"entregado\",\r\n      \"hasta\": \"devuelto\"\r\n    }\r\n  ],\r\n  \"ocl\": [\r\n    \"context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 5\",\r\n    \"context Prestamo inv PlazoValido: self.dias >= 1 and self.dias \u003c= 30\",\r\n    \"context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8\"\r\n  ]\r\n}";
+const ADVANCED = "{\r\n  \"version\": 1,\r\n  \"id\": \"compras-institucionales\",\r\n  \"nombre\": \"Compras institucionales\",\r\n  \"objetivo\": \"Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.\",\r\n  \"entidad\": \"Compra\",\r\n  \"actores\": [\r\n    {\r\n      \"id\": \"solicitante\",\r\n      \"nombre\": \"Solicitante\"\r\n    },\r\n    {\r\n      \"id\": \"jefatura\",\r\n      \"nombre\": \"Jefatura\"\r\n    },\r\n    {\r\n      \"id\": \"presupuesto\",\r\n      \"nombre\": \"Presupuesto\"\r\n    },\r\n    {\r\n      \"id\": \"compras\",\r\n      \"nombre\": \"Compras\"\r\n    },\r\n    {\r\n      \"id\": \"juridico\",\r\n      \"nombre\": \"Jurídico\"\r\n    },\r\n    {\r\n      \"id\": \"comite\",\r\n      \"nombre\": \"Comité\"\r\n    },\r\n    {\r\n      \"id\": \"bodega\",\r\n      \"nombre\": \"Bodega\"\r\n    },\r\n    {\r\n      \"id\": \"contabilidad\",\r\n      \"nombre\": \"Contabilidad\"\r\n    },\r\n    {\r\n      \"id\": \"tesoreria\",\r\n      \"nombre\": \"Tesorería\"\r\n    }\r\n  ],\r\n  \"datos\": [\r\n    {\r\n      \"id\": \"referencia\",\r\n      \"nombre\": \"Referencia interna\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"unidad\",\r\n      \"nombre\": \"Unidad solicitante\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"objeto\",\r\n      \"nombre\": \"Objeto de la compra\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"justificacion\",\r\n      \"nombre\": \"Justificación\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"monto\",\r\n      \"nombre\": \"Monto estimado (USD)\",\r\n      \"tipo\": \"Entero\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"cantidad\",\r\n      \"nombre\": \"Unidades\",\r\n      \"tipo\": \"Entero\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"cotizaciones\",\r\n      \"nombre\": \"Cotizaciones disponibles\",\r\n      \"tipo\": \"Entero\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"plazo\",\r\n      \"nombre\": \"Plazo de entrega (días)\",\r\n      \"tipo\": \"Entero\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"proveedor\",\r\n      \"nombre\": \"Proveedor propuesto\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": false\r\n    },\r\n    {\r\n      \"id\": \"partida\",\r\n      \"nombre\": \"Partida presupuestaria\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"prioridad\",\r\n      \"tipo\": \"Seleccion\",\r\n      \"opciones\": [\r\n        {\r\n          \"nombre\": \"Normal\",\r\n          \"id\": \"normal\"\r\n        },\r\n        {\r\n          \"nombre\": \"Urgente\",\r\n          \"id\": \"urgente\"\r\n        },\r\n        {\r\n          \"nombre\": \"Crítica\",\r\n          \"id\": \"critica\"\r\n        }\r\n      ],\r\n      \"requerido\": false,\r\n      \"nombre\": \"Prioridad\"\r\n    },\r\n    {\r\n      \"id\": \"fecha-necesaria\",\r\n      \"tipo\": \"Fecha\",\r\n      \"requerido\": false,\r\n      \"nombre\": \"Fecha en que se necesita\"\r\n    },\r\n    {\r\n      \"id\": \"documentacion\",\r\n      \"tipo\": \"Booleano\",\r\n      \"requerido\": false,\r\n      \"nombre\": \"Documentación adjunta disponible\"\r\n    }\r\n  ],\r\n  \"inicio\": {\r\n    \"actor\": \"solicitante\",\r\n    \"estado\": \"solicitada\",\r\n    \"nombre\": \"Registrar solicitud\"\r\n  },\r\n  \"estados\": [\r\n    {\r\n      \"id\": \"solicitada\",\r\n      \"nombre\": \"Revisión de jefatura\"\r\n    },\r\n    {\r\n      \"id\": \"observada\",\r\n      \"nombre\": \"Ampliación pendiente\"\r\n    },\r\n    {\r\n      \"id\": \"presupuesto\",\r\n      \"nombre\": \"Control de presupuesto\"\r\n    },\r\n    {\r\n      \"id\": \"modalidad\",\r\n      \"nombre\": \"Selección de modalidad\"\r\n    },\r\n    {\r\n      \"id\": \"juridica\",\r\n      \"nombre\": \"Revisión jurídica\"\r\n    },\r\n    {\r\n      \"id\": \"comite\",\r\n      \"nombre\": \"Evaluación del comité\"\r\n    },\r\n    {\r\n      \"id\": \"adjudicada\",\r\n      \"nombre\": \"Adjudicada\"\r\n    },\r\n    {\r\n      \"id\": \"ordenada\",\r\n      \"nombre\": \"Orden emitida\"\r\n    },\r\n    {\r\n      \"id\": \"incidencia\",\r\n      \"nombre\": \"Incidencia de recepción\"\r\n    },\r\n    {\r\n      \"id\": \"recibida\",\r\n      \"nombre\": \"Recibida\"\r\n    },\r\n    {\r\n      \"id\": \"contabilidad\",\r\n      \"nombre\": \"Revisión contable\"\r\n    },\r\n    {\r\n      \"id\": \"pago\",\r\n      \"nombre\": \"Pendiente de pago\"\r\n    },\r\n    {\r\n      \"id\": \"pagada\",\r\n      \"nombre\": \"Pagada\"\r\n    },\r\n    {\r\n      \"id\": \"cerrada\",\r\n      \"nombre\": \"Cerrada\",\r\n      \"final\": true\r\n    },\r\n    {\r\n      \"id\": \"rechazada\",\r\n      \"nombre\": \"Rechazada\",\r\n      \"final\": true\r\n    },\r\n    {\r\n      \"id\": \"cancelada\",\r\n      \"nombre\": \"Cancelada\",\r\n      \"final\": true\r\n    }\r\n  ],\r\n  \"transiciones\": [\r\n    {\r\n      \"id\": \"avalar\",\r\n      \"nombre\": \"Enviar a presupuesto\",\r\n      \"actor\": \"jefatura\",\r\n      \"desde\": \"solicitada\",\r\n      \"hasta\": \"presupuesto\"\r\n    },\r\n    {\r\n      \"id\": \"observar\",\r\n      \"nombre\": \"Solicitar ampliación\",\r\n      \"actor\": \"jefatura\",\r\n      \"desde\": \"solicitada\",\r\n      \"hasta\": \"observada\"\r\n    },\r\n    {\r\n      \"id\": \"justificar\",\r\n      \"nombre\": \"Registrar ampliación externa\",\r\n      \"actor\": \"solicitante\",\r\n      \"desde\": \"observada\",\r\n      \"hasta\": \"solicitada\"\r\n    },\r\n    {\r\n      \"id\": \"retirar\",\r\n      \"nombre\": \"Retirar solicitud\",\r\n      \"actor\": \"solicitante\",\r\n      \"desde\": \"observada\",\r\n      \"hasta\": \"cancelada\"\r\n    },\r\n    {\r\n      \"id\": \"denegar\",\r\n      \"nombre\": \"Rechazar solicitud\",\r\n      \"actor\": \"jefatura\",\r\n      \"desde\": \"solicitada\",\r\n      \"hasta\": \"rechazada\"\r\n    },\r\n    {\r\n      \"id\": \"certificar\",\r\n      \"nombre\": \"Certificar disponibilidad\",\r\n      \"actor\": \"presupuesto\",\r\n      \"desde\": \"presupuesto\",\r\n      \"hasta\": \"modalidad\"\r\n    },\r\n    {\r\n      \"id\": \"sinfondos\",\r\n      \"nombre\": \"Rechazar por falta de fondos\",\r\n      \"actor\": \"presupuesto\",\r\n      \"desde\": \"presupuesto\",\r\n      \"hasta\": \"rechazada\"\r\n    },\r\n    {\r\n      \"id\": \"directa\",\r\n      \"nombre\": \"Adjudicar compra directa\",\r\n      \"actor\": \"compras\",\r\n      \"desde\": \"modalidad\",\r\n      \"hasta\": \"adjudicada\"\r\n    },\r\n    {\r\n      \"id\": \"competitiva\",\r\n      \"nombre\": \"Enviar a revisión jurídica\",\r\n      \"actor\": \"compras\",\r\n      \"desde\": \"modalidad\",\r\n      \"hasta\": \"juridica\"\r\n    },\r\n    {\r\n      \"id\": \"cancelar\",\r\n      \"nombre\": \"Cancelar trámite\",\r\n      \"actor\": \"compras\",\r\n      \"desde\": \"modalidad\",\r\n      \"hasta\": \"cancelada\"\r\n    },\r\n    {\r\n      \"id\": \"dictamen\",\r\n      \"nombre\": \"Emitir dictamen favorable\",\r\n      \"actor\": \"juridico\",\r\n      \"desde\": \"juridica\",\r\n      \"hasta\": \"comite\"\r\n    },\r\n    {\r\n      \"id\": \"devolver\",\r\n      \"nombre\": \"Devolver a compras\",\r\n      \"actor\": \"juridico\",\r\n      \"desde\": \"juridica\",\r\n      \"hasta\": \"modalidad\"\r\n    },\r\n    {\r\n      \"id\": \"objecion\",\r\n      \"nombre\": \"Rechazar por objeción jurídica\",\r\n      \"actor\": \"juridico\",\r\n      \"desde\": \"juridica\",\r\n      \"hasta\": \"rechazada\"\r\n    },\r\n    {\r\n      \"id\": \"adjudicar\",\r\n      \"nombre\": \"Adjudicar por comité\",\r\n      \"actor\": \"comite\",\r\n      \"desde\": \"comite\",\r\n      \"hasta\": \"adjudicada\"\r\n    },\r\n    {\r\n      \"id\": \"desierta\",\r\n      \"nombre\": \"Declarar proceso desierto\",\r\n      \"actor\": \"comite\",\r\n      \"desde\": \"comite\",\r\n      \"hasta\": \"cancelada\"\r\n    },\r\n    {\r\n      \"id\": \"emitir\",\r\n      \"nombre\": \"Emitir orden de compra\",\r\n      \"actor\": \"compras\",\r\n      \"desde\": \"adjudicada\",\r\n      \"hasta\": \"ordenada\"\r\n    },\r\n    {\r\n      \"id\": \"recibir\",\r\n      \"nombre\": \"Confirmar recepción conforme\",\r\n      \"actor\": \"bodega\",\r\n      \"desde\": \"ordenada\",\r\n      \"hasta\": \"recibida\"\r\n    },\r\n    {\r\n      \"id\": \"incidencia\",\r\n      \"nombre\": \"Registrar recepción no conforme\",\r\n      \"actor\": \"bodega\",\r\n      \"desde\": \"ordenada\",\r\n      \"hasta\": \"incidencia\"\r\n    },\r\n    {\r\n      \"id\": \"subsanar\",\r\n      \"nombre\": \"Registrar subsanación del proveedor\",\r\n      \"actor\": \"compras\",\r\n      \"desde\": \"incidencia\",\r\n      \"hasta\": \"ordenada\"\r\n    },\r\n    {\r\n      \"id\": \"anular\",\r\n      \"nombre\": \"Anular orden\",\r\n      \"actor\": \"compras\",\r\n      \"desde\": \"incidencia\",\r\n      \"hasta\": \"cancelada\"\r\n    },\r\n    {\r\n      \"id\": \"enviarcontable\",\r\n      \"nombre\": \"Enviar expediente a contabilidad\",\r\n      \"actor\": \"compras\",\r\n      \"desde\": \"recibida\",\r\n      \"hasta\": \"contabilidad\"\r\n    },\r\n    {\r\n      \"id\": \"contabilizar\",\r\n      \"nombre\": \"Autorizar contabilización\",\r\n      \"actor\": \"contabilidad\",\r\n      \"desde\": \"contabilidad\",\r\n      \"hasta\": \"pago\"\r\n    },\r\n    {\r\n      \"id\": \"revisar\",\r\n      \"nombre\": \"Devolver expediente\",\r\n      \"actor\": \"contabilidad\",\r\n      \"desde\": \"contabilidad\",\r\n      \"hasta\": \"recibida\"\r\n    },\r\n    {\r\n      \"id\": \"pagar\",\r\n      \"nombre\": \"Registrar pago\",\r\n      \"actor\": \"tesoreria\",\r\n      \"desde\": \"pago\",\r\n      \"hasta\": \"pagada\"\r\n    },\r\n    {\r\n      \"id\": \"cerrar\",\r\n      \"nombre\": \"Cerrar expediente\",\r\n      \"actor\": \"compras\",\r\n      \"desde\": \"pagada\",\r\n      \"hasta\": \"cerrada\"\r\n    }\r\n  ],\r\n  \"ocl\": [\r\n    \"context Compra inv MontoValido: self.monto >= 1 and self.monto \u003c= 250000\",\r\n    \"context Compra inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 10000\",\r\n    \"context Compra inv PlazoValido: self.plazo >= 1 and self.plazo \u003c= 180\",\r\n    \"context Compra inv CotizacionesValidas: self.cotizaciones >= 0 and self.cotizaciones \u003c= 30\",\r\n    \"context Compra inv ReferenciaValida: self.referencia.size() >= 4\",\r\n    \"context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() >= 20\",\r\n    \"context Compra::certificar() pre PartidaIdentificada: self.partida.size() >= 4\",\r\n    \"context Compra::directa() pre MontoCompraDirecta: self.monto \u003c 10000 and self.cotizaciones >= 1\",\r\n    \"context Compra::competitiva() pre UmbralCompetitivo: self.monto >= 10000 and self.cotizaciones >= 3\",\r\n    \"context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones >= 3\",\r\n    \"context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() >= 3\",\r\n    \"context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() >= 6\"\r\n  ]\r\n}";
 const INVENTORY = "{\r\n  \"version\": 1,\r\n  \"tipo\": \"crud\",\r\n  \"id\": \"inventario\",\r\n  \"nombre\": \"Inventario de laboratorio\",\r\n  \"objetivo\": \"Consulta y actualiza el catálogo de productos y sus existencias.\",\r\n  \"entidad\": \"Producto\",\r\n  \"datos\": [\r\n    {\r\n      \"id\": \"nombre\",\r\n      \"nombre\": \"Producto\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"sku\",\r\n      \"nombre\": \"Código SKU\",\r\n      \"tipo\": \"Texto\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"categoria\",\r\n      \"nombre\": \"Categoría\",\r\n      \"tipo\": \"Seleccion\",\r\n      \"requerido\": true,\r\n      \"opciones\": [\r\n        {\r\n          \"id\": \"equipos\",\r\n          \"nombre\": \"Equipos\"\r\n        },\r\n        {\r\n          \"id\": \"consumibles\",\r\n          \"nombre\": \"Consumibles\"\r\n        },\r\n        {\r\n          \"id\": \"repuestos\",\r\n          \"nombre\": \"Repuestos\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"stock\",\r\n      \"nombre\": \"Stock disponible\",\r\n      \"tipo\": \"Entero\",\r\n      \"requerido\": true\r\n    },\r\n    {\r\n      \"id\": \"ubicacion\",\r\n      \"nombre\": \"Ubicación\",\r\n      \"tipo\": \"Texto\"\r\n    },\r\n    {\r\n      \"id\": \"reposicion\",\r\n      \"nombre\": \"Fecha de reposición\",\r\n      \"tipo\": \"Fecha\"\r\n    },\r\n    {\r\n      \"id\": \"activo\",\r\n      \"nombre\": \"Producto activo\",\r\n      \"tipo\": \"Booleano\"\r\n    }\r\n  ],\r\n  \"unicos\": [\r\n    \"sku\"\r\n  ],\r\n  \"ocl\": [\r\n    \"context Producto inv StockNoNegativo: self.stock >= 0\"\r\n  ]\r\n}";
 const LABORATORY = "{\n  \"version\": 1,\n  \"id\": \"gestion-laboratorio\",\n  \"nombre\": \"Gestión de laboratorio\",\n  \"objetivo\": \"Administra equipos y tramita préstamos con existencias compartidas.\",\n  \"entidad\": \"Prestamo\",\n  \"actores\": [\n    {\n      \"id\": \"estudiante\",\n      \"nombre\": \"Estudiante\"\n    },\n    {\n      \"id\": \"responsable\",\n      \"nombre\": \"Responsable\"\n    }\n  ],\n  \"datos\": [\n    {\n      \"id\": \"solicitante\",\n      \"nombre\": \"Solicitante\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"equipo\",\n      \"nombre\": \"Equipo del inventario\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"cantidad\",\n      \"nombre\": \"Cantidad\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"dias\",\n      \"nombre\": \"Días de préstamo\",\n      \"tipo\": \"Entero\",\n      \"requerido\": true\n    },\n    {\n      \"id\": \"motivo\",\n      \"nombre\": \"Motivo\",\n      \"tipo\": \"Texto\",\n      \"requerido\": true\n    }\n  ],\n  \"inicio\": {\n    \"actor\": \"estudiante\",\n    \"estado\": \"solicitado\",\n    \"nombre\": \"Nueva solicitud\"\n  },\n  \"estados\": [\n    {\n      \"id\": \"solicitado\",\n      \"nombre\": \"En revisión\"\n    },\n    {\n      \"id\": \"aprobado\",\n      \"nombre\": \"Aprobado\"\n    },\n    {\n      \"id\": \"entregado\",\n      \"nombre\": \"Entregado\"\n    },\n    {\n      \"id\": \"devuelto\",\n      \"nombre\": \"Devuelto\",\n      \"final\": true\n    },\n    {\n      \"id\": \"rechazado\",\n      \"nombre\": \"Rechazado\",\n      \"final\": true\n    }\n  ],\n  \"transiciones\": [\n    {\n      \"id\": \"aprobar\",\n      \"nombre\": \"Aprobar\",\n      \"actor\": \"responsable\",\n      \"desde\": \"solicitado\",\n      \"hasta\": \"aprobado\"\n    },\n    {\n      \"id\": \"rechazar\",\n      \"nombre\": \"Rechazar\",\n      \"actor\": \"responsable\",\n      \"desde\": \"solicitado\",\n      \"hasta\": \"rechazado\"\n    },\n    {\n      \"id\": \"entregar\",\n      \"nombre\": \"Registrar entrega\",\n      \"actor\": \"responsable\",\n      \"desde\": \"aprobado\",\n      \"hasta\": \"entregado\"\n    },\n    {\n      \"id\": \"devolver\",\n      \"nombre\": \"Registrar devolución\",\n      \"actor\": \"estudiante\",\n      \"desde\": \"entregado\",\n      \"hasta\": \"devuelto\"\n    }\n  ],\n  \"ocl\": [\n    \"context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 5\",\n    \"context Prestamo inv PlazoValido: self.dias >= 1 and self.dias \u003c= 30\",\n    \"context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8\"\n  ],\n  \"integracion\": {\n    \"catalogo\": {\n      \"version\": 1,\n      \"tipo\": \"crud\",\n      \"id\": \"inventario\",\n      \"nombre\": \"Inventario compartido\",\n      \"objetivo\": \"Consulta y actualiza el catálogo de productos y sus existencias.\",\n      \"entidad\": \"Producto\",\n      \"datos\": [\n        {\n          \"id\": \"nombre\",\n          \"nombre\": \"Producto\",\n          \"tipo\": \"Texto\",\n          \"requerido\": true\n        },\n        {\n          \"id\": \"sku\",\n          \"nombre\": \"Código SKU\",\n          \"tipo\": \"Texto\",\n          \"requerido\": true\n        },\n        {\n          \"id\": \"categoria\",\n          \"nombre\": \"Categoría\",\n          \"tipo\": \"Seleccion\",\n          \"requerido\": true,\n          \"opciones\": [\n            {\n              \"id\": \"equipos\",\n              \"nombre\": \"Equipos\"\n            },\n            {\n              \"id\": \"consumibles\",\n              \"nombre\": \"Consumibles\"\n            },\n            {\n              \"id\": \"repuestos\",\n              \"nombre\": \"Repuestos\"\n            }\n          ]\n        },\n        {\n          \"id\": \"stock\",\n          \"nombre\": \"Stock disponible\",\n          \"tipo\": \"Entero\",\n          \"requerido\": true\n        },\n        {\n          \"id\": \"ubicacion\",\n          \"nombre\": \"Ubicación\",\n          \"tipo\": \"Texto\"\n        },\n        {\n          \"id\": \"reposicion\",\n          \"nombre\": \"Fecha de reposición\",\n          \"tipo\": \"Fecha\"\n        },\n        {\n          \"id\": \"activo\",\n          \"nombre\": \"Producto activo\",\n          \"tipo\": \"Booleano\"\n        }\n      ],\n      \"unicos\": [\n        \"sku\"\n      ],\n      \"ocl\": [\n        \"context Producto inv StockNoNegativo: self.stock >= 0\"\n      ]\n    },\n    \"referencia\": \"equipo\",\n    \"clave\": \"sku\",\n    \"existencias\": \"stock\",\n    \"cantidad\": \"cantidad\",\n    \"movimientos\": [\n      {\n        \"transicion\": \"entregar\",\n        \"tipo\": \"salida\"\n      },\n      {\n        \"transicion\": \"devolver\",\n        \"tipo\": \"entrada\"\n      }\n    ]\n  }\n}";
 const LABORATORY_DATA = {"records":[{"id":"demo-ana","values":{"solicitante":"Ana Torres","equipo":"demo-microscopio","cantidad":1,"dias":2,"motivo":"Práctica de observación de tejidos."},"state":"solicitado","history":[{"action":"Nueva solicitud","role":"estudiante","at":"2026-11-13T15:00:00Z"}]},{"id":"demo-mateo","values":{"solicitante":"Mateo Silva","equipo":"demo-kit","cantidad":2,"dias":3,"motivo":"Montaje de un circuito para la práctica."},"state":"aprobado","history":[{"action":"Nueva solicitud","role":"estudiante","at":"2026-11-13T13:20:00Z"},{"action":"Aprobar","role":"responsable","at":"2026-11-13T14:00:00Z"}]},{"id":"demo-diego","values":{"solicitante":"Diego Rojas","equipo":"demo-microscopio","cantidad":2,"dias":4,"motivo":"Observación de muestras en clase."},"state":"entregado","history":[{"action":"Nueva solicitud","role":"estudiante","at":"2026-11-12T14:00:00Z"},{"action":"Aprobar","role":"responsable","at":"2026-11-12T15:00:00Z"},{"action":"Registrar entrega","role":"responsable","at":"2026-11-12T16:00:00Z"}]},{"id":"demo-nora","values":{"solicitante":"Nora Vega","equipo":"demo-portatil","cantidad":1,"dias":2,"motivo":"Instalación de software para un taller."},"state":"rechazado","history":[{"action":"Nueva solicitud","role":"estudiante","at":"2026-11-11T16:00:00Z"},{"action":"Rechazar","role":"responsable","at":"2026-11-11T17:00:00Z"}]},{"id":"demo-elena","values":{"solicitante":"Elena Mora","equipo":"demo-multimetro","cantidad":2,"dias":2,"motivo":"Medición de resistencia en el proyecto."},"state":"devuelto","history":[{"action":"Nueva solicitud","role":"estudiante","at":"2026-11-09T14:00:00Z"},{"action":"Aprobar","role":"responsable","at":"2026-11-09T15:00:00Z"},{"action":"Registrar entrega","role":"responsable","at":"2026-11-09T16:00:00Z"},{"action":"Registrar devolución","role":"estudiante","at":"2026-11-11T15:00:00Z"}]}],"products":[{"id":"demo-microscopio","values":{"nombre":"Microscopio binocular","sku":"MIC-DEMO-01","categoria":"equipos","stock":4,"ubicacion":"Óptica · Estante A","reposicion":null,"activo":true}},{"id":"demo-multimetro","values":{"nombre":"Multímetro digital","sku":"MUL-DEMO-01","categoria":"equipos","stock":8,"ubicacion":"Electrónica · Estante B","reposicion":null,"activo":true}},{"id":"demo-portatil","values":{"nombre":"Portátil de diagnóstico","sku":"POR-DEMO-01","categoria":"equipos","stock":3,"ubicacion":"Armario de equipos","reposicion":null,"activo":true}},{"id":"demo-kit","values":{"nombre":"Kit de cables de prueba","sku":"CAB-DEMO-01","categoria":"repuestos","stock":0,"ubicacion":"Electrónica · Cajón 3","reposicion":"2026-11-20","activo":true}}],"movements":[{"request":"demo-diego","requester":"Diego Rojas","sku":"MIC-DEMO-01","name":"Microscopio binocular","units":-2,"stock":4,"action":"entregar","at":"2026-11-12T16:00:00Z"},{"request":"demo-elena","requester":"Elena Mora","sku":"MUL-DEMO-01","name":"Multímetro digital","units":2,"stock":8,"action":"devolver","at":"2026-11-11T15:00:00Z"},{"request":"demo-elena","requester":"Elena Mora","sku":"MUL-DEMO-01","name":"Multímetro digital","units":-2,"stock":6,"action":"entregar","at":"2026-11-09T16:00:00Z"}]};
@@ -1341,7 +1361,7 @@ const compile = (function createCompiler(METAMODEL, application) {
     }
 
     return {
-      motor: 'SQL Estándar (PostgreSQL / SQLite3) + Almacén Transaccional IndexedDB',
+      motor: 'SQLite 3',
       tablas,
     };
   }
@@ -1356,9 +1376,9 @@ const compile = (function createCompiler(METAMODEL, application) {
           'Formulario de Alta/Edición (' + pim.propiedades.length + ' controles)',
           'Barra de búsqueda en tiempo real',
           'Tabla de datos con columnas: ' + pim.propiedades.map(p => p.nombre).join(', ') + ' + Acciones',
-          'Panel de conexión a Base de Datos IndexedDB / Archivo (.db.json y .sql)',
+          'Gestión de datos y exportación',
         ],
-        adaptadorDatos: 'IndexedDB (almacén de objetos) + Sincronización con Archivo Local (.db.json / .sql) + Fallback localStorage',
+        adaptadorDatos: 'IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.',
         seguridad: 'Validación de unicidad (' + (pim.unicos.join(', ') || 'sin claves únicas') + ') e invariantes OCL en cliente antes de confirmar transacción',
       };
     }
@@ -1366,19 +1386,19 @@ const compile = (function createCompiler(METAMODEL, application) {
     const isBoard = presentation === 'tablero';
     const containers = isBoard
       ? [
-          'Cabecera con selector de Rol RBAC (' + pim.roles.map(r => r.nombre).join(', ') + ')',
+          'Cabecera con selector de rol de demostración (' + pim.roles.map(r => r.nombre).join(', ') + ')',
           'Tablero Kanban con ' + pim.estados.length + ' carriles de estado: ' + pim.estados.map(s => s.nombre + (s.final ? ' [Final]' : '')).join(' | '),
           'Formulario de creación para rol inicial (' + pim.creacion.actor + ')',
           'Inspector lateral de caso seleccionado + Botonera de transiciones + Historial',
           ...(pim.integracion ? ['Módulo integrado de Catálogo (' + pim.integracion.catalogo.entidad + ') y Kardex de Movimientos'] : []),
-          'Barra de Persistencia en Base de Datos (IndexedDB + Archivo .db.json / .sql)',
+          'Gestión de datos y exportación',
         ]
       : [
-          'Cabecera con selector de Rol RBAC (' + pim.roles.map(r => r.nombre).join(', ') + ')',
+          'Cabecera con selector de rol de demostración (' + pim.roles.map(r => r.nombre).join(', ') + ')',
           'Columna izquierda: Formulario de captura (' + pim.creacion.nombre + ') + Bandeja vertical de casos con badge de estado',
           'Columna derecha: Inspector maestro-detalle, disparadores de transición y línea de tiempo auditada',
           ...(pim.integracion ? ['Módulo integrado de Catálogo (' + pim.integracion.catalogo.entidad + ') y Kardex de Movimientos'] : []),
-          'Barra de Persistencia en Base de Datos (IndexedDB + Archivo .db.json / .sql)',
+          'Gestión de datos y exportación',
         ];
 
     return {
@@ -1387,8 +1407,8 @@ const compile = (function createCompiler(METAMODEL, application) {
         ? 'Grid horizontal de carriles agrupados por cada estado de la máquina de estados (' + pim.estados.length + ' columnas) + panel de formulario e inspector.'
         : 'Layout de dos columnas 50/50: captura y lista cronológica a la izquierda; ficha técnica, acciones por rol e historial a la derecha.',
       contenedores: containers,
-      adaptadorDatos: 'IndexedDB + Sincronización en vivo con Archivo de Base de Datos (.db.json / .sql) + Fallback localStorage',
-      seguridad: 'Control de acceso basado en roles (RBAC) para ' + pim.roles.length + ' actores y ' + pim.restricciones.length + ' validadores OCL compilados a ES2022',
+      adaptadorDatos: 'IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.',
+      seguridad: 'Simulación de roles en cliente para ' + pim.roles.length + ' actores y ' + pim.restricciones.length + ' validadores OCL compilados a ES2022',
     };
   }
 
@@ -1412,7 +1432,7 @@ const compile = (function createCompiler(METAMODEL, application) {
     }));
     const crud = pim.tipo === 'crud';
     const effectivePresentation = crud ? 'tabla' : presentation;
-    const almacen = { tipo: 'IndexedDB + Archivo (.db.json / .sql) + localStorage', clave: (crud ? 'mda.registros.' : 'mda.casos.') + storageScope };
+    const almacen = { tipo: 'IndexedDB + localStorage', clave: (crud ? 'mda.registros.' : 'mda.casos.') + storageScope };
     const arquitectura = buildPsmArchitecture(pim, effectivePresentation);
     const esquemaSql = buildSqlSchema(pim);
 
@@ -1811,6 +1831,8 @@ const compile = (function createCompiler(METAMODEL, application) {
   let durable = true;
   let fileHandle = null;
   let idbDatabase = null;
+  let hasLocalSnapshot = false;
+  let pendingFileWrite = Promise.resolve();
 
   function filterValidRecords(list) {
     if (!Array.isArray(list)) return [];
@@ -1819,7 +1841,7 @@ const compile = (function createCompiler(METAMODEL, application) {
   }
 
   function applyStoredPayload(stored) {
-    if (!stored) return;
+    if (!stored) return false;
     if (link && Array.isArray(stored.records) && Array.isArray(stored.products) && Array.isArray(stored.movements)) {
       products = stored.products;
       movements = stored.movements;
@@ -1828,12 +1850,13 @@ const compile = (function createCompiler(METAMODEL, application) {
       records = filterValidRecords(stored.records);
     } else if (Array.isArray(stored)) {
       records = filterValidRecords(stored);
-    }
+    } else return false;
+    return true;
   }
 
   try {
     const stored = JSON.parse(localStorage.getItem(model.almacen.clave) ?? 'null');
-    applyStoredPayload(stored);
+    hasLocalSnapshot = applyStoredPayload(stored);
   } catch {
     durable = false;
   }
@@ -1849,31 +1872,21 @@ const compile = (function createCompiler(METAMODEL, application) {
     };
   }
 
-  function updateDbStatus(extra = '') {
+  function updateDbStatus() {
     const badge = $('#db-badge');
     const text = $('#db-status-text');
-    if (!badge || !text) return;
-    const countText = crud
-      ? records.length + ' registros'
-      : records.length + ' casos' + (link ? ' · ' + products.length + ' productos · ' + movements.length + ' movimientos' : '');
-    if (fileHandle) {
-      badge.textContent = 'Archivo BD conectado: ' + fileHandle.name;
-      badge.dataset.file = 'true';
-      text.textContent = 'Sincronización automática en disco + IndexedDB (' + countText + ').' + extra;
-    } else if (idbDatabase) {
-      badge.textContent = 'BD IndexedDB activa';
-      badge.dataset.file = 'false';
-      text.textContent = 'Almacén transaccional IndexedDB (' + countText + ').' + extra;
-    } else {
-      badge.textContent = durable ? 'Almacén Local' : 'Memoria de sesión';
-      badge.dataset.file = 'false';
-      text.textContent = 'Persistencia en navegador (' + countText + ').' + extra;
-    }
+    const count = crud ? records.length + ' registros' :
+      records.length + ' solicitudes' + (link ? ' · ' + products.length + ' artículos · ' + movements.length + ' movimientos' : '');
+    const mode = idbDatabase ? 'Guardado en el navegador (IndexedDB)' :
+      durable ? 'Guardado en el navegador' : 'Sesión temporal';
+    badge.textContent = fileHandle ? 'Archivo vinculado · ' + fileHandle.name : mode;
+    text.textContent = mode + ' · ' + count + '.';
+    if (fileHandle) text.textContent += ' Los cambios también se escriben en «' + fileHandle.name + '» durante esta sesión.';
   }
 
   function initIndexedDb() {
-    if (!globalThis.indexedDB) return;
     try {
+      if (!globalThis.indexedDB) return;
       const request = indexedDB.open('mda_studio_runtime_db', 1);
       request.onupgradeneeded = event => {
         const db = event.target.result;
@@ -1887,10 +1900,9 @@ const compile = (function createCompiler(METAMODEL, application) {
         const store = tx.objectStore('models_data');
         const getReq = store.get(model.almacen.clave);
         getReq.onsuccess = () => {
-          if (getReq.result?.payload && !records.length && !products.length) {
-            applyStoredPayload(getReq.result.payload);
+          if (!hasLocalSnapshot && applyStoredPayload(getReq.result?.payload)) {
             refreshCurrentView();
-          } else if (records.length || products.length) {
+          } else if (hasLocalSnapshot || records.length || products.length) {
             writeIndexedDb(currentPayload());
           }
           updateDbStatus();
@@ -1911,16 +1923,21 @@ const compile = (function createCompiler(METAMODEL, application) {
     }
   }
 
-  async function syncFileHandle(payload) {
-    if (!fileHandle) return;
-    try {
-      const writable = await fileHandle.createWritable();
-      await writable.write(JSON.stringify(payload, null, 2) + '\n');
-      await writable.close();
-      updateDbStatus(' Guardado en archivo.');
-    } catch {
-      notify('No se pudo escribir automáticamente en el archivo conectado.', true);
-    }
+  function syncFileHandle(payload) {
+    const handle = fileHandle;
+    if (!handle) return pendingFileWrite;
+    pendingFileWrite = pendingFileWrite.then(async () => {
+      try {
+        const writable = await handle.createWritable();
+        await writable.write(JSON.stringify(payload, null, 2) + '\n');
+        await writable.close();
+      } catch {
+        if (fileHandle === handle) fileHandle = null;
+        updateDbStatus();
+        notify('No se pudo escribir en el archivo vinculado.', true);
+      }
+    });
+    return pendingFileWrite;
   }
 
   function element(tag, label, className) {
@@ -1938,6 +1955,7 @@ const compile = (function createCompiler(METAMODEL, application) {
 
   function persist(next, nextProducts = products, nextMovements = movements) {
     const payload = currentPayload(next, nextProducts, nextMovements);
+    hasLocalSnapshot = true;
     if (durable) {
       try {
         localStorage.setItem(model.almacen.clave, JSON.stringify(link ? { records: next, products: nextProducts, movements: nextMovements } : next));
@@ -1951,7 +1969,7 @@ const compile = (function createCompiler(METAMODEL, application) {
     writeIndexedDb(payload);
     syncFileHandle(payload);
     updateDbStatus();
-    return fileHandle ? ' Sincronizado en ' + fileHandle.name + '.' : durable ? '' : ' Los cambios se conservan en esta pestaña.';
+    return durable || idbDatabase ? '' : ' Los cambios se conservan en esta pestaña.';
   }
 
   function sqlLiteral(val) {
@@ -2398,22 +2416,31 @@ const compile = (function createCompiler(METAMODEL, application) {
     if (durable) notify('');
   }
 
-  $('#db-connect-file').onclick = async () => {
-    if (typeof window.showSaveFilePicker === 'function') {
-      try {
-        fileHandle = await window.showSaveFilePicker({
-          suggestedName: model.id + '.db.json',
-          types: [{ description: 'Base de datos JSON MDA', accept: { 'application/json': ['.json'] } }],
-        });
-        await syncFileHandle(currentPayload());
-        notify('Archivo de base de datos «' + fileHandle.name + '» conectado en vivo.');
-        return;
-      } catch (err) {
-        if (err?.name === 'AbortError') return;
+  const dataDialog = $('#db-dialog');
+  $('#open-data-tools').onclick = () => {
+    $('#db-inspect-btn').open = false;
+    dataDialog.showModal();
+  };
+  const connectFile = $('#db-connect-file');
+  connectFile.hidden = window.top !== window || typeof window.showSaveFilePicker !== 'function';
+  connectFile.onclick = async () => {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: model.id + '.db.json',
+        types: [{ description: 'Copia de datos JSON', accept: { 'application/json': ['.json'] } }],
+      });
+      fileHandle = handle;
+      dataDialog.close();
+      await syncFileHandle(currentPayload());
+      if (fileHandle === handle) {
+        updateDbStatus();
+        notify('Copia vinculada a «' + handle.name + '».');
       }
+    } catch (error) {
+      if (error?.name === 'AbortError') return;
+      dataDialog.close();
+      notify('El navegador no pudo vincular el archivo. Puedes descargar una copia JSON.', true);
     }
-    downloadFile(JSON.stringify(currentPayload(), null, 2) + '\n', model.id + '.db.json', 'application/json');
-    notify('Base de datos descargada como ' + model.id + '.db.json (abre la app en una pestaña nueva para conexión directa en disco).');
   };
 
   $('#db-import-btn').onclick = () => $('#db-import-input').click();
@@ -2422,13 +2449,18 @@ const compile = (function createCompiler(METAMODEL, application) {
     if (!file) return;
     try {
       const parsed = JSON.parse(await file.text());
-      applyStoredPayload(parsed);
+      if (!parsed || (parsed.modelId && parsed.modelId !== model.id) ||
+          (link && (!Array.isArray(parsed.records) || !Array.isArray(parsed.products) || !Array.isArray(parsed.movements))) ||
+          !applyStoredPayload(parsed)) {
+        throw new Error('Copia incompatible');
+      }
       persist(records, products, movements);
       refreshCurrentView();
-      notify('Base de datos importada desde «' + file.name + '».');
+      notify('Datos restaurados desde «' + file.name + '».');
     } catch {
-      notify('El archivo seleccionado no es una base de datos JSON válida.', true);
+      notify('El archivo seleccionado no contiene una copia JSON válida para esta aplicación.', true);
     } finally {
+      dataDialog.close();
       event.target.value = '';
     }
   };
@@ -2443,12 +2475,10 @@ const compile = (function createCompiler(METAMODEL, application) {
     notify('Volcado SQL DDL + INSERT guardado (' + model.id + '.datos.sql).');
   };
 
-  $('#db-inspect-btn').onclick = () => {
-    $('#db-dialog-subtitle').textContent = 'Esquema relacional DDL y sentencias INSERT en tiempo real para ' + model.nombre;
-    $('#db-dialog-sql').textContent = generateSqlDump();
-    $('#db-dialog').showModal();
+  $('#db-inspect-btn').ontoggle = event => {
+    if (event.currentTarget.open) $('#db-dialog-sql').textContent = generateSqlDump();
   };
-  $('#db-dialog-close').onclick = () => $('#db-dialog').close();
+  $('#db-dialog-close').onclick = () => dataDialog.close();
 
   $('#app-title').textContent = model.nombre;
   root.dataset.presentation = board ? 'tablero' : 'bandeja';
@@ -2457,7 +2487,6 @@ const compile = (function createCompiler(METAMODEL, application) {
   document.title = model.nombre;
   $('#app-description').textContent = model.objetivo;
   if (!link && !crud) renderForm($('#app-form'));
-  if (!durable) notify('El almacenamiento local no está disponible. Los cambios se conservan en esta pestaña.');
   if (crud || link) {
     for (const name of [...catalog.campos.map(field => field.nombre), 'Acciones']) {
       const cell = element('th', name);
@@ -2567,21 +2596,28 @@ const compile = (function createCompiler(METAMODEL, application) {
   let draft;
   let current = 'model';
   let modelFormat = 'fields';
+  const generatedFormats = { pim: 'fields', psm: 'fields' };
+  const formats = {
+    model: { fields: 'Campos', diagram: 'Diagrama', json: 'Editar JSON' },
+    pim: { fields: 'Campos y tipos', secondary: 'Clases', tertiary: 'Reglas OCL', json: 'JSON' },
+    psm: { fields: 'Interfaz', secondary: 'Mapeo', tertiary: 'Datos y SQL', json: 'JSON' },
+    app: {},
+  };
   let previewResult;
   let inspectedModel;
   let tracePage = 0;
   const tracePageSize = 8;
   const stages = [
-    { id: 'model', name: 'CIM', next: 'Validar y ver PIM', description: 'Define el proceso, sus datos, sus reglas OCL y descarga sus diagramas (.cim / .svg / .mmd).' },
-    { id: 'pim', name: 'PIM', next: 'Ver PSM', description: 'Revisa las clases UML/Ecore, multiplicidades, firmas y descarga el metamodelo (.ecore / .ocl).' },
-    { id: 'psm', name: 'PSM', next: 'Generar aplicación', description: 'Elige la presentación web, inspecciona el wireframe y descarga el esquema SQL (.sql / .schema.json).' },
-    { id: 'app', name: 'Aplicación', description: 'Prueba la aplicación generada, ábrela en otra pestaña o conéctala a Base de Datos (.db.json / .sql).' },
+    { id: 'model', name: 'CIM', next: 'Validar y ver PIM' },
+    { id: 'pim', name: 'PIM', next: 'Ver PSM' },
+    { id: 'psm', name: 'PSM', next: 'Generar aplicación' },
+    { id: 'app', name: 'Aplicación' },
   ];
   const views = {
-    model: ['01 · Modelo Independiente de la Computación (CIM)', 'Define actores, campos de negocio, flujo del proceso y reglas OCL sin atarte a una tecnología.'],
-    pim: ['02 · Modelo Independiente de la Plataforma (PIM)', 'Especificación lógica Ecore/UML con clases, tipos formales, multiplicidades, operaciones y AST OCL.'],
-    psm: ['03 · Modelo Específico de la Plataforma (PSM)', 'Arquitectura Web HTML5/JS, disposición visual (Bandeja vs Tablero) y esquema relacional SQL DDL.'],
-    app: ['04 · Aplicación Ejecutable (M2T) y Persistencia', 'Prueba la aplicación generada, ábrela en otra pestaña y conéctala a Base de Datos / Archivo.'],
+    model: ['Modelo de negocio', 'Edita los campos o define el flujo en el diagrama.'],
+    pim: ['Modelo lógico', 'Consulta los tipos, las relaciones y las reglas del dominio.'],
+    psm: ['Modelo web', 'Consulta los controles, la presentación y el almacenamiento.'],
+    app: ['Aplicación generada', 'Ejecuta solicitudes y comprueba su efecto en los datos.'],
   };
   const typeNames = {
     movementType: 'Salida o entrada de inventario',
@@ -2647,7 +2683,6 @@ const compile = (function createCompiler(METAMODEL, application) {
     $('#fields-type').textContent = 'Tipo de negocio (CIM)';
     $('#fields-table').hidden = !model;
     const crud = model?.tipo === 'crud';
-    $('#add-transition-btn').hidden = Boolean(crud);
     if (!model) {
       $('#fields-caption').textContent = 'Corrige o genera el modelo para consultar y editar sus campos.';
       return;
@@ -2708,14 +2743,10 @@ const compile = (function createCompiler(METAMODEL, application) {
   function createUmlClassCard(entityPim) {
     const card = make('article', '', 'uml-class-card');
     const head = make('header', '', 'uml-class-head');
-    head.append(
-      make('span', entityPim.estereotipo + ' · ' + entityPim.paquete, 'uml-stereotype'),
-      make('h3', entityPim.entidad),
-      make('p', entityPim.objetivo),
-    );
+    head.append(make('h3', entityPim.entidad));
 
-    const attrSection = make('div', '', 'uml-compartment');
-    attrSection.append(make('h4', 'Atributos Ecore / UML (' + entityPim.atributos.length + ')'));
+    const attrSection = make('details', '', 'uml-compartment');
+    attrSection.append(make('summary', 'Atributos (' + entityPim.atributos.length + ')'));
     const attrList = make('ul', '', 'uml-list');
     for (const attr of entityPim.atributos) {
       const li = make('li', '');
@@ -2727,15 +2758,15 @@ const compile = (function createCompiler(METAMODEL, application) {
       if (attr.soloLectura) flags.push('readOnly');
       const flagText = flags.length ? ' {' + flags.join(', ') + '}' : '';
       const enumText = attr.valoresEnum?.length ? ' [' + attr.valoresEnum.join(' | ') + ']' : '';
-      const sig = make('code', (attr.soloLectura ? '🔒 ' : '+ ') + attr.id + ' : ' + attr.tipoEcore + ' [' + attr.multiplicidad + ']' + flagText + enumText);
+      const sig = make('code', attr.id + ' · ' + attr.tipoEcore + ' [' + attr.multiplicidad + ']' + flagText + enumText);
       const label = make('small', attr.nombre + ' (CIM: ' + attr.tipoDominio + ')');
       li.append(originBadge, sig, label);
       attrList.append(li);
     }
     attrSection.append(attrList);
 
-    const opSection = make('div', '', 'uml-compartment');
-    opSection.append(make('h4', 'Operaciones y Transiciones Lógicas (' + entityPim.firmas.length + ')'));
+    const opSection = make('details', '', 'uml-compartment');
+    opSection.append(make('summary', 'Operaciones (' + entityPim.firmas.length + ')'));
     const opList = make('ul', '', 'uml-list');
     for (const op of entityPim.firmas) {
       const li = make('li', '');
@@ -2755,6 +2786,24 @@ const compile = (function createCompiler(METAMODEL, application) {
     return card;
   }
 
+  function renderPimFields(pim) {
+    const entities = pim.integracion ? [pim, pim.integracion.catalogo] : [pim];
+    const table = $('#pim-fields-table');
+    for (const body of [...table.tBodies]) body.remove();
+    for (const entity of entities) {
+      const body = table.createTBody();
+      const group = make('tr', '', 'entity-group');
+      const heading = make('th', entity.entidad);
+      heading.scope = 'rowgroup';
+      heading.colSpan = 4;
+      group.append(heading);
+      body.append(group);
+      for (const attribute of entity.atributos.filter(item => item.origen === 'dominio')) {
+        body.append(tableRow(attribute.nombre, make('code', attribute.id), attribute.tipoEcore, attribute.multiplicidad));
+      }
+    }
+  }
+
   function renderPim() {
     const pim = result?.pim;
     const grid = $('#pim-uml-grid');
@@ -2764,6 +2813,7 @@ const compile = (function createCompiler(METAMODEL, application) {
     relList.replaceChildren();
     astList.replaceChildren();
     if (!pim) return;
+    renderPimFields(pim);
 
     grid.append(createUmlClassCard(pim));
     if (pim.integracion) {
@@ -2790,27 +2840,21 @@ const compile = (function createCompiler(METAMODEL, application) {
     ];
     if (allRules.length) {
       for (const rule of allRules) {
-        const item = make('div', '', 'stage-item');
+        const item = make('details', '', 'stage-item rule-detail');
         const kindMap = { inv: 'Invariante (inv)', pre: 'Precondición (pre)', post: 'Postcondición (post)' };
-        const head = make('strong', rule.clase + (rule.operacion ? '::' + rule.operacion + '()' : '') + ' · ' + rule.id + ' [' + (kindMap[rule.tipo] ?? rule.tipo) + ']');
+        const head = make('summary', rule.clase + (rule.operacion ? '::' + rule.operacion + '()' : '') + ' · ' + rule.id + ' [' + (kindMap[rule.tipo] ?? rule.tipo) + ']');
         const astDesc = rule.expresion.map((t, idx) => {
           const prefix = idx > 0 ? (t.conector ?? 'and').toUpperCase() + ' ' : '';
           const left = t.acceso === 'size' ? 'size(self.' + t.campo + ')' : 'self.' + t.campo;
           const right = t.campoDerecho ? 'self.' + t.campoDerecho : JSON.stringify(t.valor);
           return prefix + '(' + left + ' ' + t.operador + ' ' + right + ')';
         }).join(' ');
-        item.append(head, make('code', 'AST: ' + astDesc), make('small', 'Fuente OCL: ' + rule.fuente));
+        item.append(head, make('code', rule.fuente), make('small', 'Expresión analizada · ' + astDesc));
         astList.append(item);
       }
     } else {
-      astList.append(make('p', 'Sin reglas OCL declaradas. Añade una desde el panel lateral.', 'muted-note'));
+      astList.append(make('p', 'Este modelo no tiene reglas OCL. Puedes añadirlas en el CIM.', 'muted-note'));
     }
-
-    const stem = exportStem();
-    $('#pim-ecore-name').textContent = stem + '.pim.ecore';
-    $('#pim-ocl-name').textContent = stem + '.pim.ocl';
-    $('#pim-ecore-code').textContent = result.entregables.pimEcore;
-    $('#pim-ocl-code').textContent = result.entregables.pimOcl;
   }
 
   function renderPsm() {
@@ -2824,48 +2868,37 @@ const compile = (function createCompiler(METAMODEL, application) {
     if (!psm) return;
 
     const archEntries = [
-      ['Plataforma destino', psm.plataforma],
-      ['Patrón de Interfaz (UI)', psm.arquitectura.patronUi],
-      ['Disposición estructural', psm.arquitectura.disposicion],
-      ['Adaptador de Base de Datos', psm.arquitectura.adaptadorDatos],
-      ['Clave de almacén lógico', psm.almacen.clave],
-      ['Seguridad y Validadores', psm.arquitectura.seguridad],
+      ['Aplicación', 'HTML5 y JavaScript'],
+      ['Almacenamiento', psm.arquitectura.adaptadorDatos],
+      ['Validación', psm.arquitectura.seguridad],
     ];
     for (const [dt, dd] of archEntries) {
       archDl.append(make('dt', dt), make('dd', dd));
     }
 
-    $('#presentation-summary').textContent = psm.tipo === 'crud'
-      ? 'Catálogo tabular CRUD + Persistencia SQL/IndexedDB'
-      : psm.presentacion === 'tablero'
-        ? 'Activo: Tablero Kanban (' + psm.estados.length + ' columnas de estado)'
-        : 'Activo: Bandeja Maestro-Detalle (2 columnas)';
-
-    $('#psm-wireframe-title').textContent = 'Disposición Visual Generada: ' + psm.arquitectura.patronUi;
-    const wfHeader = make('div', '', 'wf-bar');
-    wfHeader.textContent = 'Cabecera App: ' + psm.nombre + (psm.roles ? ' · Selector RBAC (' + psm.roles.length + ' roles)' : ' · Modo Catálogo CRUD');
-    const wfDbBar = make('div', '', 'wf-db-bar');
-    wfDbBar.textContent = 'Barra de Base de Datos: IndexedDB (' + psm.esquemaSql.tablas.length + ' tablas) + Conexión a archivo .db.json / Exportación .sql';
-    wireframe.append(wfHeader, wfDbBar);
+    $('#psm-wireframe-title').textContent = psm.tipo === 'crud' ? 'Formulario y tabla' :
+      psm.presentacion === 'tablero' ? 'Tablero por estado' : 'Lista de casos';
+    wireframe.append(make('div', psm.nombre, 'wf-bar'));
 
     if (psm.tipo === 'crud') {
       const grid = make('div', '', 'wf-crud');
       grid.append(
-        make('div', 'Formulario Multi-columna (' + psm.campos.length + ' controles HTML5)', 'wf-box'),
-        make('div', 'Tabla Filtrable CRUD (' + psm.campos.map(c => c.nombre).join(' | ') + ' | Editar / Eliminar)', 'wf-box'),
+        make('div', 'Formulario (' + psm.campos.length + ' controles HTML5)', 'wf-box'),
+        make('div', 'Tabla de registros (' + psm.campos.length + ' columnas)', 'wf-box'),
       );
       wireframe.append(grid);
     } else if (psm.presentacion === 'tablero') {
       const lanesWrap = make('div', '', 'wf-lanes');
       for (const st of psm.estados) {
         const lane = make('div', '', 'wf-lane' + (st.final ? ' is-final' : ''));
-        lane.append(make('strong', st.nombre), make('small', st.final ? 'Columna Final' : 'Carril de Estado'));
+        lane.append(make('strong', st.nombre));
+        if (st.final) lane.append(make('small', 'Estado final'));
         lanesWrap.append(lane);
       }
       const bottomSplit = make('div', '', 'wf-split');
       bottomSplit.append(
         make('div', 'Formulario: ' + psm.formulario.nombre + ' (Rol: ' + psm.formulario.actor + ')', 'wf-box'),
-        make('div', 'Inspector de Caso + Botones de Transición + Historial', 'wf-box'),
+        make('div', 'Detalle del caso · Acciones e historial', 'wf-box'),
       );
       wireframe.append(lanesWrap, bottomSplit);
     } else {
@@ -2873,11 +2906,11 @@ const compile = (function createCompiler(METAMODEL, application) {
       const leftCol = make('div', '', 'wf-col');
       leftCol.append(
         make('div', 'Formulario: ' + psm.formulario.nombre + ' (' + psm.campos.length + ' campos)', 'wf-box'),
-        make('div', 'Bandeja Vertical de Casos con Badges de Estado', 'wf-box'),
+        make('div', 'Lista de casos y sus estados', 'wf-box'),
       );
       const rightCol = make('div', '', 'wf-col');
       rightCol.append(
-        make('div', 'Inspector Maestro-Detalle + Disparadores por Rol + Bitácora (' + psm.acciones.length + ' acciones)', 'wf-box is-tall'),
+        make('div', 'Detalle del caso · Acciones e historial', 'wf-box is-tall'),
       );
       split.append(leftCol, rightCol);
       wireframe.append(split);
@@ -2908,19 +2941,26 @@ const compile = (function createCompiler(METAMODEL, application) {
     const bar = $('#deliverables-bar');
     bar.replaceChildren();
     const stem = exportStem();
-    const label = make('span', 'Entregables MDA de esta fase:', 'deliverables-label');
-    bar.append(label);
+    $('#exports-caption').textContent = 'Archivos de ' + stages.find(stage => stage.id === current).name;
+    $('#cim-file-actions').hidden = current !== 'model';
+    const pimFiles = current === 'pim' && result;
+    $('#pim-file-previews').hidden = !pimFiles;
+    if (pimFiles) {
+      for (const panel of $('#pim-file-previews').querySelectorAll('details')) panel.open = false;
+      $('#pim-ecore-code').textContent = result.entregables.pimEcore;
+      $('#pim-ocl-code').textContent = result.entregables.pimOcl;
+    }
 
-    const addBtn = (text, handler, primary = false) => {
-      const btn = make('button', text, primary ? 'deliverable-btn is-primary' : 'deliverable-btn');
+    const addBtn = (text, handler) => {
+      const btn = make('button', text, 'deliverable-btn');
       btn.type = 'button';
       btn.onclick = handler;
       bar.append(btn);
     };
 
     if (current === 'model') {
-      addBtn('Descargar CIM (.cim.json)', () => download(source.value, stem + '.cim.json', 'application/json'), true);
-      if (result) {
+      addBtn('Descargar CIM (.cim.json)', () => download(source.value, stem + '.cim.json', 'application/json'));
+      if (result && draft === source.value) {
         addBtn('Descargar Diagrama (.cim.svg)', () => {
           const svgContent = diagram.exportSvg(source.value);
           if (svgContent) download(svgContent, stem + '.cim.svg', 'image/svg+xml;charset=utf-8');
@@ -2928,18 +2968,15 @@ const compile = (function createCompiler(METAMODEL, application) {
         addBtn('Descargar Flujo Mermaid (.cim.mmd)', () => download(result.entregables.cimMermaid, stem + '.cim.mmd', 'text/plain;charset=utf-8'));
       }
     } else if (current === 'pim' && result) {
-      addBtn('Descargar Eclipse Ecore (.pim.ecore)', () => download(result.entregables.pimEcore, stem + '.pim.ecore', 'application/xml;charset=utf-8'), true);
+      addBtn('Descargar Eclipse Ecore (.pim.ecore)', () => download(result.entregables.pimEcore, stem + '.pim.ecore', 'application/xml;charset=utf-8'));
       addBtn('Descargar Reglas OCL (.pim.ocl)', () => download(result.entregables.pimOcl, stem + '.pim.ocl', 'text/plain;charset=utf-8'));
       addBtn('Descargar Modelo PIM (.pim.json)', () => downloadModel(result.pim, 'pim'));
     } else if (current === 'psm' && result) {
-      addBtn('Descargar Esquema SQL (.psm.sql)', () => download(result.entregables.psmSql, stem + '.psm.sql', 'application/sql;charset=utf-8'), true);
+      addBtn('Descargar Esquema SQL (.psm.sql)', () => download(result.entregables.psmSql, stem + '.psm.sql', 'application/sql;charset=utf-8'));
       addBtn('Descargar JSON Schema (.psm.schema.json)', () => download(result.entregables.psmSchema, stem + '.psm.schema.json', 'application/schema+json;charset=utf-8'));
       addBtn('Descargar Modelo PSM (.psm.json)', () => downloadModel(result.psm, 'psm'));
     } else if (current === 'app' && result) {
-      addBtn('Abrir aplicación en pestaña nueva ↗', openAppInNewTab, true);
-      addBtn('Descargar Aplicación (.html)', () => download(result.html, stem + '.html', 'text/html;charset=utf-8'));
-      addBtn('Descargar DDL Base de Datos (.psm.sql)', () => download(result.entregables.psmSql, stem + '.psm.sql', 'application/sql;charset=utf-8'));
-      addBtn('Descargar Trazabilidad (.traza.csv)', () => download(result.entregables.traceCsv, stem + '.traza.csv', 'text/csv;charset=utf-8'));
+      addBtn('Descargar aplicación (.html)', () => download(result.html, stem + '.html', 'text/html;charset=utf-8'));
     }
   }
 
@@ -2997,7 +3034,6 @@ const compile = (function createCompiler(METAMODEL, application) {
     $('#guide').hidden = true;
     $('#library').hidden = false;
     $('#editor').hidden = true;
-    $('#open-new-tab-top').hidden = true;
     renderProjects();
     window.scrollTo(0, 0);
   }
@@ -3051,8 +3087,6 @@ const compile = (function createCompiler(METAMODEL, application) {
   function openProject(project) {
     $('#library').hidden = true;
     $('#editor').hidden = false;
-    $('#open-new-tab-top').hidden = false;
-    $('#project-caption').textContent = project.name;
     active = project;
     source.load(project.source);
     result = undefined;
@@ -3069,8 +3103,8 @@ const compile = (function createCompiler(METAMODEL, application) {
     $('#trace-kind').value = '';
     tracePage = 0;
     renderTrace();
-    $('#flow-card').open = true;
-    $('#rules-card').open = true;
+    $('#flow-card').open = false;
+    $('#rules-card').open = false;
     $('#flow-role').replaceChildren();
     $('#flow-count').textContent = '';
     $('#rules-count').textContent = '';
@@ -3080,6 +3114,8 @@ const compile = (function createCompiler(METAMODEL, application) {
     persistProject(false);
     current = 'model';
     modelFormat = 'fields';
+    generatedFormats.pim = 'fields';
+    generatedFormats.psm = 'fields';
     build();
     window.scrollTo(0, 0);
   }
@@ -3226,7 +3262,6 @@ const compile = (function createCompiler(METAMODEL, application) {
   }
 
   function view(next) {
-    if (next !== 'model' && modelFormat === 'diagram') modelFormat = 'fields';
     current = next;
     $('#editor').dataset.stage = next;
     for (const button of document.querySelectorAll('[data-view]')) {
@@ -3238,59 +3273,44 @@ const compile = (function createCompiler(METAMODEL, application) {
     renderStageNavigation(next);
     $('#view-title').textContent = views[next][0];
     $('#view-subtitle').textContent = views[next][1];
-    const structuredView = next !== 'app' && modelFormat === 'fields';
-    const diagramView = next === 'model' && modelFormat === 'diagram';
+    const format = next === 'model' ? modelFormat : generatedFormats[next];
+    const cimFields = next === 'model' && format === 'fields';
+    const diagramView = next === 'model' && format === 'diagram';
     const crud = result?.cim.tipo === 'crud';
-
-    const structuredLabels = {
-      model: 'Campos y negocio',
-      pim: 'Clases Ecore / UML y Reglas',
-      psm: 'Arquitectura Web y Esquema SQL',
-    };
-    $('#show-fields').textContent = structuredLabels[next] ?? 'Vista estructurada';
-    $('#show-diagram').textContent = crud ? 'Estructura visual' : 'Diagrama de flujo';
     $('#flow-card').hidden = crud;
     $('#integration-card').hidden = !result?.cim.integracion;
     $('#model-format').hidden = next === 'app';
-    $('#show-fields').setAttribute('aria-pressed', String(structuredView));
-    $('#show-json').setAttribute('aria-pressed', String(modelFormat === 'json'));
-    $('#show-diagram').hidden = next !== 'model';
-    $('#show-diagram').setAttribute('aria-pressed', String(diagramView));
-    $('#show-json').textContent = next === 'model' ? 'Editar JSON (.cim)' : 'Inspeccionar JSON (.' + next + ')';
-
-    $('#fields-panel').hidden = !(next === 'model' && structuredView);
-    $('#pim-panel').hidden = !(next === 'pim' && structuredView);
-    $('#psm-panel').hidden = !(next === 'psm' && structuredView);
-    $('#source-panel').hidden = next !== 'model' || modelFormat !== 'json';
+    for (const button of $('#model-format').querySelectorAll('[data-format]')) {
+      const label = formats[next][button.dataset.format];
+      button.hidden = !label;
+      button.setAttribute('aria-pressed', String(button.dataset.format === format));
+      if (label) button.textContent = label;
+    }
+    $('#fields-panel').hidden = !cimFields;
+    $('#pim-panel').hidden = next !== 'pim' || format === 'json';
+    $('#psm-panel').hidden = next !== 'psm' || format === 'json';
+    for (const [id, selectedFormat] of [
+      ['pim-fields', 'fields'], ['pim-classes', 'secondary'], ['pim-rules', 'tertiary'],
+      ['psm-layout', 'fields'], ['psm-controls', 'secondary'], ['psm-data', 'tertiary'],
+    ]) $('#' + id).hidden = format !== selectedFormat;
+    $('#source-panel').hidden = next !== 'model' || format !== 'json';
     $('#diagram-panel').hidden = !diagramView;
 
     if (!$('#source-panel').hidden) {
       $('#source-filename').textContent = (result?.cim.id ?? 'modelo') + '.cim.json';
       source.measure();
     }
-    $('#load-button').hidden = next !== 'model';
-    $('#reset').hidden = next !== 'model' || !examples.has(active.id);
-    $('#output').hidden = structuredView || !['pim', 'psm'].includes(next);
+    $('#reset').hidden = !examples.has(active.id);
+    $('#output').hidden = !['pim', 'psm'].includes(next) || format !== 'json';
     $('#app-panel').hidden = next !== 'app';
-    $('#model-summary').hidden = next === 'app' || diagramView;
-    $('.workspace').classList.toggle('full-width', next === 'app' || diagramView);
-    const process = result && result.cim.tipo !== 'crud';
-    $('#presentation-panel').hidden = !process || next !== 'psm';
-    $('#presentation-current').hidden = !process || next !== 'app';
+    $('#model-summary').hidden = !cimFields;
+    $('.workspace').classList.toggle('full-width', !cimFields);
+    $('#presentation-panel').hidden = !result || crud || next !== 'psm' || format !== 'fields';
     $('#presentation-reset').hidden = !previewResult;
-    if (process && next === 'app') {
-      const board = result.psm.presentacion === 'tablero';
-      $('#presentation-current-name').textContent = board ? 'Vista activa · Tablero por estado' : 'Vista activa · Lista de casos';
-      $('#presentation-current-description').textContent = board
-        ? 'Cada grupo reúne los casos que están en el mismo estado.'
-        : 'Cada caso aparece en la lista junto con su estado.';
-    }
-    $('#download').hidden = true;
 
-    renderDeliverables();
-    if (next === 'model' && structuredView) renderFields();
-    if (next === 'pim' && structuredView) renderPim();
-    if (next === 'psm' && structuredView) renderPsm();
+    if (cimFields) renderFields();
+    if (next === 'pim' && format !== 'json') renderPim();
+    if (next === 'psm' && format !== 'json') renderPsm();
     if (diagramView) diagram.show(source.value, active.id);
     if (!$('#output').hidden) renderInspector(next);
     if (next === 'app' && result && previewResult !== result) {
@@ -3427,7 +3447,6 @@ const compile = (function createCompiler(METAMODEL, application) {
     const index = stages.findIndex(stage => stage.id === id);
     const stage = stages[index];
     $('#stage-progress').textContent = stage.name + ' · Etapa ' + (index + 1) + ' de ' + stages.length;
-    $('#stage-description').textContent = stage.description;
     $('#stage-back').hidden = index === 0;
     $('#stage-back-label').textContent = index > 0 ? 'Volver al ' + stages[index - 1].name : '';
     $('#stage-next').hidden = !stage.next;
@@ -3545,25 +3564,38 @@ const compile = (function createCompiler(METAMODEL, application) {
   for (const button of document.querySelectorAll('[data-view]')) {
     button.onclick = () => goToStage(button.dataset.view);
   }
-  $('#show-fields').onclick = () => { modelFormat = 'fields'; view(current); };
-  $('#show-json').onclick = () => { modelFormat = 'json'; view(current); };
-  $('#show-diagram').onclick = () => { modelFormat = 'diagram'; view('model'); };
+  for (const button of $('#model-format').querySelectorAll('[data-format]')) {
+    button.onclick = () => {
+      if (current === 'model') modelFormat = button.dataset.format;
+      else generatedFormats[current] = button.dataset.format;
+      view(current);
+    };
+  }
+
+  const resources = $('#stage-resources');
+  function showResources(trace) {
+    $('#stage-exports').hidden = trace;
+    $('#stage-trace').hidden = !trace;
+    $('#show-exports').setAttribute('aria-pressed', String(!trace));
+    $('#show-trace').setAttribute('aria-pressed', String(trace));
+  }
+  $('#open-stage-resources').onclick = () => {
+    renderDeliverables();
+    showResources(false);
+    resources.showModal();
+  };
+  $('#close-stage-resources').onclick = () => resources.close();
+  $('#show-exports').onclick = () => showResources(false);
+  $('#show-trace').onclick = () => showResources(true);
 
   $('#add-field-btn').onclick = () => diagram.openItem('datos', undefined, {}, source.value, active.id);
-  $('#add-transition-btn').onclick = () => diagram.openItem('transiciones', undefined, {}, source.value, active.id);
-  $('#add-ocl-btn').onclick = () => diagram.openItem('ocl', undefined, {}, source.value, active.id);
   $('#side-add-actor').onclick = () => diagram.openItem('actores', undefined, {}, source.value, active.id);
   $('#side-add-state').onclick = () => diagram.openItem('estados', undefined, {}, source.value, active.id);
   $('#side-add-transition').onclick = () => diagram.openItem('transiciones', undefined, {}, source.value, active.id);
   $('#side-edit-start').onclick = () => diagram.openItem('inicio', 0, {}, source.value, active.id);
   $('#side-add-rule').onclick = () => diagram.openItem('ocl', undefined, {}, source.value, active.id);
 
-  $('#btn-dl-ecore').onclick = () => result && download(result.entregables.pimEcore, exportStem() + '.pim.ecore', 'application/xml;charset=utf-8');
-  $('#btn-dl-ocl').onclick = () => result && download(result.entregables.pimOcl, exportStem() + '.pim.ocl', 'text/plain;charset=utf-8');
-  $('#btn-dl-sql').onclick = () => result && download(result.entregables.psmSql, exportStem() + '.psm.sql', 'application/sql;charset=utf-8');
   $('#open-app-tab').onclick = openAppInNewTab;
-  $('#open-new-tab-top').onclick = openAppInNewTab;
-  $('#download-app-html').onclick = () => result && download(result.html, exportStem() + '.html', 'text/html;charset=utf-8');
 
   for (const type of Object.keys(METAMODEL)) {
     if (!['CIM', 'PIM', 'PSM', 'CIMCrud', 'PIMCrud', 'PSMCrud'].includes(type)) $('#metamodel-types').append(make('option', type));
@@ -3588,10 +3620,6 @@ const compile = (function createCompiler(METAMODEL, application) {
     persistProject(true);
     build();
   };
-  $('#change-presentation').onclick = () => {
-    goToStage('psm');
-    if (current === 'psm') $('input[name=presentation]:checked').focus();
-  };
   $('#flow-role').onchange = renderFlow;
   for (const selector of ['#trace-search', '#trace-kind']) {
     $(selector).addEventListener('input', () => {
@@ -3603,9 +3631,15 @@ const compile = (function createCompiler(METAMODEL, application) {
   $('#trace-next').onclick = () => { tracePage++; renderTrace(); };
   $('#reset').onclick = () => {
     const example = examples.get(active.id);
-    if (example) markDraft(example);
+    if (example) {
+      resources.close();
+      markDraft(example);
+    }
   };
-  $('#load-button').onclick = () => $('#load').click();
+  $('#load-button').onclick = () => {
+    resources.close();
+    $('#load').click();
+  };
   $('#load').onchange = async event => {
     const file = event.target.files[0];
     if (!file) return;

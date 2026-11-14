@@ -21,20 +21,6 @@
     <div><p class="product">MDA STUDIO · APLICACIÓN EJECUTABLE (M2T)</p><h1 id="app-title"></h1><p id="app-description" class="muted"></p></div>
     <label class="role">Rol de demostración<select id="app-role" aria-describedby="app-role-help"></select><small class="muted" id="app-role-help">Simula quién realiza la tarea.</small></label>
   </header>
-  <section id="db-bar" class="db-bar" aria-label="Conexión a Base de Datos y Archivo">
-    <div class="db-info">
-      <span id="db-badge" class="db-badge">BD IndexedDB activa</span>
-      <span id="db-status-text" class="muted">Sincronizado en base de datos local del navegador.</span>
-    </div>
-    <div class="db-actions">
-      <button type="button" id="db-connect-file" class="primary-outline">Conectar archivo (.db.json)</button>
-      <button type="button" id="db-import-btn">Importar BD (.json)</button>
-      <input type="file" id="db-import-input" accept=".json,application/json" hidden>
-      <button type="button" id="db-export-json">Guardar BD (.db.json)</button>
-      <button type="button" id="db-export-sql">Volcado SQL (.sql)</button>
-      <button type="button" id="db-inspect-btn">Ver tablas / SQL</button>
-    </div>
-  </section>
   <nav id="app-nav" aria-label="Módulos de la aplicación" hidden>
     <button type="button" data-module="requests" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19V5h14M5 12h8v6h6M16 3l3 2-3 2m0 9 3 2-3 2"/></svg>Solicitudes</button>
     <button type="button" data-module="catalog" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v13H4zM3 4h18v3M9 11h6m-6 5h6"/></svg>Inventario</button>
@@ -62,12 +48,28 @@
     <h2 id="crud-delete-title">¿Eliminar el registro?</h2><p id="crud-delete-name"></p>
     <div class="action-bar"><button id="crud-delete-cancel" type="button" autofocus>Cancelar</button><button id="crud-delete-confirm" type="button" class="danger">Confirmar eliminación</button></div>
   </dialog>
+  <footer id="db-bar" class="data-footer">
+    <p id="db-badge" role="status"></p>
+    <button type="button" id="open-data-tools" aria-haspopup="dialog">Gestionar datos</button>
+  </footer>
   <dialog id="db-dialog" aria-labelledby="db-dialog-title">
     <div class="section-head">
-      <div><h2 id="db-dialog-title">Inspector de Base de Datos y Sentencias SQL</h2><p class="muted" id="db-dialog-subtitle"></p></div>
-      <button type="button" id="db-dialog-close">Cerrar</button>
+      <h2 id="db-dialog-title">Datos de la aplicación</h2>
+      <button type="button" id="db-dialog-close" autofocus>Cerrar</button>
     </div>
-    <pre id="db-dialog-sql" class="db-code"></pre>
+    <p id="db-status-text" class="muted"></p>
+    <p class="data-help">Usa una copia JSON para guardar los datos o restaurarlos en otra sesión. El archivo SQL sirve para llevar los datos a SQLite.</p>
+    <div class="data-actions">
+      <button type="button" id="db-export-json">Guardar copia JSON</button>
+      <button type="button" id="db-import-btn">Restaurar copia JSON</button>
+      <input type="file" id="db-import-input" accept=".json,application/json" hidden>
+      <button type="button" id="db-connect-file" hidden>Guardar en archivo automáticamente</button>
+      <button type="button" id="db-export-sql">Descargar SQL</button>
+    </div>
+    <details id="db-inspect-btn" class="data-sql">
+      <summary>Ver esquema y datos SQL</summary>
+      <pre id="db-dialog-sql" class="db-code" tabindex="0" aria-label="Código SQL"></pre>
+    </details>
   </dialog>
 </main>
 <script>

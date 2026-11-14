@@ -9,20 +9,20 @@
     "patronUi": "Bandeja Maestro-Detalle (Master-Detail Inbox)",
     "disposicion": "Layout de dos columnas 50/50: captura y lista cronológica a la izquierda; ficha técnica, acciones por rol e historial a la derecha.",
     "contenedores": [
-      "Cabecera con selector de Rol RBAC (Estudiante, Responsable)",
+      "Cabecera con selector de rol de demostración (Estudiante, Responsable)",
       "Columna izquierda: Formulario de captura (Nueva solicitud) + Bandeja vertical de casos con badge de estado",
       "Columna derecha: Inspector maestro-detalle, disparadores de transición y línea de tiempo auditada",
-      "Barra de Persistencia en Base de Datos (IndexedDB + Archivo .db.json / .sql)"
+      "Gestión de datos y exportación"
     ],
-    "adaptadorDatos": "IndexedDB + Sincronización en vivo con Archivo de Base de Datos (.db.json / .sql) + Fallback localStorage",
-    "seguridad": "Control de acceso basado en roles (RBAC) para 2 actores y 3 validadores OCL compilados a ES2022"
+    "adaptadorDatos": "IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.",
+    "seguridad": "Simulación de roles en cliente para 2 actores y 3 validadores OCL compilados a ES2022"
   },
   "almacen": {
-    "tipo": "IndexedDB + Archivo (.db.json / .sql) + localStorage",
+    "tipo": "IndexedDB + localStorage",
     "clave": "mda.casos.prestamos-lab"
   },
   "esquemaSql": {
-    "motor": "SQL Estándar (PostgreSQL / SQLite3) + Almacén Transaccional IndexedDB",
+    "motor": "SQLite 3",
     "tablas": [
       {
         "nombre": "prestamo",

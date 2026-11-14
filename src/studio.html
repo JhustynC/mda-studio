@@ -21,7 +21,6 @@
   <div class="brand"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span>MDA Studio</div>
   <span class="context">Nuevos paradigmas de programación · Flujo CIM → PIM → PSM → M2T</span>
   <div class="top-actions">
-    <button class="open-tab-btn" id="open-new-tab-top" type="button" hidden>Abrir app en pestaña ↗</button>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Tema oscuro" aria-pressed="false" title="Cambiar tema">
       <svg class="theme-moon" viewBox="0 0 24 24" role="presentation" aria-hidden="true"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"/></svg>
       <svg class="theme-sun" viewBox="0 0 24 24" role="presentation" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
@@ -37,7 +36,7 @@
       <a href="#guide-dsl">Estructura del CIM</a>
       <a href="#guide-fields">Tipos de campo</a>
       <a href="#guide-ocl">Reglas OCL</a>
-      <a href="#guide-generation">Entregables y BD</a>
+      <a href="#guide-generation">Archivos y datos</a>
     </nav>
     <article class="guide-article">
       <section id="guide-start" tabindex="-1">
@@ -45,9 +44,9 @@
         <ol>
           <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso básico</strong>.</li>
           <li>En <strong>CIM → Campos y negocio</strong>, usa <strong>+ Añadir campo</strong> directamente en la tabla para agregar atributos sin tocar el JSON, o usa los botones <strong>+ Actor</strong>, <strong>+ Estado</strong>, <strong>+ Transición</strong> y <strong>+ Regla OCL</strong> del panel lateral.</li>
-          <li>Pulsa <strong>Validar y ver PIM</strong> para inspeccionar el modelo lógico independiente de plataforma (clases UML/Ecore, tipos <code>EString</code>/<code>EInt</code>, multiplicidades, firmas de operaciones y archivo <code>.ecore</code>).</li>
-          <li>Sigue con <strong>Ver PSM</strong> para elegir entre <strong>Lista de casos (bandeja)</strong> y <strong>Tablero por estado</strong> viendo cómo cambia la arquitectura visual, los controles HTML5 y el esquema relacional SQL (<code>.sql</code>).</li>
-          <li>Pulsa <strong>Generar aplicación</strong> o <strong>Abrir app en pestaña ↗</strong> para ejecutar la aplicación con persistencia en Base de Datos (IndexedDB) y conexión directa a archivo (<code>.db.json</code> / <code>.sql</code>).</li>
+          <li>Pulsa <strong>Validar y ver PIM</strong>. Comprueba los datos en <strong>Campos y tipos</strong>. Consulta las relaciones en <strong>Clases</strong> y las restricciones en <strong>Reglas OCL</strong>.</li>
+          <li>Sigue con <strong>Ver PSM</strong>. En <strong>Interfaz</strong> elige una lista o un tablero. <strong>Mapeo</strong> muestra qué control se genera por campo y <strong>Datos y SQL</strong> reúne el almacenamiento y el esquema.</li>
+          <li>Pulsa <strong>Generar aplicación</strong> para probar el flujo. Usa <strong>Abrir en otra pestaña</strong> cuando quieras conservar los cambios en el navegador.</li>
         </ol>
         <button id="guide-new-project" class="generate" type="button">Crear un proyecto</button>
       </section>
@@ -82,12 +81,13 @@ context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8
 context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self.documentado = true</code></pre>
       </section>
       <section id="guide-generation" tabindex="-1">
-        <h2>Entregables por etapa y Base de Datos</h2>
+        <h2>Archivos y datos</h2>
+        <p>Abre <strong>Archivos y trazabilidad</strong> desde cualquier etapa para descargar lo generado o seguir cómo se transforma un elemento del CIM.</p>
         <ol>
           <li><strong>CIM:</strong> Descarga el modelo <code>.cim.json</code>, el diagrama vectorial <code>.svg</code> y la especificación <code>.cim.mmd</code> (Mermaid).</li>
           <li><strong>PIM:</strong> Descarga el metamodelo estándar Eclipse EMF <code>.pim.ecore</code> (XMI), el archivo formal <code>.pim.ocl</code> y <code>.pim.json</code>.</li>
           <li><strong>PSM:</strong> Descarga el esquema relacional <code>.psm.sql</code> (con tablas y restricciones <code>CHECK</code> derivadas de OCL), <code>.psm.schema.json</code> y <code>.psm.json</code>.</li>
-          <li><strong>Aplicación (M2T):</strong> Ábrela en una pestaña dedicada, conéctala a un archivo local <code>.db.json</code> o exporta/importa volcados <code>.sql</code> y <code>.db.json</code> respaldados en <code>IndexedDB</code>.</li>
+          <li><strong>Aplicación.</strong> Desde <strong>Gestionar datos</strong>, guarda o restaura una copia <code>.db.json</code> y descarga un volcado SQL para SQLite. El guardado habitual usa el almacenamiento del navegador.</li>
         </ol>
       </section>
     </article>
@@ -168,20 +168,20 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
   </form>
 </dialog>
 <main id="editor" hidden>
-  <div class="editor-nav"><button class="back-link" id="back-projects" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6m-6-6h16"/></svg>Volver a proyectos</button><span id="project-caption"></span><p id="project-status" class="save-status" role="status"></p></div>
-  <div class="intro"><div><p class="eyebrow">FLUJO DIRIGIDO POR MODELOS (MDA)</p><h1 id="title">Préstamos de laboratorio</h1><p id="description"></p></div>
+  <div class="editor-nav"><button class="back-link" id="back-projects" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6m-6-6h16"/></svg>Volver a proyectos</button><p id="project-status" class="save-status" role="status"></p></div>
+  <div class="intro"><div><h1 id="title">Préstamos de laboratorio</h1><p id="description"></p></div>
   <span id="build-status" class="status" role="status"></span></div>
   <div class="pipeline" role="group" aria-label="Etapas del flujo MDA">
-    <button type="button" data-view="model" aria-pressed="true"><b><span class="step-symbol" aria-hidden="true">◇</span>01 · CIM</b><small>Dominio, BPM y Reglas (.cim / .svg)</small></button>
+    <button type="button" data-view="model" aria-pressed="true"><b><span class="step-symbol" aria-hidden="true">◇</span>01 · CIM</b><small>Modelo de negocio</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="pim" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▤</span>02 · PIM</b><small>Clases UML, Ecore y AST (.ecore / .ocl)</small></button>
+    <button type="button" data-view="pim" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▤</span>02 · PIM</b><small>Modelo lógico</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="psm" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▥</span>03 · PSM</b><small>Arquitectura Web y DDL (.sql / .schema)</small></button>
+    <button type="button" data-view="psm" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">▥</span>03 · PSM</b><small>Modelo web</small></button>
     <span class="arrow" aria-hidden="true">M2T →</span>
-    <button type="button" data-view="app" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">↗</span>04 · Aplicación</b><small>Ejecutable + Base de Datos (.html / .db)</small></button>
+    <button type="button" data-view="app" aria-pressed="false"><b><span class="step-symbol" aria-hidden="true">↗</span>04 · Aplicación</b><small>Prueba del sistema</small></button>
   </div>
   <nav class="stage-navigation" aria-label="Navegación entre etapas">
-    <div class="stage-context"><p id="stage-progress"></p><p id="stage-description"></p></div>
+    <div class="stage-context"><p id="stage-progress"></p></div>
     <div class="stage-actions">
       <button id="stage-back" type="button" hidden><span aria-hidden="true">←</span><span id="stage-back-label"></span></button>
       <button class="generate" id="stage-next" type="button"><span id="stage-next-label"></span><span aria-hidden="true">→</span></button>
@@ -191,41 +191,15 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
     <section class="work-card">
       <div class="section-head">
         <div><h2 id="view-title" tabindex="-1">Modelo de negocio (CIM)</h2><p id="view-subtitle"></p></div>
-        <div class="tools">
-          <button id="reset" type="button">Restaurar ejemplo</button>
-          <button id="load-button" type="button">Importar CIM (.json)</button>
-          <input id="load" type="file" accept=".json,application/json" hidden>
-          <button id="download" type="button" hidden>Descargar principal</button>
-        </div>
-      </div>
-      <div id="deliverables-bar" class="deliverables-bar" aria-label="Entregables de la etapa actual"></div>
-      <fieldset id="presentation-panel" class="presentation-panel" aria-describedby="presentation-help" hidden>
-        <legend>¿Cómo se mostrarán los casos en la plataforma web (PSM)?</legend>
-        <p id="presentation-help">Elige cómo organizar los mismos casos. El wireframe de arquitectura PSM y la aplicación generada se actualizan automáticamente.</p>
-        <div class="presentation-options">
-          <label class="presentation-option">
-            <span class="presentation-option-heading"><input type="radio" name="presentation" value="bandeja" checked><strong>Lista de casos <small>(bandeja maestro-detalle)</small></strong></span>
-            <span class="layout-example list-example" aria-hidden="true"><span><b>Préstamo de Ana</b><i>En revisión</i></span><span><b>Préstamo de Luis</b><i>Aprobado</i></span></span>
-            <span class="presentation-description">Todos los casos en una sola lista junto a su estado e inspector lateral. Útil para revisar uno a la vez.</span>
-          </label>
-          <label class="presentation-option">
-            <span class="presentation-option-heading"><input type="radio" name="presentation" value="tablero"><strong>Tablero Kanban por estado</strong></span>
-            <span class="layout-example board-example" aria-hidden="true"><span><i>En revisión</i><b>Préstamo de Ana</b></span><span><i>Aprobado</i><b>Préstamo de Luis</b></span></span>
-            <span class="presentation-description">Los casos se agrupan en columnas por cada estado del proceso. Útil para visualizar el flujo completo de un vistazo.</span>
-          </label>
-        </div>
-        <p id="presentation-summary" class="presentation-summary"></p>
-        <p id="presentation-reset" hidden>Cambiar la vista reiniciará la vista previa la próxima vez que abras la etapa Aplicación.</p>
-      </fieldset>
-      <div id="presentation-current" class="presentation-current" hidden>
-        <div><strong id="presentation-current-name"></strong><p id="presentation-current-description"></p></div>
-        <button id="change-presentation" type="button">Cambiar vista en PSM</button>
+        <button id="open-stage-resources" type="button" aria-haspopup="dialog">Archivos y trazabilidad</button>
       </div>
       <div id="error" class="error" role="alert" tabindex="-1" hidden></div>
       <div id="model-format" class="model-format" role="group" aria-label="Vista del modelo">
-        <button id="show-fields" type="button" aria-pressed="true">Vista estructurada</button>
-        <button id="show-diagram" type="button" aria-pressed="false">Diagrama interactivo</button>
-        <button id="show-json" type="button" aria-pressed="false">Editar JSON</button>
+        <button id="show-fields" data-format="fields" type="button" aria-pressed="true">Campos</button>
+        <button id="show-diagram" data-format="diagram" type="button" aria-pressed="false">Diagrama</button>
+        <button id="show-secondary" data-format="secondary" type="button" aria-pressed="false" hidden></button>
+        <button id="show-tertiary" data-format="tertiary" type="button" aria-pressed="false" hidden></button>
+        <button id="show-json" data-format="json" type="button" aria-pressed="false">Editar JSON</button>
       </div>
 
       <div id="fields-panel">
@@ -233,8 +207,6 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
           <p id="fields-caption"></p>
           <div class="tools" id="cim-quick-actions">
             <button id="add-field-btn" type="button" class="primary-subtle">+ Añadir campo</button>
-            <button id="add-transition-btn" type="button">+ Añadir transición</button>
-            <button id="add-ocl-btn" type="button">+ Añadir regla OCL</button>
           </div>
         </div>
         <div class="table-wrap" id="fields-table">
@@ -255,71 +227,45 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
       </div>
 
       <section id="pim-panel" class="stage-panel" aria-label="Modelo Independiente de la Plataforma (PIM)" hidden>
-        <div class="stage-explainer">
-          <strong>Transformación M2M (CIM → PIM):</strong> El compilador abstrae los datos del negocio en una <strong>Clase de Dominio Ecore/UML</strong> independiente de tecnología, sintetizando atributos de identidad y ciclo de vida (<code>id: EString «PK»</code>, <code>estado-actual: EEnum</code>, <code>historial: EList</code>), tipado formal EMF, firmas de operaciones con pre/postcondiciones y el árbol sintáctico (AST) de reglas OCL.
+        <div id="pim-fields" class="table-wrap stage-scroll" tabindex="0" role="region" aria-label="Campos lógicos">
+          <table id="pim-fields-table" class="stage-table"><thead><tr><th scope="col">Campo</th><th scope="col">Identificador</th><th scope="col">Tipo lógico</th><th scope="col">Multiplicidad</th></tr></thead></table>
         </div>
-        <div id="pim-uml-grid" class="uml-grid"></div>
-        <div class="pim-subgrid">
-          <div class="stage-box">
-            <h3>Relaciones y Asociaciones UML</h3>
-            <div id="pim-relations-list" class="stage-list"></div>
-          </div>
-          <div class="stage-box">
-            <h3>Árbol Sintáctico de Reglas OCL (AST Validado)</h3>
-            <div id="pim-ocl-ast" class="stage-list"></div>
-          </div>
+        <div id="pim-classes" class="stage-scroll" tabindex="0" role="region" aria-label="Clases y relaciones" hidden>
+          <div id="pim-uml-grid" class="uml-grid"></div>
+          <section class="stage-box stage-relations"><h3>Relaciones</h3><div id="pim-relations-list" class="stage-list"></div></section>
         </div>
-        <details class="stage-artifact-details">
-          <summary><strong>Inspeccionar entregable estándar Eclipse EMF (<code>.pim.ecore</code>) y especificación (<code>.pim.ocl</code>)</strong></summary>
-          <div class="artifact-code-grid">
-            <div>
-              <div class="artifact-code-head"><span id="pim-ecore-name">modelo.pim.ecore</span><button type="button" id="btn-dl-ecore">Descargar .ecore</button></div>
-              <pre id="pim-ecore-code" class="stage-code"></pre>
-            </div>
-            <div>
-              <div class="artifact-code-head"><span id="pim-ocl-name">modelo.pim.ocl</span><button type="button" id="btn-dl-ocl">Descargar .ocl</button></div>
-              <pre id="pim-ocl-code" class="stage-code"></pre>
-            </div>
-          </div>
-        </details>
+        <div id="pim-rules" class="stage-scroll" tabindex="0" role="region" aria-label="Reglas OCL" hidden>
+          <div id="pim-ocl-ast" class="stage-list"></div>
+        </div>
       </section>
 
       <section id="psm-panel" class="stage-panel" aria-label="Modelo Específico de la Plataforma (PSM)" hidden>
-        <div class="stage-explainer">
-          <strong>Transformación M2M (PIM → PSM):</strong> Aterriza el modelo lógico sobre la arquitectura tecnológica destino: <strong>Interfaz Web HTML5/CSS Grid</strong> (conmutable en vivo entre <em>Bandeja Maestro-Detalle</em> y <em>Tablero Kanban por Estado</em>), <strong>Validadores JS ES2022</strong>, <strong>Persistencia Transaccional (IndexedDB + Archivo local)</strong> y <strong>Esquema Relacional SQL DDL</strong> con restricciones <code>CHECK</code> derivadas de OCL.
+        <fieldset id="presentation-panel" class="presentation-panel" hidden>
+          <legend>Presentación de los casos</legend>
+          <div class="presentation-options">
+            <label class="presentation-option">
+              <span class="presentation-option-heading"><input type="radio" name="presentation" value="bandeja" checked><strong>Lista de casos</strong></span>
+              <span class="presentation-description">Revisa cada caso y su detalle en una misma pantalla.</span>
+            </label>
+            <label class="presentation-option">
+              <span class="presentation-option-heading"><input type="radio" name="presentation" value="tablero"><strong>Tablero por estado</strong></span>
+              <span class="presentation-description">Consulta qué casos están en cada estado.</span>
+            </label>
+          </div>
+          <p id="presentation-reset" hidden>Cambiar la vista reiniciará la vista previa la próxima vez que abras la etapa Aplicación.</p>
+        </fieldset>
+        <div id="psm-layout" class="stage-box">
+          <h3 id="psm-wireframe-title">Distribución de la interfaz</h3>
+          <div id="psm-wireframe" class="psm-wireframe"></div>
         </div>
-        <div class="psm-arch-grid">
-          <div class="stage-box">
-            <h3>Especificación de Arquitectura de Plataforma</h3>
-            <dl id="psm-arch-dl" class="arch-dl"></dl>
-          </div>
-          <div class="stage-box">
-            <h3 id="psm-wireframe-title">Disposición Visual Generada (Wireframe en vivo)</h3>
-            <div id="psm-wireframe" class="psm-wireframe"></div>
-          </div>
+        <div id="psm-controls" class="table-wrap stage-scroll" tabindex="0" role="region" aria-label="Mapeo de campos y controles" hidden>
+          <table class="stage-table"><thead><tr><th scope="col">Campo lógico</th><th scope="col">Control web</th><th scope="col">Validación web</th><th scope="col">Columna SQL</th></tr></thead>
+            <tbody id="psm-controls-rows"></tbody>
+          </table>
         </div>
-        <div class="stage-box">
-          <h3>Mapeo de Controles Web HTML5, Restricciones DOM y Columnas SQL</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Propiedad PIM</th>
-                  <th scope="col">Componente HTML5</th>
-                  <th scope="col">Atributos DOM derivados (OCL / Metamodelo)</th>
-                  <th scope="col">Columna Relacional SQL</th>
-                </tr>
-              </thead>
-              <tbody id="psm-controls-rows"></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="stage-box">
-          <div class="artifact-code-head">
-            <h3>Esquema Relacional de Base de Datos Generado (<code>.psm.sql</code>)</h3>
-            <button type="button" id="btn-dl-sql">Descargar esquema .sql</button>
-          </div>
-          <pre id="psm-sql-code" class="stage-code"></pre>
+        <div id="psm-data" class="stage-scroll" tabindex="0" role="region" aria-label="Almacenamiento y esquema SQL" hidden>
+          <section class="stage-box"><h3>Destino web</h3><dl id="psm-arch-dl" class="arch-dl"></dl></section>
+          <section class="stage-box stage-relations"><h3>Esquema SQL para SQLite</h3><pre id="psm-sql-code" class="stage-code" tabindex="0" aria-label="Código SQL"></pre></section>
         </div>
       </section>
 
@@ -366,14 +312,8 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
 
       <div id="app-panel" hidden>
         <div class="app-launch-bar">
-          <div>
-            <strong>Ejecución M2T de la Aplicación Generada</strong>
-            <p>La aplicación incluye conexión a Base de Datos <code>IndexedDB</code> y sincronización con archivo físico <code>.db.json</code> / exportación <code>.sql</code>. Ábrela en una pestaña nueva para trabajar a pantalla completa.</p>
-          </div>
-          <div class="tools">
-            <button id="open-app-tab" type="button" class="generate">Abrir en pestaña nueva ↗</button>
-            <button id="download-app-html" type="button">Descargar App (.html)</button>
-          </div>
+          <p>Prueba el flujo en la vista previa. Abre la aplicación en otra pestaña para guardar cambios en el navegador.</p>
+          <button id="open-app-tab" type="button" class="generate">Abrir en otra pestaña ↗</button>
         </div>
         <iframe id="preview" title="Aplicación generada" sandbox="allow-scripts allow-forms allow-modals allow-downloads"></iframe>
       </div>
@@ -381,7 +321,7 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
 
     <aside id="model-summary">
       <section id="integration-card" class="side-card" hidden><h2>Inventario compartido</h2><p id="integration-link" class="flow-start"></p><ul id="integration-movements"></ul></section>
-      <details class="side-card" id="flow-card" open>
+      <details class="side-card" id="flow-card">
         <summary><strong>Proceso de negocio</strong><span id="flow-count"></span></summary>
         <div class="side-actions">
           <button type="button" id="side-add-actor">+ Actor</button>
@@ -394,7 +334,7 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
         <select id="flow-role"></select>
         <div id="flow" class="side-list" tabindex="0" aria-label="Transiciones"></div>
       </details>
-      <details class="side-card" id="rules-card" open>
+      <details class="side-card" id="rules-card">
         <summary><strong>Restricciones OCL</strong><span id="rules-count"></span></summary>
         <div class="side-actions">
           <button type="button" id="side-add-rule">+ Nueva regla OCL (inv / pre / post)</button>
@@ -419,22 +359,42 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
     </form>
   </dialog>
 
-  <section class="trace-card" aria-labelledby="trace-title">
-    <div class="section-head">
-      <div><h2 id="trace-title">Matriz de Trazabilidad MDA</h2><p>Correspondencia formal desde los elementos de negocio (CIM), pasando por Ecore/UML (PIM) y Web/SQL (PSM), hasta el código ejecutable.</p></div>
-      <div class="tools">
-        <button id="trace-download-csv" type="button">Descargar CSV (.csv)</button>
-        <button id="trace-download" type="button">Descargar JSON (.traza.json)</button>
+  <dialog id="stage-resources" aria-labelledby="stage-resources-title">
+    <div class="section-head"><h2 id="stage-resources-title">Archivos y trazabilidad</h2><button id="close-stage-resources" type="button" autofocus>Cerrar</button></div>
+    <div class="model-format" role="group" aria-label="Recursos de la etapa">
+      <button id="show-exports" type="button" aria-pressed="true">Archivos</button>
+      <button id="show-trace" type="button" aria-pressed="false">Trazabilidad</button>
+    </div>
+    <section id="stage-exports" aria-label="Archivos de la etapa">
+      <p id="exports-caption"></p>
+      <div id="deliverables-bar" class="deliverables-bar"></div>
+      <div id="pim-file-previews" hidden>
+        <details><summary>Ver Ecore</summary><pre id="pim-ecore-code" class="stage-code" tabindex="0" aria-label="Código Ecore"></pre></details>
+        <details><summary>Ver OCL</summary><pre id="pim-ocl-code" class="stage-code" tabindex="0" aria-label="Código OCL"></pre></details>
       </div>
-    </div>
-    <div class="trace-controls">
-      <div><label for="trace-search">Buscar en la trazabilidad</label><input id="trace-search" type="search" placeholder="Ej. CantidadValida, EInt, CHECK"></div>
-      <div><label for="trace-kind">Tipo de elemento</label><select id="trace-kind"><option value="">Todos</option><option value="datos">Campos / Atributos</option><option value="transiciones">Transiciones / Operaciones</option><option value="tipo">Operaciones CRUD</option><option value="unicos">Unicidad</option><option value="integracion">Integración</option><option value="ocl">Reglas OCL</option></select></div>
-    </div>
-    <p id="trace-empty" class="trace-empty" hidden></p>
-    <div class="table-wrap" id="trace-table"><table><thead><tr><th>01 · CIM (Negocio)</th><th>02 · PIM (Ecore / UML)</th><th>03 · PSM (Web / SQL)</th><th>04 · Aplicación (M2T)</th></tr></thead><tbody id="trace"></tbody></table></div>
-    <div class="trace-footer"><p id="trace-count" role="status"></p><div class="tools"><button id="trace-prev" type="button">Anterior</button><button id="trace-next" type="button">Siguiente</button></div></div>
-  </section>
+      <div id="cim-file-actions" class="tools">
+        <button id="load-button" type="button">Importar CIM (.json)</button>
+        <input id="load" type="file" accept=".json,application/json" hidden>
+        <button id="reset" type="button">Restaurar ejemplo</button>
+      </div>
+    </section>
+    <section class="trace-card" id="stage-trace" aria-labelledby="trace-title" hidden>
+      <div class="section-head">
+        <div><h3 id="trace-title">Del modelo al código</h3><p>Busca un campo, una transición o una regla para seguir cómo se transforma.</p></div>
+        <div class="tools">
+          <button id="trace-download-csv" type="button">Descargar CSV (.csv)</button>
+          <button id="trace-download" type="button">Descargar JSON (.traza.json)</button>
+        </div>
+      </div>
+      <div class="trace-controls">
+        <div><label for="trace-search">Buscar en la trazabilidad</label><input id="trace-search" type="search" placeholder="Ej. CantidadValida, EInt, CHECK"></div>
+        <div><label for="trace-kind">Tipo de elemento</label><select id="trace-kind"><option value="">Todos</option><option value="datos">Campos / Atributos</option><option value="transiciones">Transiciones / Operaciones</option><option value="tipo">Operaciones CRUD</option><option value="unicos">Unicidad</option><option value="integracion">Integración</option><option value="ocl">Reglas OCL</option></select></div>
+      </div>
+      <p id="trace-empty" class="trace-empty" hidden></p>
+      <div class="table-wrap" id="trace-table"><table><thead><tr><th>01 · CIM (Negocio)</th><th>02 · PIM (Ecore / UML)</th><th>03 · PSM (Web / SQL)</th><th>04 · Aplicación (M2T)</th></tr></thead><tbody id="trace"></tbody></table></div>
+      <div class="trace-footer"><p id="trace-count" role="status"></p><div class="tools"><button id="trace-prev" type="button">Anterior</button><button id="trace-next" type="button">Siguiente</button></div></div>
+    </section>
+  </dialog>
 </main>
 <script>{{SCRIPT}}</script>
 </body>

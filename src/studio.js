@@ -76,21 +76,28 @@
   let draft;
   let current = 'model';
   let modelFormat = 'fields';
+  const generatedFormats = { pim: 'fields', psm: 'fields' };
+  const formats = {
+    model: { fields: 'Campos', diagram: 'Diagrama', json: 'Editar JSON' },
+    pim: { fields: 'Campos y tipos', secondary: 'Clases', tertiary: 'Reglas OCL', json: 'JSON' },
+    psm: { fields: 'Interfaz', secondary: 'Mapeo', tertiary: 'Datos y SQL', json: 'JSON' },
+    app: {},
+  };
   let previewResult;
   let inspectedModel;
   let tracePage = 0;
   const tracePageSize = 8;
   const stages = [
-    { id: 'model', name: 'CIM', next: 'Validar y ver PIM', description: 'Define el proceso, sus datos, sus reglas OCL y descarga sus diagramas (.cim / .svg / .mmd).' },
-    { id: 'pim', name: 'PIM', next: 'Ver PSM', description: 'Revisa las clases UML/Ecore, multiplicidades, firmas y descarga el metamodelo (.ecore / .ocl).' },
-    { id: 'psm', name: 'PSM', next: 'Generar aplicación', description: 'Elige la presentación web, inspecciona el wireframe y descarga el esquema SQL (.sql / .schema.json).' },
-    { id: 'app', name: 'Aplicación', description: 'Prueba la aplicación generada, ábrela en otra pestaña o conéctala a Base de Datos (.db.json / .sql).' },
+    { id: 'model', name: 'CIM', next: 'Validar y ver PIM' },
+    { id: 'pim', name: 'PIM', next: 'Ver PSM' },
+    { id: 'psm', name: 'PSM', next: 'Generar aplicación' },
+    { id: 'app', name: 'Aplicación' },
   ];
   const views = {
-    model: ['01 · Modelo Independiente de la Computación (CIM)', 'Define actores, campos de negocio, flujo del proceso y reglas OCL sin atarte a una tecnología.'],
-    pim: ['02 · Modelo Independiente de la Plataforma (PIM)', 'Especificación lógica Ecore/UML con clases, tipos formales, multiplicidades, operaciones y AST OCL.'],
-    psm: ['03 · Modelo Específico de la Plataforma (PSM)', 'Arquitectura Web HTML5/JS, disposición visual (Bandeja vs Tablero) y esquema relacional SQL DDL.'],
-    app: ['04 · Aplicación Ejecutable (M2T) y Persistencia', 'Prueba la aplicación generada, ábrela en otra pestaña y conéctala a Base de Datos / Archivo.'],
+    model: ['Modelo de negocio', 'Edita los campos o define el flujo en el diagrama.'],
+    pim: ['Modelo lógico', 'Consulta los tipos, las relaciones y las reglas del dominio.'],
+    psm: ['Modelo web', 'Consulta los controles, la presentación y el almacenamiento.'],
+    app: ['Aplicación generada', 'Ejecuta solicitudes y comprueba su efecto en los datos.'],
   };
   const typeNames = {
     movementType: 'Salida o entrada de inventario',
@@ -156,7 +163,6 @@
     $('#fields-type').textContent = 'Tipo de negocio (CIM)';
     $('#fields-table').hidden = !model;
     const crud = model?.tipo === 'crud';
-    $('#add-transition-btn').hidden = Boolean(crud);
     if (!model) {
       $('#fields-caption').textContent = 'Corrige o genera el modelo para consultar y editar sus campos.';
       return;
@@ -217,14 +223,10 @@
   function createUmlClassCard(entityPim) {
     const card = make('article', '', 'uml-class-card');
     const head = make('header', '', 'uml-class-head');
-    head.append(
-      make('span', entityPim.estereotipo + ' · ' + entityPim.paquete, 'uml-stereotype'),
-      make('h3', entityPim.entidad),
-      make('p', entityPim.objetivo),
-    );
+    head.append(make('h3', entityPim.entidad));
 
-    const attrSection = make('div', '', 'uml-compartment');
-    attrSection.append(make('h4', 'Atributos Ecore / UML (' + entityPim.atributos.length + ')'));
+    const attrSection = make('details', '', 'uml-compartment');
+    attrSection.append(make('summary', 'Atributos (' + entityPim.atributos.length + ')'));
     const attrList = make('ul', '', 'uml-list');
     for (const attr of entityPim.atributos) {
       const li = make('li', '');
@@ -236,15 +238,15 @@
       if (attr.soloLectura) flags.push('readOnly');
       const flagText = flags.length ? ' {' + flags.join(', ') + '}' : '';
       const enumText = attr.valoresEnum?.length ? ' [' + attr.valoresEnum.join(' | ') + ']' : '';
-      const sig = make('code', (attr.soloLectura ? '🔒 ' : '+ ') + attr.id + ' : ' + attr.tipoEcore + ' [' + attr.multiplicidad + ']' + flagText + enumText);
+      const sig = make('code', attr.id + ' · ' + attr.tipoEcore + ' [' + attr.multiplicidad + ']' + flagText + enumText);
       const label = make('small', attr.nombre + ' (CIM: ' + attr.tipoDominio + ')');
       li.append(originBadge, sig, label);
       attrList.append(li);
     }
     attrSection.append(attrList);
 
-    const opSection = make('div', '', 'uml-compartment');
-    opSection.append(make('h4', 'Operaciones y Transiciones Lógicas (' + entityPim.firmas.length + ')'));
+    const opSection = make('details', '', 'uml-compartment');
+    opSection.append(make('summary', 'Operaciones (' + entityPim.firmas.length + ')'));
     const opList = make('ul', '', 'uml-list');
     for (const op of entityPim.firmas) {
       const li = make('li', '');
@@ -264,6 +266,24 @@
     return card;
   }
 
+  function renderPimFields(pim) {
+    const entities = pim.integracion ? [pim, pim.integracion.catalogo] : [pim];
+    const table = $('#pim-fields-table');
+    for (const body of [...table.tBodies]) body.remove();
+    for (const entity of entities) {
+      const body = table.createTBody();
+      const group = make('tr', '', 'entity-group');
+      const heading = make('th', entity.entidad);
+      heading.scope = 'rowgroup';
+      heading.colSpan = 4;
+      group.append(heading);
+      body.append(group);
+      for (const attribute of entity.atributos.filter(item => item.origen === 'dominio')) {
+        body.append(tableRow(attribute.nombre, make('code', attribute.id), attribute.tipoEcore, attribute.multiplicidad));
+      }
+    }
+  }
+
   function renderPim() {
     const pim = result?.pim;
     const grid = $('#pim-uml-grid');
@@ -273,6 +293,7 @@
     relList.replaceChildren();
     astList.replaceChildren();
     if (!pim) return;
+    renderPimFields(pim);
 
     grid.append(createUmlClassCard(pim));
     if (pim.integracion) {
@@ -299,27 +320,21 @@
     ];
     if (allRules.length) {
       for (const rule of allRules) {
-        const item = make('div', '', 'stage-item');
+        const item = make('details', '', 'stage-item rule-detail');
         const kindMap = { inv: 'Invariante (inv)', pre: 'Precondición (pre)', post: 'Postcondición (post)' };
-        const head = make('strong', rule.clase + (rule.operacion ? '::' + rule.operacion + '()' : '') + ' · ' + rule.id + ' [' + (kindMap[rule.tipo] ?? rule.tipo) + ']');
+        const head = make('summary', rule.clase + (rule.operacion ? '::' + rule.operacion + '()' : '') + ' · ' + rule.id + ' [' + (kindMap[rule.tipo] ?? rule.tipo) + ']');
         const astDesc = rule.expresion.map((t, idx) => {
           const prefix = idx > 0 ? (t.conector ?? 'and').toUpperCase() + ' ' : '';
           const left = t.acceso === 'size' ? 'size(self.' + t.campo + ')' : 'self.' + t.campo;
           const right = t.campoDerecho ? 'self.' + t.campoDerecho : JSON.stringify(t.valor);
           return prefix + '(' + left + ' ' + t.operador + ' ' + right + ')';
         }).join(' ');
-        item.append(head, make('code', 'AST: ' + astDesc), make('small', 'Fuente OCL: ' + rule.fuente));
+        item.append(head, make('code', rule.fuente), make('small', 'Expresión analizada · ' + astDesc));
         astList.append(item);
       }
     } else {
-      astList.append(make('p', 'Sin reglas OCL declaradas. Añade una desde el panel lateral.', 'muted-note'));
+      astList.append(make('p', 'Este modelo no tiene reglas OCL. Puedes añadirlas en el CIM.', 'muted-note'));
     }
-
-    const stem = exportStem();
-    $('#pim-ecore-name').textContent = stem + '.pim.ecore';
-    $('#pim-ocl-name').textContent = stem + '.pim.ocl';
-    $('#pim-ecore-code').textContent = result.entregables.pimEcore;
-    $('#pim-ocl-code').textContent = result.entregables.pimOcl;
   }
 
   function renderPsm() {
@@ -333,48 +348,37 @@
     if (!psm) return;
 
     const archEntries = [
-      ['Plataforma destino', psm.plataforma],
-      ['Patrón de Interfaz (UI)', psm.arquitectura.patronUi],
-      ['Disposición estructural', psm.arquitectura.disposicion],
-      ['Adaptador de Base de Datos', psm.arquitectura.adaptadorDatos],
-      ['Clave de almacén lógico', psm.almacen.clave],
-      ['Seguridad y Validadores', psm.arquitectura.seguridad],
+      ['Aplicación', 'HTML5 y JavaScript'],
+      ['Almacenamiento', psm.arquitectura.adaptadorDatos],
+      ['Validación', psm.arquitectura.seguridad],
     ];
     for (const [dt, dd] of archEntries) {
       archDl.append(make('dt', dt), make('dd', dd));
     }
 
-    $('#presentation-summary').textContent = psm.tipo === 'crud'
-      ? 'Catálogo tabular CRUD + Persistencia SQL/IndexedDB'
-      : psm.presentacion === 'tablero'
-        ? 'Activo: Tablero Kanban (' + psm.estados.length + ' columnas de estado)'
-        : 'Activo: Bandeja Maestro-Detalle (2 columnas)';
-
-    $('#psm-wireframe-title').textContent = 'Disposición Visual Generada: ' + psm.arquitectura.patronUi;
-    const wfHeader = make('div', '', 'wf-bar');
-    wfHeader.textContent = 'Cabecera App: ' + psm.nombre + (psm.roles ? ' · Selector RBAC (' + psm.roles.length + ' roles)' : ' · Modo Catálogo CRUD');
-    const wfDbBar = make('div', '', 'wf-db-bar');
-    wfDbBar.textContent = 'Barra de Base de Datos: IndexedDB (' + psm.esquemaSql.tablas.length + ' tablas) + Conexión a archivo .db.json / Exportación .sql';
-    wireframe.append(wfHeader, wfDbBar);
+    $('#psm-wireframe-title').textContent = psm.tipo === 'crud' ? 'Formulario y tabla' :
+      psm.presentacion === 'tablero' ? 'Tablero por estado' : 'Lista de casos';
+    wireframe.append(make('div', psm.nombre, 'wf-bar'));
 
     if (psm.tipo === 'crud') {
       const grid = make('div', '', 'wf-crud');
       grid.append(
-        make('div', 'Formulario Multi-columna (' + psm.campos.length + ' controles HTML5)', 'wf-box'),
-        make('div', 'Tabla Filtrable CRUD (' + psm.campos.map(c => c.nombre).join(' | ') + ' | Editar / Eliminar)', 'wf-box'),
+        make('div', 'Formulario (' + psm.campos.length + ' controles HTML5)', 'wf-box'),
+        make('div', 'Tabla de registros (' + psm.campos.length + ' columnas)', 'wf-box'),
       );
       wireframe.append(grid);
     } else if (psm.presentacion === 'tablero') {
       const lanesWrap = make('div', '', 'wf-lanes');
       for (const st of psm.estados) {
         const lane = make('div', '', 'wf-lane' + (st.final ? ' is-final' : ''));
-        lane.append(make('strong', st.nombre), make('small', st.final ? 'Columna Final' : 'Carril de Estado'));
+        lane.append(make('strong', st.nombre));
+        if (st.final) lane.append(make('small', 'Estado final'));
         lanesWrap.append(lane);
       }
       const bottomSplit = make('div', '', 'wf-split');
       bottomSplit.append(
         make('div', 'Formulario: ' + psm.formulario.nombre + ' (Rol: ' + psm.formulario.actor + ')', 'wf-box'),
-        make('div', 'Inspector de Caso + Botones de Transición + Historial', 'wf-box'),
+        make('div', 'Detalle del caso · Acciones e historial', 'wf-box'),
       );
       wireframe.append(lanesWrap, bottomSplit);
     } else {
@@ -382,11 +386,11 @@
       const leftCol = make('div', '', 'wf-col');
       leftCol.append(
         make('div', 'Formulario: ' + psm.formulario.nombre + ' (' + psm.campos.length + ' campos)', 'wf-box'),
-        make('div', 'Bandeja Vertical de Casos con Badges de Estado', 'wf-box'),
+        make('div', 'Lista de casos y sus estados', 'wf-box'),
       );
       const rightCol = make('div', '', 'wf-col');
       rightCol.append(
-        make('div', 'Inspector Maestro-Detalle + Disparadores por Rol + Bitácora (' + psm.acciones.length + ' acciones)', 'wf-box is-tall'),
+        make('div', 'Detalle del caso · Acciones e historial', 'wf-box is-tall'),
       );
       split.append(leftCol, rightCol);
       wireframe.append(split);
@@ -417,19 +421,26 @@
     const bar = $('#deliverables-bar');
     bar.replaceChildren();
     const stem = exportStem();
-    const label = make('span', 'Entregables MDA de esta fase:', 'deliverables-label');
-    bar.append(label);
+    $('#exports-caption').textContent = 'Archivos de ' + stages.find(stage => stage.id === current).name;
+    $('#cim-file-actions').hidden = current !== 'model';
+    const pimFiles = current === 'pim' && result;
+    $('#pim-file-previews').hidden = !pimFiles;
+    if (pimFiles) {
+      for (const panel of $('#pim-file-previews').querySelectorAll('details')) panel.open = false;
+      $('#pim-ecore-code').textContent = result.entregables.pimEcore;
+      $('#pim-ocl-code').textContent = result.entregables.pimOcl;
+    }
 
-    const addBtn = (text, handler, primary = false) => {
-      const btn = make('button', text, primary ? 'deliverable-btn is-primary' : 'deliverable-btn');
+    const addBtn = (text, handler) => {
+      const btn = make('button', text, 'deliverable-btn');
       btn.type = 'button';
       btn.onclick = handler;
       bar.append(btn);
     };
 
     if (current === 'model') {
-      addBtn('Descargar CIM (.cim.json)', () => download(source.value, stem + '.cim.json', 'application/json'), true);
-      if (result) {
+      addBtn('Descargar CIM (.cim.json)', () => download(source.value, stem + '.cim.json', 'application/json'));
+      if (result && draft === source.value) {
         addBtn('Descargar Diagrama (.cim.svg)', () => {
           const svgContent = diagram.exportSvg(source.value);
           if (svgContent) download(svgContent, stem + '.cim.svg', 'image/svg+xml;charset=utf-8');
@@ -437,18 +448,15 @@
         addBtn('Descargar Flujo Mermaid (.cim.mmd)', () => download(result.entregables.cimMermaid, stem + '.cim.mmd', 'text/plain;charset=utf-8'));
       }
     } else if (current === 'pim' && result) {
-      addBtn('Descargar Eclipse Ecore (.pim.ecore)', () => download(result.entregables.pimEcore, stem + '.pim.ecore', 'application/xml;charset=utf-8'), true);
+      addBtn('Descargar Eclipse Ecore (.pim.ecore)', () => download(result.entregables.pimEcore, stem + '.pim.ecore', 'application/xml;charset=utf-8'));
       addBtn('Descargar Reglas OCL (.pim.ocl)', () => download(result.entregables.pimOcl, stem + '.pim.ocl', 'text/plain;charset=utf-8'));
       addBtn('Descargar Modelo PIM (.pim.json)', () => downloadModel(result.pim, 'pim'));
     } else if (current === 'psm' && result) {
-      addBtn('Descargar Esquema SQL (.psm.sql)', () => download(result.entregables.psmSql, stem + '.psm.sql', 'application/sql;charset=utf-8'), true);
+      addBtn('Descargar Esquema SQL (.psm.sql)', () => download(result.entregables.psmSql, stem + '.psm.sql', 'application/sql;charset=utf-8'));
       addBtn('Descargar JSON Schema (.psm.schema.json)', () => download(result.entregables.psmSchema, stem + '.psm.schema.json', 'application/schema+json;charset=utf-8'));
       addBtn('Descargar Modelo PSM (.psm.json)', () => downloadModel(result.psm, 'psm'));
     } else if (current === 'app' && result) {
-      addBtn('Abrir aplicación en pestaña nueva ↗', openAppInNewTab, true);
-      addBtn('Descargar Aplicación (.html)', () => download(result.html, stem + '.html', 'text/html;charset=utf-8'));
-      addBtn('Descargar DDL Base de Datos (.psm.sql)', () => download(result.entregables.psmSql, stem + '.psm.sql', 'application/sql;charset=utf-8'));
-      addBtn('Descargar Trazabilidad (.traza.csv)', () => download(result.entregables.traceCsv, stem + '.traza.csv', 'text/csv;charset=utf-8'));
+      addBtn('Descargar aplicación (.html)', () => download(result.html, stem + '.html', 'text/html;charset=utf-8'));
     }
   }
 
@@ -506,7 +514,6 @@
     $('#guide').hidden = true;
     $('#library').hidden = false;
     $('#editor').hidden = true;
-    $('#open-new-tab-top').hidden = true;
     renderProjects();
     window.scrollTo(0, 0);
   }
@@ -560,8 +567,6 @@
   function openProject(project) {
     $('#library').hidden = true;
     $('#editor').hidden = false;
-    $('#open-new-tab-top').hidden = false;
-    $('#project-caption').textContent = project.name;
     active = project;
     source.load(project.source);
     result = undefined;
@@ -578,8 +583,8 @@
     $('#trace-kind').value = '';
     tracePage = 0;
     renderTrace();
-    $('#flow-card').open = true;
-    $('#rules-card').open = true;
+    $('#flow-card').open = false;
+    $('#rules-card').open = false;
     $('#flow-role').replaceChildren();
     $('#flow-count').textContent = '';
     $('#rules-count').textContent = '';
@@ -589,6 +594,8 @@
     persistProject(false);
     current = 'model';
     modelFormat = 'fields';
+    generatedFormats.pim = 'fields';
+    generatedFormats.psm = 'fields';
     build();
     window.scrollTo(0, 0);
   }
@@ -735,7 +742,6 @@
   }
 
   function view(next) {
-    if (next !== 'model' && modelFormat === 'diagram') modelFormat = 'fields';
     current = next;
     $('#editor').dataset.stage = next;
     for (const button of document.querySelectorAll('[data-view]')) {
@@ -747,59 +753,44 @@
     renderStageNavigation(next);
     $('#view-title').textContent = views[next][0];
     $('#view-subtitle').textContent = views[next][1];
-    const structuredView = next !== 'app' && modelFormat === 'fields';
-    const diagramView = next === 'model' && modelFormat === 'diagram';
+    const format = next === 'model' ? modelFormat : generatedFormats[next];
+    const cimFields = next === 'model' && format === 'fields';
+    const diagramView = next === 'model' && format === 'diagram';
     const crud = result?.cim.tipo === 'crud';
-
-    const structuredLabels = {
-      model: 'Campos y negocio',
-      pim: 'Clases Ecore / UML y Reglas',
-      psm: 'Arquitectura Web y Esquema SQL',
-    };
-    $('#show-fields').textContent = structuredLabels[next] ?? 'Vista estructurada';
-    $('#show-diagram').textContent = crud ? 'Estructura visual' : 'Diagrama de flujo';
     $('#flow-card').hidden = crud;
     $('#integration-card').hidden = !result?.cim.integracion;
     $('#model-format').hidden = next === 'app';
-    $('#show-fields').setAttribute('aria-pressed', String(structuredView));
-    $('#show-json').setAttribute('aria-pressed', String(modelFormat === 'json'));
-    $('#show-diagram').hidden = next !== 'model';
-    $('#show-diagram').setAttribute('aria-pressed', String(diagramView));
-    $('#show-json').textContent = next === 'model' ? 'Editar JSON (.cim)' : 'Inspeccionar JSON (.' + next + ')';
-
-    $('#fields-panel').hidden = !(next === 'model' && structuredView);
-    $('#pim-panel').hidden = !(next === 'pim' && structuredView);
-    $('#psm-panel').hidden = !(next === 'psm' && structuredView);
-    $('#source-panel').hidden = next !== 'model' || modelFormat !== 'json';
+    for (const button of $('#model-format').querySelectorAll('[data-format]')) {
+      const label = formats[next][button.dataset.format];
+      button.hidden = !label;
+      button.setAttribute('aria-pressed', String(button.dataset.format === format));
+      if (label) button.textContent = label;
+    }
+    $('#fields-panel').hidden = !cimFields;
+    $('#pim-panel').hidden = next !== 'pim' || format === 'json';
+    $('#psm-panel').hidden = next !== 'psm' || format === 'json';
+    for (const [id, selectedFormat] of [
+      ['pim-fields', 'fields'], ['pim-classes', 'secondary'], ['pim-rules', 'tertiary'],
+      ['psm-layout', 'fields'], ['psm-controls', 'secondary'], ['psm-data', 'tertiary'],
+    ]) $('#' + id).hidden = format !== selectedFormat;
+    $('#source-panel').hidden = next !== 'model' || format !== 'json';
     $('#diagram-panel').hidden = !diagramView;
 
     if (!$('#source-panel').hidden) {
       $('#source-filename').textContent = (result?.cim.id ?? 'modelo') + '.cim.json';
       source.measure();
     }
-    $('#load-button').hidden = next !== 'model';
-    $('#reset').hidden = next !== 'model' || !examples.has(active.id);
-    $('#output').hidden = structuredView || !['pim', 'psm'].includes(next);
+    $('#reset').hidden = !examples.has(active.id);
+    $('#output').hidden = !['pim', 'psm'].includes(next) || format !== 'json';
     $('#app-panel').hidden = next !== 'app';
-    $('#model-summary').hidden = next === 'app' || diagramView;
-    $('.workspace').classList.toggle('full-width', next === 'app' || diagramView);
-    const process = result && result.cim.tipo !== 'crud';
-    $('#presentation-panel').hidden = !process || next !== 'psm';
-    $('#presentation-current').hidden = !process || next !== 'app';
+    $('#model-summary').hidden = !cimFields;
+    $('.workspace').classList.toggle('full-width', !cimFields);
+    $('#presentation-panel').hidden = !result || crud || next !== 'psm' || format !== 'fields';
     $('#presentation-reset').hidden = !previewResult;
-    if (process && next === 'app') {
-      const board = result.psm.presentacion === 'tablero';
-      $('#presentation-current-name').textContent = board ? 'Vista activa · Tablero por estado' : 'Vista activa · Lista de casos';
-      $('#presentation-current-description').textContent = board
-        ? 'Cada grupo reúne los casos que están en el mismo estado.'
-        : 'Cada caso aparece en la lista junto con su estado.';
-    }
-    $('#download').hidden = true;
 
-    renderDeliverables();
-    if (next === 'model' && structuredView) renderFields();
-    if (next === 'pim' && structuredView) renderPim();
-    if (next === 'psm' && structuredView) renderPsm();
+    if (cimFields) renderFields();
+    if (next === 'pim' && format !== 'json') renderPim();
+    if (next === 'psm' && format !== 'json') renderPsm();
     if (diagramView) diagram.show(source.value, active.id);
     if (!$('#output').hidden) renderInspector(next);
     if (next === 'app' && result && previewResult !== result) {
@@ -936,7 +927,6 @@
     const index = stages.findIndex(stage => stage.id === id);
     const stage = stages[index];
     $('#stage-progress').textContent = stage.name + ' · Etapa ' + (index + 1) + ' de ' + stages.length;
-    $('#stage-description').textContent = stage.description;
     $('#stage-back').hidden = index === 0;
     $('#stage-back-label').textContent = index > 0 ? 'Volver al ' + stages[index - 1].name : '';
     $('#stage-next').hidden = !stage.next;
@@ -1054,25 +1044,38 @@
   for (const button of document.querySelectorAll('[data-view]')) {
     button.onclick = () => goToStage(button.dataset.view);
   }
-  $('#show-fields').onclick = () => { modelFormat = 'fields'; view(current); };
-  $('#show-json').onclick = () => { modelFormat = 'json'; view(current); };
-  $('#show-diagram').onclick = () => { modelFormat = 'diagram'; view('model'); };
+  for (const button of $('#model-format').querySelectorAll('[data-format]')) {
+    button.onclick = () => {
+      if (current === 'model') modelFormat = button.dataset.format;
+      else generatedFormats[current] = button.dataset.format;
+      view(current);
+    };
+  }
+
+  const resources = $('#stage-resources');
+  function showResources(trace) {
+    $('#stage-exports').hidden = trace;
+    $('#stage-trace').hidden = !trace;
+    $('#show-exports').setAttribute('aria-pressed', String(!trace));
+    $('#show-trace').setAttribute('aria-pressed', String(trace));
+  }
+  $('#open-stage-resources').onclick = () => {
+    renderDeliverables();
+    showResources(false);
+    resources.showModal();
+  };
+  $('#close-stage-resources').onclick = () => resources.close();
+  $('#show-exports').onclick = () => showResources(false);
+  $('#show-trace').onclick = () => showResources(true);
 
   $('#add-field-btn').onclick = () => diagram.openItem('datos', undefined, {}, source.value, active.id);
-  $('#add-transition-btn').onclick = () => diagram.openItem('transiciones', undefined, {}, source.value, active.id);
-  $('#add-ocl-btn').onclick = () => diagram.openItem('ocl', undefined, {}, source.value, active.id);
   $('#side-add-actor').onclick = () => diagram.openItem('actores', undefined, {}, source.value, active.id);
   $('#side-add-state').onclick = () => diagram.openItem('estados', undefined, {}, source.value, active.id);
   $('#side-add-transition').onclick = () => diagram.openItem('transiciones', undefined, {}, source.value, active.id);
   $('#side-edit-start').onclick = () => diagram.openItem('inicio', 0, {}, source.value, active.id);
   $('#side-add-rule').onclick = () => diagram.openItem('ocl', undefined, {}, source.value, active.id);
 
-  $('#btn-dl-ecore').onclick = () => result && download(result.entregables.pimEcore, exportStem() + '.pim.ecore', 'application/xml;charset=utf-8');
-  $('#btn-dl-ocl').onclick = () => result && download(result.entregables.pimOcl, exportStem() + '.pim.ocl', 'text/plain;charset=utf-8');
-  $('#btn-dl-sql').onclick = () => result && download(result.entregables.psmSql, exportStem() + '.psm.sql', 'application/sql;charset=utf-8');
   $('#open-app-tab').onclick = openAppInNewTab;
-  $('#open-new-tab-top').onclick = openAppInNewTab;
-  $('#download-app-html').onclick = () => result && download(result.html, exportStem() + '.html', 'text/html;charset=utf-8');
 
   for (const type of Object.keys(METAMODEL)) {
     if (!['CIM', 'PIM', 'PSM', 'CIMCrud', 'PIMCrud', 'PSMCrud'].includes(type)) $('#metamodel-types').append(make('option', type));
@@ -1097,10 +1100,6 @@
     persistProject(true);
     build();
   };
-  $('#change-presentation').onclick = () => {
-    goToStage('psm');
-    if (current === 'psm') $('input[name=presentation]:checked').focus();
-  };
   $('#flow-role').onchange = renderFlow;
   for (const selector of ['#trace-search', '#trace-kind']) {
     $(selector).addEventListener('input', () => {
@@ -1112,9 +1111,15 @@
   $('#trace-next').onclick = () => { tracePage++; renderTrace(); };
   $('#reset').onclick = () => {
     const example = examples.get(active.id);
-    if (example) markDraft(example);
+    if (example) {
+      resources.close();
+      markDraft(example);
+    }
   };
-  $('#load-button').onclick = () => $('#load').click();
+  $('#load-button').onclick = () => {
+    resources.close();
+    $('#load').click();
+  };
   $('#load').onchange = async event => {
     const file = event.target.files[0];
     if (!file) return;

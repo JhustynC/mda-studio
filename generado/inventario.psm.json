@@ -13,17 +13,17 @@
       "Formulario de Alta/Edición (7 controles)",
       "Barra de búsqueda en tiempo real",
       "Tabla de datos con columnas: Producto, Código SKU, Categoría, Stock disponible, Ubicación, Fecha de reposición, Producto activo + Acciones",
-      "Panel de conexión a Base de Datos IndexedDB / Archivo (.db.json y .sql)"
+      "Gestión de datos y exportación"
     ],
-    "adaptadorDatos": "IndexedDB (almacén de objetos) + Sincronización con Archivo Local (.db.json / .sql) + Fallback localStorage",
+    "adaptadorDatos": "IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.",
     "seguridad": "Validación de unicidad (sku) e invariantes OCL en cliente antes de confirmar transacción"
   },
   "almacen": {
-    "tipo": "IndexedDB + Archivo (.db.json / .sql) + localStorage",
+    "tipo": "IndexedDB + localStorage",
     "clave": "mda.registros.proyecto.example-inventario.inventario"
   },
   "esquemaSql": {
-    "motor": "SQL Estándar (PostgreSQL / SQLite3) + Almacén Transaccional IndexedDB",
+    "motor": "SQLite 3",
     "tablas": [
       {
         "nombre": "producto",

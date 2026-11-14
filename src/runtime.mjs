@@ -17,6 +17,8 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
   let durable = true;
   let fileHandle = null;
   let idbDatabase = null;
+  let hasLocalSnapshot = false;
+  let pendingFileWrite = Promise.resolve();
 
   function filterValidRecords(list) {
     if (!Array.isArray(list)) return [];
@@ -25,7 +27,7 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
   }
 
   function applyStoredPayload(stored) {
-    if (!stored) return;
+    if (!stored) return false;
     if (link && Array.isArray(stored.records) && Array.isArray(stored.products) && Array.isArray(stored.movements)) {
       products = stored.products;
       movements = stored.movements;
@@ -34,12 +36,13 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
       records = filterValidRecords(stored.records);
     } else if (Array.isArray(stored)) {
       records = filterValidRecords(stored);
-    }
+    } else return false;
+    return true;
   }
 
   try {
     const stored = JSON.parse(localStorage.getItem(model.almacen.clave) ?? 'null');
-    applyStoredPayload(stored);
+    hasLocalSnapshot = applyStoredPayload(stored);
   } catch {
     durable = false;
   }
@@ -55,31 +58,21 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     };
   }
 
-  function updateDbStatus(extra = '') {
+  function updateDbStatus() {
     const badge = $('#db-badge');
     const text = $('#db-status-text');
-    if (!badge || !text) return;
-    const countText = crud
-      ? records.length + ' registros'
-      : records.length + ' casos' + (link ? ' · ' + products.length + ' productos · ' + movements.length + ' movimientos' : '');
-    if (fileHandle) {
-      badge.textContent = 'Archivo BD conectado: ' + fileHandle.name;
-      badge.dataset.file = 'true';
-      text.textContent = 'Sincronización automática en disco + IndexedDB (' + countText + ').' + extra;
-    } else if (idbDatabase) {
-      badge.textContent = 'BD IndexedDB activa';
-      badge.dataset.file = 'false';
-      text.textContent = 'Almacén transaccional IndexedDB (' + countText + ').' + extra;
-    } else {
-      badge.textContent = durable ? 'Almacén Local' : 'Memoria de sesión';
-      badge.dataset.file = 'false';
-      text.textContent = 'Persistencia en navegador (' + countText + ').' + extra;
-    }
+    const count = crud ? records.length + ' registros' :
+      records.length + ' solicitudes' + (link ? ' · ' + products.length + ' artículos · ' + movements.length + ' movimientos' : '');
+    const mode = idbDatabase ? 'Guardado en el navegador (IndexedDB)' :
+      durable ? 'Guardado en el navegador' : 'Sesión temporal';
+    badge.textContent = fileHandle ? 'Archivo vinculado · ' + fileHandle.name : mode;
+    text.textContent = mode + ' · ' + count + '.';
+    if (fileHandle) text.textContent += ' Los cambios también se escriben en «' + fileHandle.name + '» durante esta sesión.';
   }
 
   function initIndexedDb() {
-    if (!globalThis.indexedDB) return;
     try {
+      if (!globalThis.indexedDB) return;
       const request = indexedDB.open('mda_studio_runtime_db', 1);
       request.onupgradeneeded = event => {
         const db = event.target.result;
@@ -93,10 +86,9 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
         const store = tx.objectStore('models_data');
         const getReq = store.get(model.almacen.clave);
         getReq.onsuccess = () => {
-          if (getReq.result?.payload && !records.length && !products.length) {
-            applyStoredPayload(getReq.result.payload);
+          if (!hasLocalSnapshot && applyStoredPayload(getReq.result?.payload)) {
             refreshCurrentView();
-          } else if (records.length || products.length) {
+          } else if (hasLocalSnapshot || records.length || products.length) {
             writeIndexedDb(currentPayload());
           }
           updateDbStatus();
@@ -117,16 +109,21 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     }
   }
 
-  async function syncFileHandle(payload) {
-    if (!fileHandle) return;
-    try {
-      const writable = await fileHandle.createWritable();
-      await writable.write(JSON.stringify(payload, null, 2) + '\n');
-      await writable.close();
-      updateDbStatus(' Guardado en archivo.');
-    } catch {
-      notify('No se pudo escribir automáticamente en el archivo conectado.', true);
-    }
+  function syncFileHandle(payload) {
+    const handle = fileHandle;
+    if (!handle) return pendingFileWrite;
+    pendingFileWrite = pendingFileWrite.then(async () => {
+      try {
+        const writable = await handle.createWritable();
+        await writable.write(JSON.stringify(payload, null, 2) + '\n');
+        await writable.close();
+      } catch {
+        if (fileHandle === handle) fileHandle = null;
+        updateDbStatus();
+        notify('No se pudo escribir en el archivo vinculado.', true);
+      }
+    });
+    return pendingFileWrite;
   }
 
   function element(tag, label, className) {
@@ -144,6 +141,7 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
 
   function persist(next, nextProducts = products, nextMovements = movements) {
     const payload = currentPayload(next, nextProducts, nextMovements);
+    hasLocalSnapshot = true;
     if (durable) {
       try {
         localStorage.setItem(model.almacen.clave, JSON.stringify(link ? { records: next, products: nextProducts, movements: nextMovements } : next));
@@ -157,7 +155,7 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     writeIndexedDb(payload);
     syncFileHandle(payload);
     updateDbStatus();
-    return fileHandle ? ' Sincronizado en ' + fileHandle.name + '.' : durable ? '' : ' Los cambios se conservan en esta pestaña.';
+    return durable || idbDatabase ? '' : ' Los cambios se conservan en esta pestaña.';
   }
 
   function sqlLiteral(val) {
@@ -604,22 +602,31 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     if (durable) notify('');
   }
 
-  $('#db-connect-file').onclick = async () => {
-    if (typeof window.showSaveFilePicker === 'function') {
-      try {
-        fileHandle = await window.showSaveFilePicker({
-          suggestedName: model.id + '.db.json',
-          types: [{ description: 'Base de datos JSON MDA', accept: { 'application/json': ['.json'] } }],
-        });
-        await syncFileHandle(currentPayload());
-        notify('Archivo de base de datos «' + fileHandle.name + '» conectado en vivo.');
-        return;
-      } catch (err) {
-        if (err?.name === 'AbortError') return;
+  const dataDialog = $('#db-dialog');
+  $('#open-data-tools').onclick = () => {
+    $('#db-inspect-btn').open = false;
+    dataDialog.showModal();
+  };
+  const connectFile = $('#db-connect-file');
+  connectFile.hidden = window.top !== window || typeof window.showSaveFilePicker !== 'function';
+  connectFile.onclick = async () => {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: model.id + '.db.json',
+        types: [{ description: 'Copia de datos JSON', accept: { 'application/json': ['.json'] } }],
+      });
+      fileHandle = handle;
+      dataDialog.close();
+      await syncFileHandle(currentPayload());
+      if (fileHandle === handle) {
+        updateDbStatus();
+        notify('Copia vinculada a «' + handle.name + '».');
       }
+    } catch (error) {
+      if (error?.name === 'AbortError') return;
+      dataDialog.close();
+      notify('El navegador no pudo vincular el archivo. Puedes descargar una copia JSON.', true);
     }
-    downloadFile(JSON.stringify(currentPayload(), null, 2) + '\n', model.id + '.db.json', 'application/json');
-    notify('Base de datos descargada como ' + model.id + '.db.json (abre la app en una pestaña nueva para conexión directa en disco).');
   };
 
   $('#db-import-btn').onclick = () => $('#db-import-input').click();
@@ -628,13 +635,18 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     if (!file) return;
     try {
       const parsed = JSON.parse(await file.text());
-      applyStoredPayload(parsed);
+      if (!parsed || (parsed.modelId && parsed.modelId !== model.id) ||
+          (link && (!Array.isArray(parsed.records) || !Array.isArray(parsed.products) || !Array.isArray(parsed.movements))) ||
+          !applyStoredPayload(parsed)) {
+        throw new Error('Copia incompatible');
+      }
       persist(records, products, movements);
       refreshCurrentView();
-      notify('Base de datos importada desde «' + file.name + '».');
+      notify('Datos restaurados desde «' + file.name + '».');
     } catch {
-      notify('El archivo seleccionado no es una base de datos JSON válida.', true);
+      notify('El archivo seleccionado no contiene una copia JSON válida para esta aplicación.', true);
     } finally {
+      dataDialog.close();
       event.target.value = '';
     }
   };
@@ -649,12 +661,10 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     notify('Volcado SQL DDL + INSERT guardado (' + model.id + '.datos.sql).');
   };
 
-  $('#db-inspect-btn').onclick = () => {
-    $('#db-dialog-subtitle').textContent = 'Esquema relacional DDL y sentencias INSERT en tiempo real para ' + model.nombre;
-    $('#db-dialog-sql').textContent = generateSqlDump();
-    $('#db-dialog').showModal();
+  $('#db-inspect-btn').ontoggle = event => {
+    if (event.currentTarget.open) $('#db-dialog-sql').textContent = generateSqlDump();
   };
-  $('#db-dialog-close').onclick = () => $('#db-dialog').close();
+  $('#db-dialog-close').onclick = () => dataDialog.close();
 
   $('#app-title').textContent = model.nombre;
   root.dataset.presentation = board ? 'tablero' : 'bandeja';
@@ -663,7 +673,6 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
   document.title = model.nombre;
   $('#app-description').textContent = model.objetivo;
   if (!link && !crud) renderForm($('#app-form'));
-  if (!durable) notify('El almacenamiento local no está disponible. Los cambios se conservan en esta pestaña.');
   if (crud || link) {
     for (const name of [...catalog.campos.map(field => field.nombre), 'Acciones']) {
       const cell = element('th', name);

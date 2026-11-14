@@ -24,13 +24,16 @@ Desde **Proyectos**, abre **Recursos del Studio** para consultar la **Guía de i
 
 La pantalla **Proyectos** reúne los ejemplos y los proyectos locales que crees. El buscador encuentra proyectos por nombre, descripción o tipo. Las tarjetas identifican si se trata de un proceso, un catálogo CRUD o una integración de proceso e inventario. Abre uno para entrar al editor. Usa **Volver a proyectos** para regresar a la biblioteca. **Nuevo proyecto** permite partir de un proceso básico, un CRUD básico, una copia del último proyecto abierto o un ejemplo. El título de la aplicación se define en `nombre` dentro del CIM.
 
-El Studio guarda cada borrador, incluso mientras el JSON está incompleto, en el almacenamiento de este navegador. Al cambiar de proyecto, restaura su CIM y calcula sus propias salidas. Desde la barra **Entregables MDA de esta fase** puedes descargar los artefactos formales de cada etapa (`.cim.json`, `.cim.svg`, `.cim.mmd`, `.pim.ecore`, `.pim.ocl`, `.psm.sql`, `.psm.schema.json`, `.traza.csv` o `.html`).
+El Studio guarda cada borrador, incluso mientras el JSON está incompleto, en el almacenamiento de este navegador. Al cambiar de proyecto, restaura su CIM y calcula sus propias salidas. Abre **Archivos y trazabilidad** para descargar los artefactos de la etapa y consultar o exportar la matriz en CSV o JSON.
 
 En el editor, **Proceso de negocio** y **Restricciones OCL** permiten agregar y editar actores, estados, transiciones y reglas OCL (`inv`, `pre`, `post`) directamente desde la vista estructurada. Las tablas de **Campos y negocio** agrupan los datos por entidad cuando el proyecto vincula un catálogo a un proceso y permiten añadir o editar campos con un clic.
 
-**CIM → Editar JSON** usa CodeMirror 6 con colores de sintaxis, números de línea, bloques plegables, búsqueda y diagnósticos de sintaxis. Usa `Ctrl+Enter` para validar el CIM y ver el PIM desde el editor. **PIM** y **PSM** ofrecen sus propias vistas de arquitectura (clases UML/Ecore y wireframe + esquema SQL) además de **Inspeccionar JSON**.
+- **CIM.** Abre **Campos** para revisar y editar los datos, **Diagrama** para modelar el proceso o **Editar JSON** para trabajar con el DSL en CodeMirror. Pulsa Ctrl+Enter en el editor para validar y avanzar.
+- **PIM.** Empieza por **Campos y tipos**. **Clases** añade relaciones y permite desplegar sus atributos y operaciones. **Reglas OCL** permite abrir cada expresión y ver cómo la interpreta el compilador.
+- **PSM.** En **Interfaz** elige la lista de casos o el tablero y consulta su boceto. Abre **Mapeo** para seguir el paso de los campos a controles HTML y columnas SQL. **Datos y SQL** reúne la configuración de almacenamiento y el esquema SQLite.
+- **Aplicación.** Prueba el flujo en la vista previa o abre la aplicación en otra pestaña. El botón **Gestionar datos** reúne las copias JSON y las herramientas SQL.
 
-En **PSM**, elige cómo se mostrarán los casos entre **Lista de casos (bandeja)** y **Tablero Kanban por estado**, actualizando tanto el wireframe de arquitectura como la aplicación generada.
+PIM y PSM incluyen una vista **JSON** de solo lectura. Los archivos JSON, SVG, Mermaid, Ecore, OCL, SQL y JSON Schema correspondientes se descargan desde **Archivos y trazabilidad**.
 
 ## Las ocho etapas del proyecto
 
@@ -46,10 +49,16 @@ MDA Studio implementa el recorrido **CIM → PIM → PSM → aplicación** con u
 | 04 · Validación OCL | El motor OCL soporta invariantes (`inv`), precondiciones (`pre`) y postcondiciones (`post`) sobre `Entero`, `Texto`, `Seleccion`, `Booleano` y `Fecha`, comparación entre atributos (`self.a >= self.b`) y conectores `and`, `or` e `implies`, con constructor visual asistido. | [Reglas OCL formales](generado/prestamos-lab.pim.ocl) · [Compilador OCL](src/compiler.mjs) |
 | 05 · Diseño del PSM | La vista de arquitectura PSM explica y visualiza con un wireframe en vivo el patrón de interfaz (`Bandeja Maestro-Detalle` vs `Tablero Kanban por estado`), los atributos DOM derivados de OCL, el adaptador de persistencia y el esquema relacional SQL. | [Esquema SQL DDL](generado/prestamos-lab.psm.sql) · [JSON Schema](generado/prestamos-lab.psm.schema.json) |
 | 06 · Transformación M2M | Dos transformaciones automáticas convierten `CIM → PIM (Ecore/UML)` y `PIM → PSM (HTML5 + SQL DDL)`. Las invariantes OCL se transforman simultáneamente en validadores JS, atributos DOM (`min`, `max`, `minlength`) y restricciones `CHECK` en SQL. | [PSM de Préstamos](generado/prestamos-lab.psm.json) · [DDL de Laboratorio](generado/gestion-laboratorio.psm.sql) |
-| 07 · Generación M2T | El PSM alimenta la plantilla ejecutable generando HTML5, CSS, validadores JS ES2022, esquema SQL embebido y adaptador de persistencia en Base de Datos (`IndexedDB`) y sincronización con archivo local (`.db.json` / `.sql`). | [Plantilla](src/generated.html) · [HTML de Préstamos](generado/prestamos-lab.html) |
-| 08 · Ejecución, Pestaña Dedicada y BD | La aplicación puede abrirse en una **pestaña nueva a pantalla completa**, conectarse en vivo a un archivo físico de base de datos (`.db.json`) mediante File System Access API o exportar/importar volcados transaccionales `.sql` (`CREATE TABLE` + `INSERT INTO`) y `.db.json`. | [Trazabilidad CSV](generado/prestamos-lab.traza.csv) · [Guion para exponer](#guion-para-exponer) |
+| 07 · Generación M2T | El PSM alimenta la plantilla ejecutable generando HTML5, CSS, validadores JS ES2022, esquema SQL embebido y persistencia local mediante IndexedDB y localStorage. | [Plantilla](src/generated.html) · [HTML de Préstamos](generado/prestamos-lab.html) |
+| 08 · Ejecución y pruebas | La vista previa permite comprobar el flujo. La aplicación autónoma conserva los cambios en el navegador. Desde **Gestionar datos** puedes restaurar copias JSON o descargar un volcado SQL para SQLite. | [Trazabilidad CSV](generado/prestamos-lab.traza.csv) · [Guion para exponer](#guion-para-exponer) |
 
 La [trazabilidad](generado/prestamos-lab.traza.json) permite seguir cada campo, transición y regla desde el CIM hasta la aplicación. Cada proyecto puede definir un flujo, una entidad CRUD o un flujo con un catálogo vinculado. Las aplicaciones guardan los datos en el navegador. Los proyectos de procesos incluyen un selector para simular actores durante la demostración.
+
+### Persistencia de la aplicación web
+
+IndexedDB y localStorage guardan los datos de esta aplicación en el navegador. La vista previa del Studio se ejecuta en una sesión aislada. Para trasladar sus datos, usa **Gestionar datos → Guardar copia JSON** y **Restaurar copia JSON** en la aplicación abierta por separado. Restaurar sustituye los datos de la sesión abierta.
+
+En los navegadores compatibles, **Guardar en archivo automáticamente** vincula una copia JSON durante la sesión. El esquema y el volcado SQL usan sintaxis SQLite y se ejecutan con un motor externo. La aplicación web sigue funcionando en el navegador con roles de demostración.
 
 ### Posible extensión para el equipo
 

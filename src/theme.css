@@ -136,3 +136,63 @@ dialog .project-template{display:flex;align-items:flex-start;gap:10px;border:1px
 .project-template:has(:checked){border-color:var(--sub)}
 .project-template input{flex:none;margin:3px 0 0;accent-color:var(--primary)}
 .project-template small{display:block;margin-top:2px;color:var(--sub);font-size:12px;font-weight:400;line-height:1.4}
+
+.work-card{min-width:0;background:var(--surface)}
+.work-card .section-head{gap:10px 16px}
+#open-stage-resources{margin-left:auto;color:var(--sub)}
+.model-format{gap:4px;padding-bottom:12px}
+#model-format button{border-color:transparent;background:transparent;color:var(--sub);font-weight:650;min-height:36px}
+#model-format button[aria-pressed=true],:root[data-theme="dark"] #model-format button[aria-pressed=true]{color:var(--stage-accent);background:var(--stage-bg);border-color:var(--stage-accent)}
+#model-format button:not([aria-pressed=true]):hover{background:var(--stripe)}
+.stage-panel{min-width:0}
+.stage-scroll{max-height:clamp(290px,52vh,480px);overflow:auto;scrollbar-gutter:stable;min-width:0;padding:1px}
+.stage-scroll:focus-visible,.stage-code:focus-visible{outline:2px solid var(--stage-accent);outline-offset:2px}
+.table-wrap.stage-scroll{border:1px solid var(--line);border-radius:8px;padding:0}
+.stage-table{font:12px system-ui,sans-serif}
+.stage-table thead th{position:sticky;top:0;z-index:1}
+.stage-table .entity-group th{background:var(--stripe);color:var(--ink)}
+.stage-table td code{overflow-wrap:anywhere}
+.stage-relations{margin-top:10px}
+.uml-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));align-items:start;gap:10px}
+.uml-class-card{border:1px solid var(--line);box-shadow:none;min-width:0}
+.uml-class-head{padding:9px 13px;background:var(--stage-bg);color:var(--stage-accent)}
+.uml-class-head h3{font-size:15px;overflow-wrap:anywhere}
+.uml-compartment{border-color:var(--line);padding:9px 13px}
+.uml-compartment summary,.rule-detail summary{cursor:pointer;font-size:13px;font-weight:650;color:var(--ink);overflow-wrap:anywhere}
+.uml-compartment .uml-list{margin-top:6px;padding-left:0;list-style:none}
+.uml-list li+li{border-top:1px solid var(--line)}
+.uml-list code,.uml-list small,.stage-item small,.stage-item strong,.arch-dl dd{overflow-wrap:anywhere}
+.rule-detail code,.rule-detail small{display:block;margin-top:6px}
+.stage-box,.stage-item{background:var(--surface);border-color:var(--line)}
+.stage-box h3,.stage-item strong,.stage-item code{color:var(--ink)}
+#psm-layout{max-height:clamp(290px,47vh,435px);overflow:auto}
+#psm-layout .psm-wireframe{overflow-wrap:anywhere}
+#psm-data .stage-code{max-height:240px}
+.app-launch-bar{margin:0 12px 12px;background:var(--stripe);border-color:var(--line)}
+.app-launch-bar p{margin:0;color:var(--sub);font-size:13px;flex:1 1 270px}
+.app-launch-bar .generate{margin-left:0}
+#stage-resources{width:min(860px,calc(100% - 24px));max-height:calc(100dvh - 24px);padding:0;background:var(--surface)}
+#stage-resources .section-head{gap:8px 15px}
+#stage-resources .section-head h3{margin:0;font-size:15px}
+#stage-exports{padding:0 14px 16px}
+#exports-caption{color:var(--sub);font-size:13px;margin:0 0 8px}
+#stage-resources .deliverables-bar{margin:0;padding:0;background:none;border:0;gap:8px}
+#stage-resources .deliverable-btn{padding:8px 11px;font-size:12px}
+#cim-file-actions{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+#stage-trace{margin:0;border:0;border-top:1px solid var(--line);border-radius:0}
+#stage-trace .table-wrap{max-height:42vh}
+#stage-trace thead th{position:sticky;top:0}
+#stage-trace .trace-controls>div{min-width:0;max-width:100%}
+@media(min-width:801px){#editor:is([data-stage="pim"],[data-stage="psm"]) .work-card{min-height:390px}}
+@media(max-width:530px){#open-stage-resources{margin-left:0}#model-format{padding-inline:10px}#model-format button{padding-inline:9px}#stage-resources .section-head{padding-inline:12px}#stage-trace td{min-width:112px}}
+
+#editor .intro{margin-block:14px}
+#editor .intro h1{font-size:clamp(24px,3.3vw,38px)}
+#editor .pipeline button{min-height:56px;padding-block:9px}
+#editor .stage-navigation{padding-block:8px}
+#editor .stage-context{flex:1 1 auto}
+#presentation-panel{margin:0}
+#pim-file-previews{display:grid;gap:8px;margin-top:12px}
+#pim-file-previews details{padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+#pim-file-previews summary{cursor:pointer;font-size:13px;font-weight:650}
+#pim-file-previews pre{margin-top:8px}

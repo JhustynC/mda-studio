@@ -646,7 +646,7 @@ export function createCompiler(METAMODEL, application) {
     }
 
     return {
-      motor: 'SQL Estándar (PostgreSQL / SQLite3) + Almacén Transaccional IndexedDB',
+      motor: 'SQLite 3',
       tablas,
     };
   }
@@ -661,9 +661,9 @@ export function createCompiler(METAMODEL, application) {
           'Formulario de Alta/Edición (' + pim.propiedades.length + ' controles)',
           'Barra de búsqueda en tiempo real',
           'Tabla de datos con columnas: ' + pim.propiedades.map(p => p.nombre).join(', ') + ' + Acciones',
-          'Panel de conexión a Base de Datos IndexedDB / Archivo (.db.json y .sql)',
+          'Gestión de datos y exportación',
         ],
-        adaptadorDatos: 'IndexedDB (almacén de objetos) + Sincronización con Archivo Local (.db.json / .sql) + Fallback localStorage',
+        adaptadorDatos: 'IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.',
         seguridad: 'Validación de unicidad (' + (pim.unicos.join(', ') || 'sin claves únicas') + ') e invariantes OCL en cliente antes de confirmar transacción',
       };
     }
@@ -671,19 +671,19 @@ export function createCompiler(METAMODEL, application) {
     const isBoard = presentation === 'tablero';
     const containers = isBoard
       ? [
-          'Cabecera con selector de Rol RBAC (' + pim.roles.map(r => r.nombre).join(', ') + ')',
+          'Cabecera con selector de rol de demostración (' + pim.roles.map(r => r.nombre).join(', ') + ')',
           'Tablero Kanban con ' + pim.estados.length + ' carriles de estado: ' + pim.estados.map(s => s.nombre + (s.final ? ' [Final]' : '')).join(' | '),
           'Formulario de creación para rol inicial (' + pim.creacion.actor + ')',
           'Inspector lateral de caso seleccionado + Botonera de transiciones + Historial',
           ...(pim.integracion ? ['Módulo integrado de Catálogo (' + pim.integracion.catalogo.entidad + ') y Kardex de Movimientos'] : []),
-          'Barra de Persistencia en Base de Datos (IndexedDB + Archivo .db.json / .sql)',
+          'Gestión de datos y exportación',
         ]
       : [
-          'Cabecera con selector de Rol RBAC (' + pim.roles.map(r => r.nombre).join(', ') + ')',
+          'Cabecera con selector de rol de demostración (' + pim.roles.map(r => r.nombre).join(', ') + ')',
           'Columna izquierda: Formulario de captura (' + pim.creacion.nombre + ') + Bandeja vertical de casos con badge de estado',
           'Columna derecha: Inspector maestro-detalle, disparadores de transición y línea de tiempo auditada',
           ...(pim.integracion ? ['Módulo integrado de Catálogo (' + pim.integracion.catalogo.entidad + ') y Kardex de Movimientos'] : []),
-          'Barra de Persistencia en Base de Datos (IndexedDB + Archivo .db.json / .sql)',
+          'Gestión de datos y exportación',
         ];
 
     return {
@@ -692,8 +692,8 @@ export function createCompiler(METAMODEL, application) {
         ? 'Grid horizontal de carriles agrupados por cada estado de la máquina de estados (' + pim.estados.length + ' columnas) + panel de formulario e inspector.'
         : 'Layout de dos columnas 50/50: captura y lista cronológica a la izquierda; ficha técnica, acciones por rol e historial a la derecha.',
       contenedores: containers,
-      adaptadorDatos: 'IndexedDB + Sincronización en vivo con Archivo de Base de Datos (.db.json / .sql) + Fallback localStorage',
-      seguridad: 'Control de acceso basado en roles (RBAC) para ' + pim.roles.length + ' actores y ' + pim.restricciones.length + ' validadores OCL compilados a ES2022',
+      adaptadorDatos: 'IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.',
+      seguridad: 'Simulación de roles en cliente para ' + pim.roles.length + ' actores y ' + pim.restricciones.length + ' validadores OCL compilados a ES2022',
     };
   }
 
@@ -717,7 +717,7 @@ export function createCompiler(METAMODEL, application) {
     }));
     const crud = pim.tipo === 'crud';
     const effectivePresentation = crud ? 'tabla' : presentation;
-    const almacen = { tipo: 'IndexedDB + Archivo (.db.json / .sql) + localStorage', clave: (crud ? 'mda.registros.' : 'mda.casos.') + storageScope };
+    const almacen = { tipo: 'IndexedDB + localStorage', clave: (crud ? 'mda.registros.' : 'mda.casos.') + storageScope };
     const arquitectura = buildPsmArchitecture(pim, effectivePresentation);
     const esquemaSql = buildSqlSchema(pim);
 
