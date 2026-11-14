@@ -3,11 +3,150 @@
   "nombre": "Compras institucionales",
   "objetivo": "Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.",
   "entidad": "Compra",
-  "plataforma": "HTML5 / JavaScript ES2022 / Web Storage",
+  "plataforma": "HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL",
   "presentacion": "tablero",
+  "arquitectura": {
+    "patronUi": "Tablero Kanban por Estado (State-Lane Board)",
+    "disposicion": "Grid horizontal de carriles agrupados por cada estado de la máquina de estados (16 columnas) + panel de formulario e inspector.",
+    "contenedores": [
+      "Cabecera con selector de Rol RBAC (Solicitante, Jefatura, Presupuesto, Compras, Jurídico, Comité, Bodega, Contabilidad, Tesorería)",
+      "Tablero Kanban con 16 carriles de estado: Revisión de jefatura | Ampliación pendiente | Control de presupuesto | Selección de modalidad | Revisión jurídica | Evaluación del comité | Adjudicada | Orden emitida | Incidencia de recepción | Recibida | Revisión contable | Pendiente de pago | Pagada | Cerrada [Final] | Rechazada [Final] | Cancelada [Final]",
+      "Formulario de creación para rol inicial (solicitante)",
+      "Inspector lateral de caso seleccionado + Botonera de transiciones + Historial",
+      "Barra de Persistencia en Base de Datos (IndexedDB + Archivo .db.json / .sql)"
+    ],
+    "adaptadorDatos": "IndexedDB + Sincronización en vivo con Archivo de Base de Datos (.db.json / .sql) + Fallback localStorage",
+    "seguridad": "Control de acceso basado en roles (RBAC) para 9 actores y 12 validadores OCL compilados a ES2022"
+  },
   "almacen": {
-    "tipo": "localStorage",
+    "tipo": "IndexedDB + Archivo (.db.json / .sql) + localStorage",
     "clave": "mda.casos.proyecto.example-compras.compras-institucionales"
+  },
+  "esquemaSql": {
+    "motor": "SQL Estándar (PostgreSQL / SQLite3) + Almacén Transaccional IndexedDB",
+    "tablas": [
+      {
+        "nombre": "compra",
+        "descripcion": "Tabla principal de casos de proceso para Compra",
+        "columnas": [
+          {
+            "nombre": "id",
+            "tipo": "VARCHAR(64)",
+            "restricciones": "PRIMARY KEY NOT NULL"
+          },
+          {
+            "nombre": "estado_actual",
+            "tipo": "VARCHAR(48)",
+            "restricciones": "NOT NULL DEFAULT 'solicitada'"
+          },
+          {
+            "nombre": "referencia",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "unidad",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "objeto",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "justificacion",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "monto",
+            "tipo": "INTEGER",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "cantidad",
+            "tipo": "INTEGER",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "cotizaciones",
+            "tipo": "INTEGER",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "plazo",
+            "tipo": "INTEGER",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "proveedor",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NULL"
+          },
+          {
+            "nombre": "partida",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "prioridad",
+            "tipo": "VARCHAR(64)",
+            "restricciones": "CHECK (prioridad IN ('normal', 'urgente', 'critica'))"
+          },
+          {
+            "nombre": "fecha_necesaria",
+            "tipo": "DATE",
+            "restricciones": "NULL"
+          },
+          {
+            "nombre": "documentacion",
+            "tipo": "BOOLEAN",
+            "restricciones": "NULL"
+          }
+        ],
+        "checks": [
+          "CONSTRAINT chk_compra_estado CHECK (estado_actual IN ('solicitada', 'observada', 'presupuesto', 'modalidad', 'juridica', 'comite', 'adjudicada', 'ordenada', 'incidencia', 'recibida', 'contabilidad', 'pago', 'pagada', 'cerrada', 'rechazada', 'cancelada'))",
+          "CONSTRAINT chk_montovalido CHECK (monto >= 1 AND monto <= 250000)",
+          "CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad <= 10000)",
+          "CONSTRAINT chk_plazovalido CHECK (plazo >= 1 AND plazo <= 180)",
+          "CONSTRAINT chk_cotizacionesvalidas CHECK (cotizaciones >= 0 AND cotizaciones <= 30)",
+          "CONSTRAINT chk_referenciavalida CHECK (CHAR_LENGTH(referencia) >= 4)"
+        ]
+      },
+      {
+        "nombre": "compra_historial",
+        "descripcion": "Bitácora inmutable de auditoría de transiciones por rol",
+        "columnas": [
+          {
+            "nombre": "id_evento",
+            "tipo": "INTEGER",
+            "restricciones": "PRIMARY KEY AUTOINCREMENT"
+          },
+          {
+            "nombre": "caso_id",
+            "tipo": "VARCHAR(64)",
+            "restricciones": "NOT NULL REFERENCES compra(id) ON DELETE CASCADE"
+          },
+          {
+            "nombre": "accion",
+            "tipo": "VARCHAR(120)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "rol_actor",
+            "tipo": "VARCHAR(64)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "fecha_hora",
+            "tipo": "TIMESTAMP",
+            "restricciones": "NOT NULL DEFAULT CURRENT_TIMESTAMP"
+          }
+        ],
+        "checks": []
+      }
+    ]
   },
   "roles": [
     {
@@ -52,67 +191,131 @@
       "id": "referencia",
       "nombre": "Referencia interna",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\"",
+        "minlength=\"4\""
+      ]
     },
     {
       "id": "unidad",
       "nombre": "Unidad solicitante",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "objeto",
       "nombre": "Objeto de la compra",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "justificacion",
       "nombre": "Justificación",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "monto",
       "nombre": "Monto estimado (USD)",
       "control": "number",
-      "requerido": true
+      "tipoSql": "INTEGER",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "step=\"1\"",
+        "inputmode=\"numeric\"",
+        "min=\"1\"",
+        "max=\"250000\""
+      ]
     },
     {
       "id": "cantidad",
       "nombre": "Unidades",
       "control": "number",
-      "requerido": true
+      "tipoSql": "INTEGER",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "step=\"1\"",
+        "inputmode=\"numeric\"",
+        "min=\"1\"",
+        "max=\"10000\""
+      ]
     },
     {
       "id": "cotizaciones",
       "nombre": "Cotizaciones disponibles",
       "control": "number",
-      "requerido": true
+      "tipoSql": "INTEGER",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "step=\"1\"",
+        "inputmode=\"numeric\"",
+        "min=\"0\"",
+        "max=\"30\""
+      ]
     },
     {
       "id": "plazo",
       "nombre": "Plazo de entrega (días)",
       "control": "number",
-      "requerido": true
+      "tipoSql": "INTEGER",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "step=\"1\"",
+        "inputmode=\"numeric\"",
+        "min=\"1\"",
+        "max=\"180\""
+      ]
     },
     {
       "id": "proveedor",
       "nombre": "Proveedor propuesto",
       "control": "text",
-      "requerido": false
+      "tipoSql": "VARCHAR(300)",
+      "requerido": false,
+      "atributosHtml": [
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "partida",
       "nombre": "Partida presupuestaria",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "prioridad",
       "nombre": "Prioridad",
       "control": "select",
+      "tipoSql": "VARCHAR(64)",
       "requerido": false,
+      "atributosHtml": [],
       "opciones": [
         {
           "nombre": "Normal",
@@ -132,13 +335,17 @@
       "id": "fecha-necesaria",
       "nombre": "Fecha en que se necesita",
       "control": "date",
-      "requerido": false
+      "tipoSql": "DATE",
+      "requerido": false,
+      "atributosHtml": []
     },
     {
       "id": "documentacion",
       "nombre": "Documentación adjunta disponible",
       "control": "checkbox",
-      "requerido": false
+      "tipoSql": "BOOLEAN",
+      "requerido": false,
+      "atributosHtml": []
     }
   ],
   "formulario": {
@@ -409,6 +616,7 @@
           "campo": "monto",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 250000
         }
       ],
@@ -430,6 +638,7 @@
           "campo": "cantidad",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 10000
         }
       ],
@@ -451,6 +660,7 @@
           "campo": "plazo",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 180
         }
       ],
@@ -472,6 +682,7 @@
           "campo": "cotizaciones",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 30
         }
       ],
@@ -538,6 +749,7 @@
           "campo": "cotizaciones",
           "acceso": "value",
           "operador": ">=",
+          "conector": "and",
           "valor": 1
         }
       ],
@@ -559,6 +771,7 @@
           "campo": "cotizaciones",
           "acceso": "value",
           "operador": ">=",
+          "conector": "and",
           "valor": 3
         }
       ],

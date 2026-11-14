@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    name="compras_institucionales"
+    nsURI="http://mda.studio/models/compras-institucionales/1.0"
+    nsPrefix="compras_institucionales">
+  <eClassifiers xsi:type="ecore:EClass" name="Compra">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="MontoValido CantidadValida PlazoValido CotizacionesValidas ReferenciaValida JustificacionSuficiente PartidaIdentificada MontoCompraDirecta UmbralCompetitivo CotizacionesComite ProveedorIdentificado ReferenciaContable"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+      <details key="MontoValido" value="context Compra inv MontoValido: self.monto &gt;= 1 and self.monto &lt;= 250000"/>
+      <details key="CantidadValida" value="context Compra inv CantidadValida: self.cantidad &gt;= 1 and self.cantidad &lt;= 10000"/>
+      <details key="PlazoValido" value="context Compra inv PlazoValido: self.plazo &gt;= 1 and self.plazo &lt;= 180"/>
+      <details key="CotizacionesValidas" value="context Compra inv CotizacionesValidas: self.cotizaciones &gt;= 0 and self.cotizaciones &lt;= 30"/>
+      <details key="ReferenciaValida" value="context Compra inv ReferenciaValida: self.referencia.size() &gt;= 4"/>
+      <details key="JustificacionSuficiente" value="context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() &gt;= 20"/>
+      <details key="PartidaIdentificada" value="context Compra::certificar() pre PartidaIdentificada: self.partida.size() &gt;= 4"/>
+      <details key="MontoCompraDirecta" value="context Compra::directa() pre MontoCompraDirecta: self.monto &lt; 10000 and self.cotizaciones &gt;= 1"/>
+      <details key="UmbralCompetitivo" value="context Compra::competitiva() pre UmbralCompetitivo: self.monto &gt;= 10000 and self.cotizaciones &gt;= 3"/>
+      <details key="CotizacionesComite" value="context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones &gt;= 3"/>
+      <details key="ProveedorIdentificado" value="context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() &gt;= 3"/>
+      <details key="ReferenciaContable" value="context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() &gt;= 6"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" upperBound="1" iD="true" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="estado-actual" lowerBound="1" upperBound="1" eType="#//Compra_estado-actual"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="referencia" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="unidad" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="objeto" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="justificacion" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="monto" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cantidad" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cotizaciones" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="plazo" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="proveedor" lowerBound="0" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="partida" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="prioridad" lowerBound="0" upperBound="1" eType="#//Compra_prioridad"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="fecha-necesaria" lowerBound="0" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentacion" lowerBound="0" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eOperations name="iniciar-caso" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="avalar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida, JustificacionSuficiente"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="observar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="justificar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="retirar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="denegar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="certificar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida, PartidaIdentificada"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="sinfondos" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="directa" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida, MontoCompraDirecta"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="competitiva" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida, UmbralCompetitivo"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="cancelar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="dictamen" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="devolver" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="objecion" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="adjudicar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida, CotizacionesComite"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="desierta" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="emitir" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida, ProveedorIdentificado"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="recibir" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="incidencia" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="subsanar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="anular" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="enviarcontable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="contabilizar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida, ReferenciaContable"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="revisar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="pagar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="cerrar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="MontoValido, CantidadValida, PlazoValido, CotizacionesValidas, ReferenciaValida"/>
+      </eAnnotations>
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Compra_estado-actual">
+    <eLiterals name="solicitada" value="0" literal="solicitada"/>
+    <eLiterals name="observada" value="1" literal="observada"/>
+    <eLiterals name="presupuesto" value="2" literal="presupuesto"/>
+    <eLiterals name="modalidad" value="3" literal="modalidad"/>
+    <eLiterals name="juridica" value="4" literal="juridica"/>
+    <eLiterals name="comite" value="5" literal="comite"/>
+    <eLiterals name="adjudicada" value="6" literal="adjudicada"/>
+    <eLiterals name="ordenada" value="7" literal="ordenada"/>
+    <eLiterals name="incidencia" value="8" literal="incidencia"/>
+    <eLiterals name="recibida" value="9" literal="recibida"/>
+    <eLiterals name="contabilidad" value="10" literal="contabilidad"/>
+    <eLiterals name="pago" value="11" literal="pago"/>
+    <eLiterals name="pagada" value="12" literal="pagada"/>
+    <eLiterals name="cerrada" value="13" literal="cerrada"/>
+    <eLiterals name="rechazada" value="14" literal="rechazada"/>
+    <eLiterals name="cancelada" value="15" literal="cancelada"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Compra_prioridad">
+    <eLiterals name="normal" value="0" literal="normal"/>
+    <eLiterals name="urgente" value="1" literal="urgente"/>
+    <eLiterals name="critica" value="2" literal="critica"/>
+  </eClassifiers>
+</ecore:EPackage>

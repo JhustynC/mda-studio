@@ -9,29 +9,32 @@
 <body>
 <header class="top">
   <div class="brand"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span>MDA Studio</div>
-  <span class="context">Nuevos paradigmas de programación</span>
-  <button class="generate" id="compile" hidden>Generar aplicación <span aria-hidden="true">→</span></button>
+  <span class="context">Nuevos paradigmas de programación · Flujo CIM → PIM → PSM → M2T</span>
+  <div class="top-actions">
+    <button class="open-tab-btn" id="open-new-tab-top" type="button" hidden>Abrir app en pestaña ↗</button>
+    <button class="generate" id="compile" type="button" hidden>Generar aplicación <span aria-hidden="true">→</span></button>
+  </div>
 </header>
 <main id="guide" hidden>
-  <div class="guide-head"><div><p class="eyebrow">DOCUMENTACIÓN</p><h1 tabindex="-1" id="guide-title">Guía de inicio</h1><p>Crea un proceso, genera su aplicación y comprueba cómo se transforma el modelo.</p></div><button id="close-guide" type="button">Volver a proyectos</button></div>
+  <div class="guide-head"><div><p class="eyebrow">DOCUMENTACIÓN</p><h1 tabindex="-1" id="guide-title">Guía de inicio</h1><p>Crea un proceso, genera su aplicación y comprueba cómo se transforma el modelo en cada fase MDA.</p></div><button id="close-guide" type="button">Volver a proyectos</button></div>
   <div class="guide-layout">
     <nav aria-label="Índice del manual" class="guide-index">
       <a href="#guide-start">Primer proyecto</a>
       <a href="#guide-dsl">Estructura del CIM</a>
       <a href="#guide-fields">Tipos de campo</a>
       <a href="#guide-ocl">Reglas OCL</a>
-      <a href="#guide-generation">Generar y probar</a>
+      <a href="#guide-generation">Entregables y BD</a>
     </nav>
     <article class="guide-article">
       <section id="guide-start" tabindex="-1">
         <h2>Tu primer proyecto</h2>
         <ol>
           <li>Abre <strong>Proyectos → Nuevo proyecto</strong>. Ponle un nombre, por ejemplo <em>Solicitudes de mantenimiento</em>, y selecciona <strong>Proceso básico</strong>.</li>
-          <li>En <strong>CIM → Editar JSON</strong>, cambia el objetivo y revisa el flujo inicial. Usa <strong>Buscar</strong> para encontrar una clave y <strong>Formatear</strong> para ordenar la sangría.</li>
-          <li>Dentro de <code>datos</code>, agrega un campo como <em>Prioridad</em> usando el ejemplo de abajo. Separa los objetos de una lista con comas y usa comillas dobles.</li>
-          <li>Pulsa <strong>Generar aplicación</strong>. Crea un caso como Solicitante, cambia a Revisor y pulsa <strong>Completar</strong>. Comprueba el estado y el historial.</li>
+          <li>En <strong>CIM → Campos y negocio</strong>, usa <strong>+ Añadir campo</strong> directamente en la tabla para agregar atributos sin tocar el JSON, o usa los botones <strong>+ Actor</strong>, <strong>+ Estado</strong>, <strong>+ Transición</strong> y <strong>+ Regla OCL</strong> del panel lateral.</li>
+          <li>Pasa a <strong>PIM</strong> para inspeccionar el modelo lógico independiente de plataforma (clases UML/Ecore, tipos <code>EString</code>/<code>EInt</code>, multiplicidades, firmas de operaciones y archivo <code>.ecore</code>).</li>
+          <li>Pasa a <strong>PSM</strong> para elegir entre <strong>Bandeja de casos</strong> y <strong>Tablero por estado</strong> viendo cómo cambia la arquitectura visual, los controles HTML5 y el esquema relacional SQL (<code>.sql</code>).</li>
+          <li>Pulsa <strong>Generar aplicación</strong> o <strong>Abrir app en pestaña ↗</strong> para ejecutar la aplicación con persistencia en Base de Datos (IndexedDB) y conexión directa a archivo (<code>.db.json</code> / <code>.sql</code>).</li>
         </ol>
-        <p>Para un catálogo o inventario, crea un proyecto con <strong>CRUD básico</strong> o abre <strong>Inventario de laboratorio</strong>. En <strong>CIM → Estructura</strong> define los campos y sus reglas. Al generar tendrás un formulario y una tabla con búsqueda, edición y eliminación.</p>
         <button id="guide-new-project" class="generate" type="button">Crear un proyecto</button>
       </section>
       <section id="guide-dsl" tabindex="-1">
@@ -44,54 +47,41 @@
           <tr><td>inicio</td><td>El <code>actor</code> que crea el caso, su primer <code>estado</code> y el <code>nombre</code> de la acción inicial.</td></tr>
           <tr><td>estados</td><td>Las etapas con <code>id</code> y <code>nombre</code>. Marca los finales con <code>"final": true</code>.</td></tr>
           <tr><td>transiciones</td><td>Acciones con <code>id</code>, <code>nombre</code>, <code>actor</code>, <code>desde</code> y <code>hasta</code>. El actor y ambos estados deben existir.</td></tr>
-          <tr><td>ocl</td><td>Lista de reglas. Usa <code>[]</code> si aún no necesitas ninguna.</td></tr>
+          <tr><td>ocl</td><td>Lista de reglas OCL (invariantes <code>inv</code>, precondiciones <code>pre</code> y postcondiciones <code>post</code>).</td></tr>
         </tbody></table></div>
-        <p>Usa identificadores únicos por lista, en minúsculas, con números o guiones después de la primera letra. Cada estado debe ser alcanzable y tener un camino hacia un final. En <strong>Proyectos → Metamodelo base</strong> puedes consultar la estructura completa.</p>
-        <p>En <strong>CIM → Diagrama</strong> puedes editar el proceso. Abre un estado y pulsa <strong>Nueva transición desde aquí</strong> para elegir el actor y el destino. Para añadir una precondición, abre <strong>OCL</strong> y elige esa transición. Los cambios aparecen en <strong>Editar JSON</strong>.</p>
       </section>
       <section id="guide-fields" tabindex="-1">
         <h2>Tipos de campo</h2>
-        <div class="table-wrap"><table><thead><tr><th scope="col">Tipo del DSL</th><th scope="col">Control generado</th></tr></thead><tbody>
-          <tr><td>Texto</td><td>Entrada de texto.</td></tr>
-          <tr><td>Entero</td><td>Entrada numérica sin decimales.</td></tr>
-          <tr><td>Fecha</td><td>Calendario. El valor se conserva como <code>AAAA-MM-DD</code>.</td></tr>
-          <tr><td>Seleccion</td><td>Lista desplegable. Declara al menos una opción con <code>id</code> y <code>nombre</code>. Se guarda el identificador y se muestra la etiqueta.</td></tr>
-          <tr><td>Booleano</td><td>Casilla Sí/No. Con <code>"requerido": true</code>, se exige marcarla antes de enviar el formulario.</td></tr>
+        <div class="table-wrap"><table><thead><tr><th scope="col">Tipo CIM</th><th scope="col">Tipo PIM (Ecore)</th><th scope="col">Control PSM (Web / SQL)</th></tr></thead><tbody>
+          <tr><td>Texto</td><td><code>EString</code></td><td><code>input[type=text]</code> · <code>VARCHAR(300)</code></td></tr>
+          <tr><td>Entero</td><td><code>EInt</code></td><td><code>input[type=number]</code> · <code>INTEGER</code></td></tr>
+          <tr><td>Fecha</td><td><code>EDate</code></td><td><code>input[type=date]</code> · <code>DATE</code></td></tr>
+          <tr><td>Seleccion</td><td><code>EEnum</code></td><td><code>select</code> · <code>VARCHAR(64) CHECK IN (...)</code></td></tr>
+          <tr><td>Booleano</td><td><code>EBoolean</code></td><td><code>input[type=checkbox]</code> · <code>BOOLEAN</code></td></tr>
         </tbody></table></div>
-        <pre class="guide-code"><code>{
-  "id": "prioridad",
-  "nombre": "Prioridad",
-  "tipo": "Seleccion",
-  "requerido": true,
-  "opciones": [
-    { "id": "normal", "nombre": "Normal" },
-    { "id": "urgente", "nombre": "Urgente" }
-  ]
-}</code></pre>
-        <p>Los botones de trabajo salen de <code>transiciones</code>. Para ofrecer <em>Aprobar</em> y <em>Rechazar</em>, declara dos transiciones con el mismo estado de origen y sus respectivos destinos.</p>
       </section>
       <section id="guide-ocl" tabindex="-1">
-        <h2>Reglas OCL</h2>
-        <p>El Studio implementa un subconjunto de OCL. Admite comparaciones de enteros, <code>.size()</code> sobre texto y <code>and</code> para combinar condiciones. Los tipos nuevos se validan mediante el formulario y las opciones del DSL.</p>
+        <h2>Reglas OCL ampliadas</h2>
+        <p>El compilador soporta invariantes (<code>inv</code>), precondiciones (<code>pre</code>) y postcondiciones (<code>post</code>) sobre campos de tipo <code>Entero</code>, <code>Texto</code>, <code>Seleccion</code>, <code>Booleano</code> y <code>Fecha</code>, comparaciones entre dos campos (<code>self.a &gt;= self.b</code>) y conectores lógicos <code>and</code>, <code>or</code> e <code>implies</code>.</p>
         <pre class="guide-code"><code>context Prestamo inv CantidadValida: self.cantidad &gt;= 1 and self.cantidad &lt;= 5
-context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8</code></pre>
-        <p>Una invariante se revisa al crear un caso y antes de cambiar su estado. Una precondición se comprueba al intentar la transición que indica. Sustituye <code>Prestamo</code> por la entidad de tu CIM y <code>aprobar</code> por el identificador de la acción correspondiente.</p>
+context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8
+context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self.documentado = true</code></pre>
       </section>
       <section id="guide-generation" tabindex="-1">
-        <h2>Generar, probar y exportar</h2>
+        <h2>Entregables por etapa y Base de Datos</h2>
         <ol>
-          <li><strong>CIM → PIM.</strong> La primera transformación valida el proceso y produce el modelo lógico con roles, propiedades y operaciones.</li>
-          <li><strong>PIM → PSM.</strong> La segunda elige los controles web. Por ejemplo, <code>Seleccion</code> pasa a <code>select</code>. Aquí también eliges bandeja o tablero.</li>
-          <li><strong>PSM → aplicación.</strong> El generador combina el PSM con una plantilla HTML y emite los validadores ejecutables.</li>
+          <li><strong>CIM:</strong> Descarga el modelo <code>.cim.json</code>, el diagrama vectorial <code>.svg</code> y la especificación <code>.cim.mmd</code> (Mermaid).</li>
+          <li><strong>PIM:</strong> Descarga el metamodelo estándar Eclipse EMF <code>.pim.ecore</code> (XMI), el archivo formal <code>.pim.ocl</code> y <code>.pim.json</code>.</li>
+          <li><strong>PSM:</strong> Descarga el esquema relacional <code>.psm.sql</code> (con tablas y restricciones <code>CHECK</code> derivadas de OCL), <code>.psm.schema.json</code> y <code>.psm.json</code>.</li>
+          <li><strong>Aplicación (M2T):</strong> Ábrela en una pestaña dedicada, conéctala a un archivo local <code>.db.json</code> o exporta/importa volcados <code>.sql</code> y <code>.db.json</code> respaldados en <code>IndexedDB</code>.</li>
         </ol>
-        <p>En PIM y PSM, abre <strong>Inspeccionar JSON</strong> para explorar las secciones de la salida generada. Usa <strong>Trazabilidad</strong> para seguir un campo desde el CIM hasta su control. Descarga el CIM para llevarlo a otro navegador, o el HTML para ejecutar la aplicación por separado. Si aparece un error, revisa el campo o la referencia indicada y vuelve a generar.</p>
       </section>
     </article>
   </div>
 </main>
 <dialog id="metamodel-dialog" aria-labelledby="metamodel-title">
   <div class="metamodel-heading"><h2 id="metamodel-title">Metamodelo base</h2><button id="close-metamodel" type="button">Cerrar</button></div>
-  <p>Define la estructura que el generador valida en todos los proyectos.</p>
+  <p>Define la estructura formal que el compilador verifica en las etapas CIM, PIM y PSM.</p>
   <div class="metamodel-controls">
     <label for="metamodel-structure">Estructura</label>
     <select id="metamodel-structure">
@@ -104,7 +94,7 @@ context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8</co
 </dialog>
 <main id="library">
   <div class="library-head">
-    <div><p class="eyebrow">MDA STUDIO</p><h1>Proyectos</h1><p>Abre un proyecto para editar su modelo y generar una aplicación.</p></div>
+    <div><p class="eyebrow">MDA STUDIO</p><h1>Proyectos</h1><p>Abre un proyecto para editar su modelo, inspeccionar sus entregables MDA y generar su aplicación.</p></div>
     <button class="generate" id="new-project" type="button">Nuevo proyecto</button>
   </div>
   <section class="library-workspace" aria-labelledby="projects-title">
@@ -116,69 +106,175 @@ context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8</co
     <div class="resource-grid">
       <button class="resource-card" id="open-guide" type="button" aria-labelledby="guide-resource-name" aria-describedby="guide-resource-description">
         <span class="resource-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 16.5A2.5 2.5 0 0 1 6.5 14H20M8 7h8m-8 3h6"/></svg></span>
-        <span class="resource-copy"><strong id="guide-resource-name">Guía de inicio</strong><span id="guide-resource-description">Crea tu primer proceso y genera una aplicación paso a paso.</span></span>
+        <span class="resource-copy"><strong id="guide-resource-name">Guía de inicio</strong><span id="guide-resource-description">Crea tu primer proceso, usa el constructor OCL y descarga los entregables MDA.</span></span>
         <span class="resource-arrow" aria-hidden="true">→</span>
       </button>
       <button class="resource-card" id="open-metamodel" type="button" aria-haspopup="dialog" aria-labelledby="metamodel-resource-name" aria-describedby="metamodel-resource-description">
         <span class="resource-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="5" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/><rect x="14" y="16" width="7" height="5" rx="1"/><path d="M12 8v4m-5.5 4v-4h11v4"/></svg></span>
-        <span class="resource-copy"><strong id="metamodel-resource-name">Metamodelo base</strong><span id="metamodel-resource-description">Consulta las estructuras y los tipos que comparten CIM, PIM y PSM.</span></span>
+        <span class="resource-copy"><strong id="metamodel-resource-name">Metamodelo base</strong><span id="metamodel-resource-description">Consulta las estructuras formales que validan CIM, PIM (Ecore) y PSM (Web/SQL).</span></span>
         <span class="resource-arrow" aria-hidden="true">→</span>
       </button>
     </div>
   </section>
 </main>
-  <dialog id="project-dialog" aria-labelledby="project-dialog-title">
-    <form id="project-form">
-      <h2 id="project-dialog-title">Nuevo proyecto</h2>
-      <label>Nombre del proyecto<input id="project-name" name="name" maxlength="100" required autofocus></label>
-      <label>Modelo inicial
-        <select id="project-template" name="template">
-          <option value="blank">Proceso básico</option>
-          <option id="copy-option" value="copy">Copia del último proyecto abierto</option>
-          <option value="example">Ejemplo de préstamos</option>
-          <option value="advanced">Ejemplo de compras</option>
-          <option value="crud">CRUD básico</option>
-          <option value="inventory">Ejemplo de inventario</option>
-          <option value="laboratory">Laboratorio integrado</option>
-        </select>
-      </label>
-      <div class="dialog-actions">
-        <button id="cancel-project" type="button">Cancelar</button>
-        <button class="generate" type="submit">Crear proyecto</button>
-      </div>
-    </form>
-  </dialog>
+<dialog id="project-dialog" aria-labelledby="project-dialog-title">
+  <form id="project-form">
+    <h2 id="project-dialog-title">Nuevo proyecto</h2>
+    <label>Nombre del proyecto<input id="project-name" name="name" maxlength="100" required autofocus></label>
+    <label>Modelo inicial
+      <select id="project-template" name="template">
+        <option value="blank">Proceso básico</option>
+        <option id="copy-option" value="copy">Copia del último proyecto abierto</option>
+        <option value="example">Ejemplo de préstamos</option>
+        <option value="advanced">Ejemplo de compras</option>
+        <option value="crud">CRUD básico</option>
+        <option value="inventory">Ejemplo de inventario</option>
+        <option value="laboratory">Laboratorio integrado</option>
+      </select>
+    </label>
+    <div class="dialog-actions">
+      <button id="cancel-project" type="button">Cancelar</button>
+      <button class="generate" type="submit">Crear proyecto</button>
+    </div>
+  </form>
+</dialog>
 <main id="editor" hidden>
   <div class="editor-nav"><button id="back-projects" type="button">← Proyectos</button><span id="project-caption"></span><p id="project-status" class="save-status" role="status"></p></div>
-  <div class="intro"><div><p class="eyebrow">PROYECTO DE INTERCICLO</p><h1 id="title">Préstamos de laboratorio</h1><p id="description"></p></div>
+  <div class="intro"><div><p class="eyebrow">FLUJO DIRIGIDO POR MODELOS (MDA)</p><h1 id="title">Préstamos de laboratorio</h1><p id="description"></p></div>
   <span id="build-status" class="status" role="status"></span></div>
   <div class="pipeline" role="group" aria-label="Etapas del flujo MDA">
-    <button type="button" data-view="model" aria-pressed="true"><b>CIM</b><small>Modelo de negocio</small></button>
+    <button type="button" data-view="model" aria-pressed="true"><b>01 · CIM</b><small>Dominio, BPM y Reglas (.cim / .svg)</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="pim" aria-pressed="false"><b>PIM</b><small>Modelo lógico</small></button>
+    <button type="button" data-view="pim" aria-pressed="false"><b>02 · PIM</b><small>Clases UML, Ecore y AST (.ecore / .ocl)</small></button>
     <span class="arrow" aria-hidden="true">M2M →</span>
-    <button type="button" data-view="psm" aria-pressed="false"><b>PSM</b><small>Modelo web</small></button>
+    <button type="button" data-view="psm" aria-pressed="false"><b>03 · PSM</b><small>Arquitectura Web y DDL (.sql / .schema)</small></button>
     <span class="arrow" aria-hidden="true">M2T →</span>
-    <button type="button" data-view="app" aria-pressed="false"><b>Aplicación</b><small>HTML ejecutable</small></button>
+    <button type="button" data-view="app" aria-pressed="false"><b>04 · Aplicación</b><small>Ejecutable + Base de Datos (.html / .db)</small></button>
   </div>
   <div class="workspace">
     <section class="work-card">
-      <div class="section-head"><div><h2 id="view-title">Modelo de negocio</h2><p id="view-subtitle"></p></div>
-        <div class="tools"><button id="reset" type="button">Cargar ejemplo</button><button id="load-button" type="button">Abrir JSON</button><input id="load" type="file" accept=".json,application/json" hidden><button id="download" type="button" hidden>Descargar</button></div></div>
+      <div class="section-head">
+        <div><h2 id="view-title">Modelo de negocio (CIM)</h2><p id="view-subtitle"></p></div>
+        <div class="tools">
+          <button id="reset" type="button">Restaurar ejemplo</button>
+          <button id="load-button" type="button">Importar CIM (.json)</button>
+          <input id="load" type="file" accept=".json,application/json" hidden>
+          <button id="download" type="button" hidden>Descargar principal</button>
+        </div>
+      </div>
+      <div id="deliverables-bar" class="deliverables-bar" aria-label="Entregables de la etapa actual"></div>
       <div id="presentation-panel" class="presentation-panel" hidden>
-        <label for="presentation">Presentación de la aplicación</label>
-        <select id="presentation"><option value="bandeja">Bandeja de casos</option><option value="tablero">Tablero por estado</option></select>
+        <div class="presentation-control">
+          <label for="presentation"><strong>Presentación de la aplicación (PSM):</strong></label>
+          <select id="presentation">
+            <option value="bandeja">Bandeja maestro-detalle (Lista + Inspector)</option>
+            <option value="tablero">Tablero Kanban agrupado por estado</option>
+          </select>
+        </div>
+        <span id="presentation-summary" class="presentation-summary"></span>
       </div>
       <div id="error" class="error" role="alert" hidden></div>
       <div id="model-format" class="model-format" role="group" aria-label="Vista del modelo">
-        <button id="show-fields" type="button" aria-pressed="true">Campos y tipos</button>
+        <button id="show-fields" type="button" aria-pressed="true">Vista estructurada</button>
+        <button id="show-diagram" type="button" aria-pressed="false">Diagrama interactivo</button>
         <button id="show-json" type="button" aria-pressed="false">Editar JSON</button>
-        <button id="show-diagram" type="button" aria-pressed="false">Diagrama</button>
       </div>
+
       <div id="fields-panel">
-        <p id="fields-caption"></p>
-        <div class="table-wrap" id="fields-table"><table><thead><tr><th scope="col">Campo</th><th scope="col">Identificador</th><th scope="col" id="fields-type">Tipo</th><th scope="col">Presencia</th><th scope="col">Opciones</th></tr></thead><tbody id="fields-rows"></tbody></table></div>
+        <div class="fields-toolbar">
+          <p id="fields-caption"></p>
+          <div class="tools" id="cim-quick-actions">
+            <button id="add-field-btn" type="button" class="primary-subtle">+ Añadir campo</button>
+            <button id="add-transition-btn" type="button">+ Añadir transición</button>
+            <button id="add-ocl-btn" type="button">+ Añadir regla OCL</button>
+          </div>
+        </div>
+        <div class="table-wrap" id="fields-table">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Campo de negocio</th>
+                <th scope="col">Identificador</th>
+                <th scope="col" id="fields-type">Tipo CIM</th>
+                <th scope="col">Presencia / Unicidad</th>
+                <th scope="col">Opciones</th>
+                <th scope="col">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="fields-rows"></tbody>
+          </table>
+        </div>
       </div>
+
+      <section id="pim-panel" class="stage-panel" aria-label="Modelo Independiente de la Plataforma (PIM)" hidden>
+        <div class="stage-explainer">
+          <strong>Transformación M2M (CIM → PIM):</strong> El compilador abstrae los datos del negocio en una <strong>Clase de Dominio Ecore/UML</strong> independiente de tecnología, sintetizando atributos de identidad y ciclo de vida (<code>id: EString «PK»</code>, <code>estado-actual: EEnum</code>, <code>historial: EList</code>), tipado formal EMF, firmas de operaciones con pre/postcondiciones y el árbol sintáctico (AST) de reglas OCL.
+        </div>
+        <div id="pim-uml-grid" class="uml-grid"></div>
+        <div class="pim-subgrid">
+          <div class="stage-box">
+            <h3>Relaciones y Asociaciones UML</h3>
+            <div id="pim-relations-list" class="stage-list"></div>
+          </div>
+          <div class="stage-box">
+            <h3>Árbol Sintáctico de Reglas OCL (AST Validado)</h3>
+            <div id="pim-ocl-ast" class="stage-list"></div>
+          </div>
+        </div>
+        <details class="stage-artifact-details">
+          <summary><strong>Inspeccionar entregable estándar Eclipse EMF (<code>.pim.ecore</code>) y especificación (<code>.pim.ocl</code>)</strong></summary>
+          <div class="artifact-code-grid">
+            <div>
+              <div class="artifact-code-head"><span id="pim-ecore-name">modelo.pim.ecore</span><button type="button" id="btn-dl-ecore">Descargar .ecore</button></div>
+              <pre id="pim-ecore-code" class="stage-code"></pre>
+            </div>
+            <div>
+              <div class="artifact-code-head"><span id="pim-ocl-name">modelo.pim.ocl</span><button type="button" id="btn-dl-ocl">Descargar .ocl</button></div>
+              <pre id="pim-ocl-code" class="stage-code"></pre>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section id="psm-panel" class="stage-panel" aria-label="Modelo Específico de la Plataforma (PSM)" hidden>
+        <div class="stage-explainer">
+          <strong>Transformación M2M (PIM → PSM):</strong> Aterriza el modelo lógico sobre la arquitectura tecnológica destino: <strong>Interfaz Web HTML5/CSS Grid</strong> (conmutable en vivo entre <em>Bandeja Maestro-Detalle</em> y <em>Tablero Kanban por Estado</em>), <strong>Validadores JS ES2022</strong>, <strong>Persistencia Transaccional (IndexedDB + Archivo local)</strong> y <strong>Esquema Relacional SQL DDL</strong> con restricciones <code>CHECK</code> derivadas de OCL.
+        </div>
+        <div class="psm-arch-grid">
+          <div class="stage-box">
+            <h3>Especificación de Arquitectura de Plataforma</h3>
+            <dl id="psm-arch-dl" class="arch-dl"></dl>
+          </div>
+          <div class="stage-box">
+            <h3 id="psm-wireframe-title">Disposición Visual Generada (Wireframe en vivo)</h3>
+            <div id="psm-wireframe" class="psm-wireframe"></div>
+          </div>
+        </div>
+        <div class="stage-box">
+          <h3>Mapeo de Controles Web HTML5, Restricciones DOM y Columnas SQL</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Propiedad PIM</th>
+                  <th scope="col">Componente HTML5</th>
+                  <th scope="col">Atributos DOM derivados (OCL / Metamodelo)</th>
+                  <th scope="col">Columna Relacional SQL</th>
+                </tr>
+              </thead>
+              <tbody id="psm-controls-rows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="stage-box">
+          <div class="artifact-code-head">
+            <h3>Esquema Relacional de Base de Datos Generado (<code>.psm.sql</code>)</h3>
+            <button type="button" id="btn-dl-sql">Descargar esquema .sql</button>
+          </div>
+          <pre id="psm-sql-code" class="stage-code"></pre>
+        </div>
+      </section>
+
       <section id="source-panel" class="json-workbench" aria-label="Editor de JSON" hidden>
         <div class="json-toolbar"><div><strong id="source-filename">modelo.cim.json</strong><span class="json-mode">Editable</span></div>
           <div class="tools"><button id="source-search" type="button" title="Ctrl+F dentro del editor">Buscar</button><button id="source-format" type="button" title="Alt+Mayús+F">Formatear</button></div>
@@ -187,6 +283,7 @@ context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8</co
         <div id="source"></div>
         <div class="json-status"><span id="source-location">Línea 1, columna 1</span><span>JSON · Ctrl+Enter para generar</span></div>
       </section>
+
       <section id="diagram-panel" class="diagram-panel" aria-label="Editor de diagramas" hidden>
         <div id="diagram-error" class="diagram-issue" role="status" hidden></div>
         <div id="diagram-workbench">
@@ -209,16 +306,8 @@ context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8</co
           </div>
           <p class="diagram-legend" id="diagram-legend"><span><i class="legend-start"></i> Inicio</span><span><i class="legend-state"></i> Estado</span><span><i class="legend-end"></i> Final</span><span><i class="legend-link"></i> Transición</span><span><i class="legend-return"></i> Retorno</span><span>Selecciona para editar. Usa la rueda para acercar o alejar y arrastra el fondo para desplazarte.</span></p>
         </div>
-        <dialog id="diagram-dialog" aria-labelledby="diagram-dialog-title">
-          <form id="diagram-form">
-            <h2 id="diagram-dialog-title"></h2>
-            <p id="diagram-dialog-context"></p>
-            <div id="diagram-form-fields"></div>
-            <p id="diagram-form-error" class="diagram-issue" role="alert" hidden></p>
-            <div class="diagram-dialog-actions"><button type="button" id="diagram-remove">Eliminar</button><button type="button" id="diagram-connect" hidden>Nueva transición desde aquí</button><button type="button" id="diagram-cancel">Cancelar</button><button class="generate" type="submit">Guardar cambios</button></div>
-          </form>
-        </dialog>
       </section>
+
       <section id="output" class="json-inspector" aria-label="Inspector de JSON generado" hidden>
         <div class="json-toolbar"><div><strong id="output-filename"></strong><span class="json-mode">Solo lectura</span></div>
           <div class="tools" id="output-tools"><button id="output-expand" type="button">Abrir secciones</button><button id="output-collapse" type="button">Plegar secciones</button></div>
@@ -226,35 +315,79 @@ context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8</co
         <p id="output-hint"></p>
         <div id="output-tree" tabindex="0" aria-label="Estructura del modelo generado"></div>
       </section>
-      <div id="app-panel" hidden><iframe id="preview" title="Aplicación generada" sandbox="allow-scripts allow-forms"></iframe></div>
+
+      <div id="app-panel" hidden>
+        <div class="app-launch-bar">
+          <div>
+            <strong>Ejecución M2T de la Aplicación Generada</strong>
+            <p>La aplicación incluye conexión a Base de Datos <code>IndexedDB</code> y sincronización con archivo físico <code>.db.json</code> / exportación <code>.sql</code>. Ábrela en una pestaña nueva para trabajar a pantalla completa.</p>
+          </div>
+          <div class="tools">
+            <button id="open-app-tab" type="button" class="generate">Abrir en pestaña nueva ↗</button>
+            <button id="download-app-html" type="button">Descargar App (.html)</button>
+          </div>
+        </div>
+        <iframe id="preview" title="Aplicación generada" sandbox="allow-scripts allow-forms allow-modals allow-downloads"></iframe>
+      </div>
     </section>
+
     <aside id="model-summary">
       <section id="integration-card" class="side-card" hidden><h2>Inventario compartido</h2><p id="integration-link" class="flow-start"></p><ul id="integration-movements"></ul></section>
-      <details class="side-card" id="flow-card">
+      <details class="side-card" id="flow-card" open>
         <summary><strong>Proceso de negocio</strong><span id="flow-count"></span></summary>
+        <div class="side-actions">
+          <button type="button" id="side-add-actor">+ Actor</button>
+          <button type="button" id="side-add-state">+ Estado</button>
+          <button type="button" id="side-add-transition">+ Transición</button>
+          <button type="button" id="side-edit-start">Inicio</button>
+        </div>
         <p id="flow-start" class="flow-start"></p>
         <label class="side-filter" for="flow-role">Filtrar por actor</label>
         <select id="flow-role"></select>
         <div id="flow" class="side-list" tabindex="0" aria-label="Transiciones"></div>
       </details>
-      <details class="side-card" id="rules-card">
+      <details class="side-card" id="rules-card" open>
         <summary><strong>Restricciones OCL</strong><span id="rules-count"></span></summary>
+        <div class="side-actions">
+          <button type="button" id="side-add-rule">+ Nueva regla OCL (inv / pre / post)</button>
+        </div>
         <ul id="rules" class="side-list" tabindex="0" aria-label="Reglas OCL"></ul>
       </details>
     </aside>
   </div>
+
+  <dialog id="diagram-dialog" aria-labelledby="diagram-dialog-title">
+    <form id="diagram-form">
+      <h2 id="diagram-dialog-title"></h2>
+      <p id="diagram-dialog-context"></p>
+      <div id="diagram-form-fields"></div>
+      <p id="diagram-form-error" class="diagram-issue" role="alert" hidden></p>
+      <div class="diagram-dialog-actions">
+        <button type="button" id="diagram-remove">Eliminar</button>
+        <button type="button" id="diagram-connect" hidden>Nueva transición desde aquí</button>
+        <button type="button" id="diagram-cancel">Cancelar</button>
+        <button class="generate" type="submit">Guardar cambios</button>
+      </div>
+    </form>
+  </dialog>
+
   <section class="trace-card" aria-labelledby="trace-title">
-    <div class="section-head"><div><h2 id="trace-title">Trazabilidad</h2><p>Correspondencia entre los elementos de cada modelo y la aplicación.</p></div><button id="trace-download" type="button">Descargar todo en JSON</button></div>
+    <div class="section-head">
+      <div><h2 id="trace-title">Matriz de Trazabilidad MDA</h2><p>Correspondencia formal desde los elementos de negocio (CIM), pasando por Ecore/UML (PIM) y Web/SQL (PSM), hasta el código ejecutable.</p></div>
+      <div class="tools">
+        <button id="trace-download-csv" type="button">Descargar CSV (.csv)</button>
+        <button id="trace-download" type="button">Descargar JSON (.traza.json)</button>
+      </div>
+    </div>
     <div class="trace-controls">
-      <div><label for="trace-search">Buscar en la trazabilidad</label><input id="trace-search" type="search" placeholder="Ej. CantidadValida"></div>
-      <div><label for="trace-kind">Tipo</label><select id="trace-kind"><option value="">Todos</option><option value="datos">Campos</option><option value="transiciones">Transiciones</option><option value="tipo">Operaciones CRUD</option><option value="unicos">Unicidad</option><option value="integracion">Integración</option><option value="ocl">Reglas OCL</option></select></div>
+      <div><label for="trace-search">Buscar en la trazabilidad</label><input id="trace-search" type="search" placeholder="Ej. CantidadValida, EInt, CHECK"></div>
+      <div><label for="trace-kind">Tipo de elemento</label><select id="trace-kind"><option value="">Todos</option><option value="datos">Campos / Atributos</option><option value="transiciones">Transiciones / Operaciones</option><option value="tipo">Operaciones CRUD</option><option value="unicos">Unicidad</option><option value="integracion">Integración</option><option value="ocl">Reglas OCL</option></select></div>
     </div>
     <p id="trace-empty" class="trace-empty" hidden></p>
-    <div class="table-wrap" id="trace-table"><table><thead><tr><th>CIM</th><th>PIM</th><th>PSM</th><th>Aplicación</th></tr></thead><tbody id="trace"></tbody></table></div>
+    <div class="table-wrap" id="trace-table"><table><thead><tr><th>01 · CIM (Negocio)</th><th>02 · PIM (Ecore / UML)</th><th>03 · PSM (Web / SQL)</th><th>04 · Aplicación (M2T)</th></tr></thead><tbody id="trace"></tbody></table></div>
     <div class="trace-footer"><p id="trace-count" role="status"></p><div class="tools"><button id="trace-prev" type="button">Anterior</button><button id="trace-next" type="button">Siguiente</button></div></div>
   </section>
 </main>
 <script>{{SCRIPT}}</script>
 </body>
 </html>
-

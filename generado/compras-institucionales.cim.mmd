@@ -1,0 +1,47 @@
+stateDiagram-v2
+  direction LR
+  [*] --> solicitada : Registrar solicitud (Solicitante)
+  state "Revisión de jefatura" as solicitada
+  state "Ampliación pendiente" as observada
+  state "Control de presupuesto" as presupuesto
+  state "Selección de modalidad" as modalidad
+  state "Revisión jurídica" as juridica
+  state "Evaluación del comité" as comite
+  state "Adjudicada" as adjudicada
+  state "Orden emitida" as ordenada
+  state "Incidencia de recepción" as incidencia
+  state "Recibida" as recibida
+  state "Revisión contable" as contabilidad
+  state "Pendiente de pago" as pago
+  state "Pagada" as pagada
+  state "Cerrada" as cerrada
+  state "Rechazada" as rechazada
+  state "Cancelada" as cancelada
+  solicitada --> presupuesto : Enviar a presupuesto [Jefatura]
+  solicitada --> observada : Solicitar ampliación [Jefatura]
+  observada --> solicitada : Registrar ampliación externa [Solicitante]
+  observada --> cancelada : Retirar solicitud [Solicitante]
+  solicitada --> rechazada : Rechazar solicitud [Jefatura]
+  presupuesto --> modalidad : Certificar disponibilidad [Presupuesto]
+  presupuesto --> rechazada : Rechazar por falta de fondos [Presupuesto]
+  modalidad --> adjudicada : Adjudicar compra directa [Compras]
+  modalidad --> juridica : Enviar a revisión jurídica [Compras]
+  modalidad --> cancelada : Cancelar trámite [Compras]
+  juridica --> comite : Emitir dictamen favorable [Jurídico]
+  juridica --> modalidad : Devolver a compras [Jurídico]
+  juridica --> rechazada : Rechazar por objeción jurídica [Jurídico]
+  comite --> adjudicada : Adjudicar por comité [Comité]
+  comite --> cancelada : Declarar proceso desierto [Comité]
+  adjudicada --> ordenada : Emitir orden de compra [Compras]
+  ordenada --> recibida : Confirmar recepción conforme [Bodega]
+  ordenada --> incidencia : Registrar recepción no conforme [Bodega]
+  incidencia --> ordenada : Registrar subsanación del proveedor [Compras]
+  incidencia --> cancelada : Anular orden [Compras]
+  recibida --> contabilidad : Enviar expediente a contabilidad [Compras]
+  contabilidad --> pago : Autorizar contabilización [Contabilidad]
+  contabilidad --> recibida : Devolver expediente [Contabilidad]
+  pago --> pagada : Registrar pago [Tesorería]
+  pagada --> cerrada : Cerrar expediente [Compras]
+  cerrada --> [*]
+  rechazada --> [*]
+  cancelada --> [*]

@@ -62,9 +62,15 @@ async function main() {
   for (const result of [purchases, inventory, laboratory, demo]) {
     const id = result.cim.id;
     const stem = /^(index|con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(id) ? 'proceso-' + id : id;
+    files[stem + '.cim.mmd'] = result.entregables.cimMermaid;
     files[stem + '.pim.json'] = toJson(result.pim);
+    files[stem + '.pim.ecore'] = result.entregables.pimEcore;
+    files[stem + '.pim.ocl'] = result.entregables.pimOcl;
     files[stem + '.psm.json'] = toJson(result.psm);
+    files[stem + '.psm.sql'] = result.entregables.psmSql;
+    files[stem + '.psm.schema.json'] = result.entregables.psmSchema;
     files[stem + '.traza.json'] = toJson(result.trace);
+    files[stem + '.traza.csv'] = result.entregables.traceCsv;
     files[stem + '.html'] = result.html;
   }
   await Promise.all(Object.entries(files).map(([name, contents]) => writeFile(join(output, name), contents)));

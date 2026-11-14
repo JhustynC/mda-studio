@@ -3,6 +3,8 @@
   "nombre": "Gestión de laboratorio",
   "objetivo": "Administra equipos y tramita préstamos con existencias compartidas.",
   "entidad": "Prestamo",
+  "paquete": "org.mda.studio.gestion_laboratorio",
+  "estereotipo": "«Entity, IntegratedProcess»",
   "roles": [
     {
       "id": "estudiante",
@@ -43,6 +45,111 @@
       "nombre": "Motivo",
       "tipo": "Texto",
       "requerido": true
+    }
+  ],
+  "atributos": [
+    {
+      "id": "id",
+      "nombre": "Identificador UUID",
+      "origen": "sistema",
+      "tipoDominio": "UUID",
+      "tipoEcore": "EString",
+      "tipoUml": "UUID «PK»",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": true,
+      "soloLectura": true
+    },
+    {
+      "id": "estado-actual",
+      "nombre": "Estado del caso",
+      "origen": "sistema",
+      "tipoDominio": "EstadoFlujo",
+      "tipoEcore": "EEnum",
+      "tipoUml": "EstadoPrestamo",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": true,
+      "valoresEnum": [
+        "solicitado",
+        "aprobado",
+        "entregado",
+        "devuelto",
+        "rechazado"
+      ]
+    },
+    {
+      "id": "historial",
+      "nombre": "Bitácora de transiciones",
+      "origen": "sistema",
+      "tipoDominio": "Colección<Evento>",
+      "tipoEcore": "EList<EventoFlujo>",
+      "tipoUml": "List<EventoFlujo>",
+      "multiplicidad": "0..*",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": true
+    },
+    {
+      "id": "solicitante",
+      "nombre": "Solicitante",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "equipo",
+      "nombre": "Equipo del inventario",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "cantidad",
+      "nombre": "Cantidad",
+      "origen": "dominio",
+      "tipoDominio": "Entero",
+      "tipoEcore": "EInt",
+      "tipoUml": "Integer",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "dias",
+      "nombre": "Días de préstamo",
+      "origen": "dominio",
+      "tipoDominio": "Entero",
+      "tipoEcore": "EInt",
+      "tipoUml": "Integer",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "motivo",
+      "nombre": "Motivo",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
     }
   ],
   "creacion": {
@@ -104,6 +211,146 @@
       "hasta": "devuelto"
     }
   ],
+  "firmas": [
+    {
+      "id": "iniciar-caso",
+      "nombre": "Nueva solicitud",
+      "visibilidad": "public",
+      "actor": "estudiante",
+      "desde": null,
+      "hasta": "solicitado",
+      "parametros": [
+        "actor: Rol",
+        "solicitante: EString",
+        "equipo: EString",
+        "cantidad: EInt",
+        "dias: EInt",
+        "motivo: EString"
+      ],
+      "retorno": "Prestamo",
+      "guardas": [
+        "CantidadValida",
+        "PlazoValido"
+      ],
+      "efectos": [
+        "Inicializa estado en solicitado",
+        "Registra evento de creación en historial"
+      ]
+    },
+    {
+      "id": "aprobar",
+      "nombre": "Aprobar",
+      "visibilidad": "public",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "aprobado",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "CantidadValida",
+        "PlazoValido",
+        "MotivoSuficiente"
+      ],
+      "efectos": [
+        "Cambia estado: solicitado → aprobado",
+        "Anexa evento auditado por rol responsable"
+      ]
+    },
+    {
+      "id": "rechazar",
+      "nombre": "Rechazar",
+      "visibilidad": "public",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "rechazado",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "CantidadValida",
+        "PlazoValido"
+      ],
+      "efectos": [
+        "Cambia estado: solicitado → rechazado",
+        "Anexa evento auditado por rol responsable"
+      ]
+    },
+    {
+      "id": "entregar",
+      "nombre": "Registrar entrega",
+      "visibilidad": "public",
+      "actor": "responsable",
+      "desde": "aprobado",
+      "hasta": "entregado",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "CantidadValida",
+        "PlazoValido"
+      ],
+      "efectos": [
+        "Cambia estado: aprobado → entregado",
+        "Anexa evento auditado por rol responsable",
+        "Descuenta stock en Producto.stock"
+      ]
+    },
+    {
+      "id": "devolver",
+      "nombre": "Registrar devolución",
+      "visibilidad": "public",
+      "actor": "estudiante",
+      "desde": "entregado",
+      "hasta": "devuelto",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "CantidadValida",
+        "PlazoValido"
+      ],
+      "efectos": [
+        "Cambia estado: entregado → devuelto",
+        "Anexa evento auditado por rol estudiante",
+        "Repone stock en Producto.stock"
+      ]
+    }
+  ],
+  "relaciones": [
+    {
+      "origen": "Prestamo",
+      "destino": "EventoHistorial",
+      "multiplicidadOrigen": "1..1",
+      "multiplicidadDestino": "1..*",
+      "rol": "historial",
+      "tipo": "composicion"
+    },
+    {
+      "origen": "ActorRol",
+      "destino": "Prestamo",
+      "multiplicidadOrigen": "1..1",
+      "multiplicidadDestino": "0..*",
+      "rol": "ejecutaTransiciones",
+      "tipo": "asociacion"
+    },
+    {
+      "origen": "Prestamo",
+      "destino": "Producto",
+      "multiplicidadOrigen": "0..*",
+      "multiplicidadDestino": "1..1",
+      "rol": "equipo → sku",
+      "tipo": "integracion"
+    }
+  ],
   "restricciones": [
     {
       "id": "CantidadValida",
@@ -121,6 +368,7 @@
           "campo": "cantidad",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 5
         }
       ],
@@ -142,6 +390,7 @@
           "campo": "dias",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 30
         }
       ],
@@ -170,6 +419,8 @@
       "nombre": "Inventario compartido",
       "objetivo": "Consulta y actualiza el catálogo de productos y sus existencias.",
       "entidad": "Producto",
+      "paquete": "org.mda.studio.inventario",
+      "estereotipo": "«Entity, CrudCatalog»",
       "propiedades": [
         {
           "id": "nombre",
@@ -225,6 +476,109 @@
           "tipo": "Booleano"
         }
       ],
+      "atributos": [
+        {
+          "id": "id",
+          "nombre": "Identificador UUID",
+          "origen": "sistema",
+          "tipoDominio": "UUID",
+          "tipoEcore": "EString",
+          "tipoUml": "UUID «PK»",
+          "multiplicidad": "1..1",
+          "requerido": true,
+          "unico": true,
+          "soloLectura": true
+        },
+        {
+          "id": "nombre",
+          "nombre": "Producto",
+          "origen": "dominio",
+          "tipoDominio": "Texto",
+          "tipoEcore": "EString",
+          "tipoUml": "String",
+          "multiplicidad": "1..1",
+          "requerido": true,
+          "unico": false,
+          "soloLectura": false
+        },
+        {
+          "id": "sku",
+          "nombre": "Código SKU",
+          "origen": "dominio",
+          "tipoDominio": "Texto",
+          "tipoEcore": "EString",
+          "tipoUml": "String",
+          "multiplicidad": "1..1",
+          "requerido": true,
+          "unico": true,
+          "soloLectura": false
+        },
+        {
+          "id": "categoria",
+          "nombre": "Categoría",
+          "origen": "dominio",
+          "tipoDominio": "Seleccion",
+          "tipoEcore": "EEnum",
+          "tipoUml": "Enum<categoria>",
+          "multiplicidad": "1..1",
+          "requerido": true,
+          "unico": false,
+          "soloLectura": false,
+          "valoresEnum": [
+            "equipos",
+            "consumibles",
+            "repuestos"
+          ]
+        },
+        {
+          "id": "stock",
+          "nombre": "Stock disponible",
+          "origen": "dominio",
+          "tipoDominio": "Entero",
+          "tipoEcore": "EInt",
+          "tipoUml": "Integer",
+          "multiplicidad": "1..1",
+          "requerido": true,
+          "unico": false,
+          "soloLectura": false
+        },
+        {
+          "id": "ubicacion",
+          "nombre": "Ubicación",
+          "origen": "dominio",
+          "tipoDominio": "Texto",
+          "tipoEcore": "EString",
+          "tipoUml": "String",
+          "multiplicidad": "0..1",
+          "requerido": false,
+          "unico": false,
+          "soloLectura": false
+        },
+        {
+          "id": "reposicion",
+          "nombre": "Fecha de reposición",
+          "origen": "dominio",
+          "tipoDominio": "Fecha",
+          "tipoEcore": "EDate",
+          "tipoUml": "Date",
+          "multiplicidad": "0..1",
+          "requerido": false,
+          "unico": false,
+          "soloLectura": false
+        },
+        {
+          "id": "activo",
+          "nombre": "Producto activo",
+          "origen": "dominio",
+          "tipoDominio": "Booleano",
+          "tipoEcore": "EBoolean",
+          "tipoUml": "Boolean",
+          "multiplicidad": "0..1",
+          "requerido": false,
+          "unico": false,
+          "soloLectura": false
+        }
+      ],
       "unicos": [
         "sku"
       ],
@@ -234,6 +588,91 @@
         "editar",
         "eliminar"
       ],
+      "firmas": [
+        {
+          "id": "crear",
+          "nombre": "Crear Producto",
+          "visibilidad": "public",
+          "actor": null,
+          "desde": null,
+          "hasta": null,
+          "parametros": [
+            "nombre: EString",
+            "sku: EString",
+            "categoria: EEnum",
+            "stock: EInt",
+            "ubicacion: EString",
+            "reposicion: EDate",
+            "activo: EBoolean"
+          ],
+          "retorno": "Producto",
+          "guardas": [
+            "StockNoNegativo"
+          ],
+          "efectos": [
+            "Persiste nueva instancia de Producto",
+            "Verifica unicidad de: sku"
+          ]
+        },
+        {
+          "id": "consultar",
+          "nombre": "Consultar catálogo",
+          "visibilidad": "public",
+          "actor": null,
+          "desde": null,
+          "hasta": null,
+          "parametros": [
+            "filtro: EString"
+          ],
+          "retorno": "EList<Producto>",
+          "guardas": [],
+          "efectos": [
+            "Filtra registros por coincidencia de texto"
+          ]
+        },
+        {
+          "id": "editar",
+          "nombre": "Actualizar Producto",
+          "visibilidad": "public",
+          "actor": null,
+          "desde": null,
+          "hasta": null,
+          "parametros": [
+            "id: EString",
+            "nombre: EString",
+            "sku: EString",
+            "categoria: EEnum",
+            "stock: EInt",
+            "ubicacion: EString",
+            "reposicion: EDate",
+            "activo: EBoolean"
+          ],
+          "retorno": "Producto",
+          "guardas": [
+            "StockNoNegativo"
+          ],
+          "efectos": [
+            "Actualiza atributos manteniendo identidad UUID"
+          ]
+        },
+        {
+          "id": "eliminar",
+          "nombre": "Eliminar Producto",
+          "visibilidad": "public",
+          "actor": null,
+          "desde": null,
+          "hasta": null,
+          "parametros": [
+            "id: EString"
+          ],
+          "retorno": "EBoolean",
+          "guardas": [],
+          "efectos": [
+            "Remueve la instancia si no existen referencias activas"
+          ]
+        }
+      ],
+      "relaciones": [],
       "restricciones": [
         {
           "id": "StockNoNegativo",

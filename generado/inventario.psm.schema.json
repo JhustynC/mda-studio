@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mda.studio/schemas/inventario.schema.json",
+  "title": "Producto",
+  "description": "Consulta y actualiza el catálogo de productos y sus existencias.",
+  "type": "object",
+  "required": [
+    "nombre",
+    "sku",
+    "categoria",
+    "stock"
+  ],
+  "properties": {
+    "nombre": {
+      "title": "Producto",
+      "type": "string",
+      "maxLength": 300
+    },
+    "sku": {
+      "title": "Código SKU",
+      "type": "string",
+      "maxLength": 300
+    },
+    "categoria": {
+      "title": "Categoría",
+      "type": "string",
+      "enum": [
+        "equipos",
+        "consumibles",
+        "repuestos"
+      ]
+    },
+    "stock": {
+      "title": "Stock disponible",
+      "type": "integer",
+      "minimum": 0
+    },
+    "ubicacion": {
+      "title": "Ubicación",
+      "type": "string",
+      "maxLength": 300
+    },
+    "reposicion": {
+      "title": "Fecha de reposición",
+      "type": "string",
+      "format": "date"
+    },
+    "activo": {
+      "title": "Producto activo",
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

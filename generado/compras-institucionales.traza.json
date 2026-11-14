@@ -1,301 +1,301 @@
 [
   {
-    "cim": "datos.referencia",
-    "pim": "Compra.referencia",
-    "psm": "campos.referencia",
-    "app": "input[type=text]"
+    "cim": "datos.referencia (Texto)",
+    "pim": "Compra.referencia : EString [1..1]",
+    "psm": "campos.referencia (text / VARCHAR(300))",
+    "app": "<input type=\"text\">"
   },
   {
-    "cim": "datos.unidad",
-    "pim": "Compra.unidad",
-    "psm": "campos.unidad",
-    "app": "input[type=text]"
+    "cim": "datos.unidad (Texto)",
+    "pim": "Compra.unidad : EString [1..1]",
+    "psm": "campos.unidad (text / VARCHAR(300))",
+    "app": "<input type=\"text\">"
   },
   {
-    "cim": "datos.objeto",
-    "pim": "Compra.objeto",
-    "psm": "campos.objeto",
-    "app": "input[type=text]"
+    "cim": "datos.objeto (Texto)",
+    "pim": "Compra.objeto : EString [1..1]",
+    "psm": "campos.objeto (text / VARCHAR(300))",
+    "app": "<input type=\"text\">"
   },
   {
-    "cim": "datos.justificacion",
-    "pim": "Compra.justificacion",
-    "psm": "campos.justificacion",
-    "app": "input[type=text]"
+    "cim": "datos.justificacion (Texto)",
+    "pim": "Compra.justificacion : EString [1..1]",
+    "psm": "campos.justificacion (text / VARCHAR(300))",
+    "app": "<input type=\"text\">"
   },
   {
-    "cim": "datos.monto",
-    "pim": "Compra.monto",
-    "psm": "campos.monto",
-    "app": "input[type=number]"
+    "cim": "datos.monto (Entero)",
+    "pim": "Compra.monto : EInt [1..1]",
+    "psm": "campos.monto (number / INTEGER)",
+    "app": "<input type=\"number\">"
   },
   {
-    "cim": "datos.cantidad",
-    "pim": "Compra.cantidad",
-    "psm": "campos.cantidad",
-    "app": "input[type=number]"
+    "cim": "datos.cantidad (Entero)",
+    "pim": "Compra.cantidad : EInt [1..1]",
+    "psm": "campos.cantidad (number / INTEGER)",
+    "app": "<input type=\"number\">"
   },
   {
-    "cim": "datos.cotizaciones",
-    "pim": "Compra.cotizaciones",
-    "psm": "campos.cotizaciones",
-    "app": "input[type=number]"
+    "cim": "datos.cotizaciones (Entero)",
+    "pim": "Compra.cotizaciones : EInt [1..1]",
+    "psm": "campos.cotizaciones (number / INTEGER)",
+    "app": "<input type=\"number\">"
   },
   {
-    "cim": "datos.plazo",
-    "pim": "Compra.plazo",
-    "psm": "campos.plazo",
-    "app": "input[type=number]"
+    "cim": "datos.plazo (Entero)",
+    "pim": "Compra.plazo : EInt [1..1]",
+    "psm": "campos.plazo (number / INTEGER)",
+    "app": "<input type=\"number\">"
   },
   {
-    "cim": "datos.proveedor",
-    "pim": "Compra.proveedor",
-    "psm": "campos.proveedor",
-    "app": "input[type=text]"
+    "cim": "datos.proveedor (Texto)",
+    "pim": "Compra.proveedor : EString [0..1]",
+    "psm": "campos.proveedor (text / VARCHAR(300))",
+    "app": "<input type=\"text\">"
   },
   {
-    "cim": "datos.partida",
-    "pim": "Compra.partida",
-    "psm": "campos.partida",
-    "app": "input[type=text]"
+    "cim": "datos.partida (Texto)",
+    "pim": "Compra.partida : EString [1..1]",
+    "psm": "campos.partida (text / VARCHAR(300))",
+    "app": "<input type=\"text\">"
   },
   {
-    "cim": "datos.prioridad",
-    "pim": "Compra.prioridad",
-    "psm": "campos.prioridad",
-    "app": "select"
+    "cim": "datos.prioridad (Seleccion)",
+    "pim": "Compra.prioridad : EEnum [0..1]",
+    "psm": "campos.prioridad (select / VARCHAR(64))",
+    "app": "<select> + CHECK SQL"
   },
   {
-    "cim": "datos.fecha-necesaria",
-    "pim": "Compra.fecha-necesaria",
-    "psm": "campos.fecha-necesaria",
-    "app": "input[type=date]"
+    "cim": "datos.fecha-necesaria (Fecha)",
+    "pim": "Compra.fecha-necesaria : EDate [0..1]",
+    "psm": "campos.fecha-necesaria (date / DATE)",
+    "app": "<input type=\"date\">"
   },
   {
-    "cim": "datos.documentacion",
-    "pim": "Compra.documentacion",
-    "psm": "campos.documentacion",
-    "app": "input[type=checkbox]"
+    "cim": "datos.documentacion (Booleano)",
+    "pim": "Compra.documentacion : EBoolean [0..1]",
+    "psm": "campos.documentacion (checkbox / BOOLEAN)",
+    "app": "<input type=\"checkbox\">"
   },
   {
-    "cim": "transiciones.avalar",
-    "pim": "operaciones.avalar",
-    "psm": "acciones.avalar",
-    "app": "solicitada → presupuesto"
+    "cim": "transiciones.avalar (jefatura)",
+    "pim": "Compra::avalar() : EBoolean",
+    "psm": "acciones.avalar [solicitada → presupuesto]",
+    "app": "Botón de rol jefatura (solicitada → presupuesto)"
   },
   {
-    "cim": "transiciones.observar",
-    "pim": "operaciones.observar",
-    "psm": "acciones.observar",
-    "app": "solicitada → observada"
+    "cim": "transiciones.observar (jefatura)",
+    "pim": "Compra::observar() : EBoolean",
+    "psm": "acciones.observar [solicitada → observada]",
+    "app": "Botón de rol jefatura (solicitada → observada)"
   },
   {
-    "cim": "transiciones.justificar",
-    "pim": "operaciones.justificar",
-    "psm": "acciones.justificar",
-    "app": "observada → solicitada"
+    "cim": "transiciones.justificar (solicitante)",
+    "pim": "Compra::justificar() : EBoolean",
+    "psm": "acciones.justificar [observada → solicitada]",
+    "app": "Botón de rol solicitante (observada → solicitada)"
   },
   {
-    "cim": "transiciones.retirar",
-    "pim": "operaciones.retirar",
-    "psm": "acciones.retirar",
-    "app": "observada → cancelada"
+    "cim": "transiciones.retirar (solicitante)",
+    "pim": "Compra::retirar() : EBoolean",
+    "psm": "acciones.retirar [observada → cancelada]",
+    "app": "Botón de rol solicitante (observada → cancelada)"
   },
   {
-    "cim": "transiciones.denegar",
-    "pim": "operaciones.denegar",
-    "psm": "acciones.denegar",
-    "app": "solicitada → rechazada"
+    "cim": "transiciones.denegar (jefatura)",
+    "pim": "Compra::denegar() : EBoolean",
+    "psm": "acciones.denegar [solicitada → rechazada]",
+    "app": "Botón de rol jefatura (solicitada → rechazada)"
   },
   {
-    "cim": "transiciones.certificar",
-    "pim": "operaciones.certificar",
-    "psm": "acciones.certificar",
-    "app": "presupuesto → modalidad"
+    "cim": "transiciones.certificar (presupuesto)",
+    "pim": "Compra::certificar() : EBoolean",
+    "psm": "acciones.certificar [presupuesto → modalidad]",
+    "app": "Botón de rol presupuesto (presupuesto → modalidad)"
   },
   {
-    "cim": "transiciones.sinfondos",
-    "pim": "operaciones.sinfondos",
-    "psm": "acciones.sinfondos",
-    "app": "presupuesto → rechazada"
+    "cim": "transiciones.sinfondos (presupuesto)",
+    "pim": "Compra::sinfondos() : EBoolean",
+    "psm": "acciones.sinfondos [presupuesto → rechazada]",
+    "app": "Botón de rol presupuesto (presupuesto → rechazada)"
   },
   {
-    "cim": "transiciones.directa",
-    "pim": "operaciones.directa",
-    "psm": "acciones.directa",
-    "app": "modalidad → adjudicada"
+    "cim": "transiciones.directa (compras)",
+    "pim": "Compra::directa() : EBoolean",
+    "psm": "acciones.directa [modalidad → adjudicada]",
+    "app": "Botón de rol compras (modalidad → adjudicada)"
   },
   {
-    "cim": "transiciones.competitiva",
-    "pim": "operaciones.competitiva",
-    "psm": "acciones.competitiva",
-    "app": "modalidad → juridica"
+    "cim": "transiciones.competitiva (compras)",
+    "pim": "Compra::competitiva() : EBoolean",
+    "psm": "acciones.competitiva [modalidad → juridica]",
+    "app": "Botón de rol compras (modalidad → juridica)"
   },
   {
-    "cim": "transiciones.cancelar",
-    "pim": "operaciones.cancelar",
-    "psm": "acciones.cancelar",
-    "app": "modalidad → cancelada"
+    "cim": "transiciones.cancelar (compras)",
+    "pim": "Compra::cancelar() : EBoolean",
+    "psm": "acciones.cancelar [modalidad → cancelada]",
+    "app": "Botón de rol compras (modalidad → cancelada)"
   },
   {
-    "cim": "transiciones.dictamen",
-    "pim": "operaciones.dictamen",
-    "psm": "acciones.dictamen",
-    "app": "juridica → comite"
+    "cim": "transiciones.dictamen (juridico)",
+    "pim": "Compra::dictamen() : EBoolean",
+    "psm": "acciones.dictamen [juridica → comite]",
+    "app": "Botón de rol juridico (juridica → comite)"
   },
   {
-    "cim": "transiciones.devolver",
-    "pim": "operaciones.devolver",
-    "psm": "acciones.devolver",
-    "app": "juridica → modalidad"
+    "cim": "transiciones.devolver (juridico)",
+    "pim": "Compra::devolver() : EBoolean",
+    "psm": "acciones.devolver [juridica → modalidad]",
+    "app": "Botón de rol juridico (juridica → modalidad)"
   },
   {
-    "cim": "transiciones.objecion",
-    "pim": "operaciones.objecion",
-    "psm": "acciones.objecion",
-    "app": "juridica → rechazada"
+    "cim": "transiciones.objecion (juridico)",
+    "pim": "Compra::objecion() : EBoolean",
+    "psm": "acciones.objecion [juridica → rechazada]",
+    "app": "Botón de rol juridico (juridica → rechazada)"
   },
   {
-    "cim": "transiciones.adjudicar",
-    "pim": "operaciones.adjudicar",
-    "psm": "acciones.adjudicar",
-    "app": "comite → adjudicada"
+    "cim": "transiciones.adjudicar (comite)",
+    "pim": "Compra::adjudicar() : EBoolean",
+    "psm": "acciones.adjudicar [comite → adjudicada]",
+    "app": "Botón de rol comite (comite → adjudicada)"
   },
   {
-    "cim": "transiciones.desierta",
-    "pim": "operaciones.desierta",
-    "psm": "acciones.desierta",
-    "app": "comite → cancelada"
+    "cim": "transiciones.desierta (comite)",
+    "pim": "Compra::desierta() : EBoolean",
+    "psm": "acciones.desierta [comite → cancelada]",
+    "app": "Botón de rol comite (comite → cancelada)"
   },
   {
-    "cim": "transiciones.emitir",
-    "pim": "operaciones.emitir",
-    "psm": "acciones.emitir",
-    "app": "adjudicada → ordenada"
+    "cim": "transiciones.emitir (compras)",
+    "pim": "Compra::emitir() : EBoolean",
+    "psm": "acciones.emitir [adjudicada → ordenada]",
+    "app": "Botón de rol compras (adjudicada → ordenada)"
   },
   {
-    "cim": "transiciones.recibir",
-    "pim": "operaciones.recibir",
-    "psm": "acciones.recibir",
-    "app": "ordenada → recibida"
+    "cim": "transiciones.recibir (bodega)",
+    "pim": "Compra::recibir() : EBoolean",
+    "psm": "acciones.recibir [ordenada → recibida]",
+    "app": "Botón de rol bodega (ordenada → recibida)"
   },
   {
-    "cim": "transiciones.incidencia",
-    "pim": "operaciones.incidencia",
-    "psm": "acciones.incidencia",
-    "app": "ordenada → incidencia"
+    "cim": "transiciones.incidencia (bodega)",
+    "pim": "Compra::incidencia() : EBoolean",
+    "psm": "acciones.incidencia [ordenada → incidencia]",
+    "app": "Botón de rol bodega (ordenada → incidencia)"
   },
   {
-    "cim": "transiciones.subsanar",
-    "pim": "operaciones.subsanar",
-    "psm": "acciones.subsanar",
-    "app": "incidencia → ordenada"
+    "cim": "transiciones.subsanar (compras)",
+    "pim": "Compra::subsanar() : EBoolean",
+    "psm": "acciones.subsanar [incidencia → ordenada]",
+    "app": "Botón de rol compras (incidencia → ordenada)"
   },
   {
-    "cim": "transiciones.anular",
-    "pim": "operaciones.anular",
-    "psm": "acciones.anular",
-    "app": "incidencia → cancelada"
+    "cim": "transiciones.anular (compras)",
+    "pim": "Compra::anular() : EBoolean",
+    "psm": "acciones.anular [incidencia → cancelada]",
+    "app": "Botón de rol compras (incidencia → cancelada)"
   },
   {
-    "cim": "transiciones.enviarcontable",
-    "pim": "operaciones.enviarcontable",
-    "psm": "acciones.enviarcontable",
-    "app": "recibida → contabilidad"
+    "cim": "transiciones.enviarcontable (compras)",
+    "pim": "Compra::enviarcontable() : EBoolean",
+    "psm": "acciones.enviarcontable [recibida → contabilidad]",
+    "app": "Botón de rol compras (recibida → contabilidad)"
   },
   {
-    "cim": "transiciones.contabilizar",
-    "pim": "operaciones.contabilizar",
-    "psm": "acciones.contabilizar",
-    "app": "contabilidad → pago"
+    "cim": "transiciones.contabilizar (contabilidad)",
+    "pim": "Compra::contabilizar() : EBoolean",
+    "psm": "acciones.contabilizar [contabilidad → pago]",
+    "app": "Botón de rol contabilidad (contabilidad → pago)"
   },
   {
-    "cim": "transiciones.revisar",
-    "pim": "operaciones.revisar",
-    "psm": "acciones.revisar",
-    "app": "contabilidad → recibida"
+    "cim": "transiciones.revisar (contabilidad)",
+    "pim": "Compra::revisar() : EBoolean",
+    "psm": "acciones.revisar [contabilidad → recibida]",
+    "app": "Botón de rol contabilidad (contabilidad → recibida)"
   },
   {
-    "cim": "transiciones.pagar",
-    "pim": "operaciones.pagar",
-    "psm": "acciones.pagar",
-    "app": "pago → pagada"
+    "cim": "transiciones.pagar (tesoreria)",
+    "pim": "Compra::pagar() : EBoolean",
+    "psm": "acciones.pagar [pago → pagada]",
+    "app": "Botón de rol tesoreria (pago → pagada)"
   },
   {
-    "cim": "transiciones.cerrar",
-    "pim": "operaciones.cerrar",
-    "psm": "acciones.cerrar",
-    "app": "pagada → cerrada"
+    "cim": "transiciones.cerrar (compras)",
+    "pim": "Compra::cerrar() : EBoolean",
+    "psm": "acciones.cerrar [pagada → cerrada]",
+    "app": "Botón de rol compras (pagada → cerrada)"
   },
   {
     "cim": "ocl.MontoValido",
-    "pim": "inv MontoValido",
-    "psm": "validadores.MontoValido",
+    "pim": "inv MontoValido (OCL AST)",
+    "psm": "validadores.MontoValido + SQL CHECK",
     "app": "validators[\"MontoValido\"]"
   },
   {
     "cim": "ocl.CantidadValida",
-    "pim": "inv CantidadValida",
-    "psm": "validadores.CantidadValida",
+    "pim": "inv CantidadValida (OCL AST)",
+    "psm": "validadores.CantidadValida + SQL CHECK",
     "app": "validators[\"CantidadValida\"]"
   },
   {
     "cim": "ocl.PlazoValido",
-    "pim": "inv PlazoValido",
-    "psm": "validadores.PlazoValido",
+    "pim": "inv PlazoValido (OCL AST)",
+    "psm": "validadores.PlazoValido + SQL CHECK",
     "app": "validators[\"PlazoValido\"]"
   },
   {
     "cim": "ocl.CotizacionesValidas",
-    "pim": "inv CotizacionesValidas",
-    "psm": "validadores.CotizacionesValidas",
+    "pim": "inv CotizacionesValidas (OCL AST)",
+    "psm": "validadores.CotizacionesValidas + SQL CHECK",
     "app": "validators[\"CotizacionesValidas\"]"
   },
   {
     "cim": "ocl.ReferenciaValida",
-    "pim": "inv ReferenciaValida",
-    "psm": "validadores.ReferenciaValida",
+    "pim": "inv ReferenciaValida (OCL AST)",
+    "psm": "validadores.ReferenciaValida + SQL CHECK",
     "app": "validators[\"ReferenciaValida\"]"
   },
   {
     "cim": "ocl.JustificacionSuficiente",
-    "pim": "pre JustificacionSuficiente",
+    "pim": "pre JustificacionSuficiente (OCL AST)",
     "psm": "validadores.JustificacionSuficiente",
     "app": "validators[\"JustificacionSuficiente\"]"
   },
   {
     "cim": "ocl.PartidaIdentificada",
-    "pim": "pre PartidaIdentificada",
+    "pim": "pre PartidaIdentificada (OCL AST)",
     "psm": "validadores.PartidaIdentificada",
     "app": "validators[\"PartidaIdentificada\"]"
   },
   {
     "cim": "ocl.MontoCompraDirecta",
-    "pim": "pre MontoCompraDirecta",
+    "pim": "pre MontoCompraDirecta (OCL AST)",
     "psm": "validadores.MontoCompraDirecta",
     "app": "validators[\"MontoCompraDirecta\"]"
   },
   {
     "cim": "ocl.UmbralCompetitivo",
-    "pim": "pre UmbralCompetitivo",
+    "pim": "pre UmbralCompetitivo (OCL AST)",
     "psm": "validadores.UmbralCompetitivo",
     "app": "validators[\"UmbralCompetitivo\"]"
   },
   {
     "cim": "ocl.CotizacionesComite",
-    "pim": "pre CotizacionesComite",
+    "pim": "pre CotizacionesComite (OCL AST)",
     "psm": "validadores.CotizacionesComite",
     "app": "validators[\"CotizacionesComite\"]"
   },
   {
     "cim": "ocl.ProveedorIdentificado",
-    "pim": "pre ProveedorIdentificado",
+    "pim": "pre ProveedorIdentificado (OCL AST)",
     "psm": "validadores.ProveedorIdentificado",
     "app": "validators[\"ProveedorIdentificado\"]"
   },
   {
     "cim": "ocl.ReferenciaContable",
-    "pim": "pre ReferenciaContable",
+    "pim": "pre ReferenciaContable (OCL AST)",
     "psm": "validadores.ReferenciaContable",
     "app": "validators[\"ReferenciaContable\"]"
   }

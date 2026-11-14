@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    name="prestamos_lab"
+    nsURI="http://mda.studio/models/prestamos-lab/1.0"
+    nsPrefix="prestamos_lab">
+  <eClassifiers xsi:type="ecore:EClass" name="Prestamo">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="CantidadValida PlazoValido MotivoSuficiente"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+      <details key="CantidadValida" value="context Prestamo inv CantidadValida: self.cantidad &gt;= 1 and self.cantidad &lt;= 5"/>
+      <details key="PlazoValido" value="context Prestamo inv PlazoValido: self.dias &gt;= 1 and self.dias &lt;= 30"/>
+      <details key="MotivoSuficiente" value="context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" upperBound="1" iD="true" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="estado-actual" lowerBound="1" upperBound="1" eType="#//Prestamo_estado-actual"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="solicitante" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="equipo" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cantidad" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dias" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="motivo" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eOperations name="iniciar-caso" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="CantidadValida, PlazoValido"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="aprobar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="CantidadValida, PlazoValido, MotivoSuficiente"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="rechazar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="CantidadValida, PlazoValido"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="entregar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="CantidadValida, PlazoValido"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="devolver" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="CantidadValida, PlazoValido"/>
+      </eAnnotations>
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Prestamo_estado-actual">
+    <eLiterals name="solicitado" value="0" literal="solicitado"/>
+    <eLiterals name="aprobado" value="1" literal="aprobado"/>
+    <eLiterals name="entregado" value="2" literal="entregado"/>
+    <eLiterals name="devuelto" value="3" literal="devuelto"/>
+    <eLiterals name="rechazado" value="4" literal="rechazado"/>
+  </eClassifiers>
+</ecore:EPackage>

@@ -1,0 +1,9 @@
+-- Especificación OCL 2.4 generada por MDA Studio
+-- Modelo PIM: Préstamos de laboratorio (org.mda.studio.prestamos_lab)
+package org::mda::studio::prestamos_lab
+
+  context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad <= 5
+  context Prestamo inv PlazoValido: self.dias >= 1 and self.dias <= 30
+  context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8
+
+endpackage

@@ -3,6 +3,8 @@
   "nombre": "Compras institucionales",
   "objetivo": "Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.",
   "entidad": "Compra",
+  "paquete": "org.mda.studio.compras_institucionales",
+  "estereotipo": "«Entity, StatefulProcess»",
   "roles": [
     {
       "id": "solicitante",
@@ -133,6 +135,223 @@
       "tipo": "Booleano",
       "requerido": false,
       "nombre": "Documentación adjunta disponible"
+    }
+  ],
+  "atributos": [
+    {
+      "id": "id",
+      "nombre": "Identificador UUID",
+      "origen": "sistema",
+      "tipoDominio": "UUID",
+      "tipoEcore": "EString",
+      "tipoUml": "UUID «PK»",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": true,
+      "soloLectura": true
+    },
+    {
+      "id": "estado-actual",
+      "nombre": "Estado del caso",
+      "origen": "sistema",
+      "tipoDominio": "EstadoFlujo",
+      "tipoEcore": "EEnum",
+      "tipoUml": "EstadoCompra",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": true,
+      "valoresEnum": [
+        "solicitada",
+        "observada",
+        "presupuesto",
+        "modalidad",
+        "juridica",
+        "comite",
+        "adjudicada",
+        "ordenada",
+        "incidencia",
+        "recibida",
+        "contabilidad",
+        "pago",
+        "pagada",
+        "cerrada",
+        "rechazada",
+        "cancelada"
+      ]
+    },
+    {
+      "id": "historial",
+      "nombre": "Bitácora de transiciones",
+      "origen": "sistema",
+      "tipoDominio": "Colección<Evento>",
+      "tipoEcore": "EList<EventoFlujo>",
+      "tipoUml": "List<EventoFlujo>",
+      "multiplicidad": "0..*",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": true
+    },
+    {
+      "id": "referencia",
+      "nombre": "Referencia interna",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "unidad",
+      "nombre": "Unidad solicitante",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "objeto",
+      "nombre": "Objeto de la compra",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "justificacion",
+      "nombre": "Justificación",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "monto",
+      "nombre": "Monto estimado (USD)",
+      "origen": "dominio",
+      "tipoDominio": "Entero",
+      "tipoEcore": "EInt",
+      "tipoUml": "Integer",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "cantidad",
+      "nombre": "Unidades",
+      "origen": "dominio",
+      "tipoDominio": "Entero",
+      "tipoEcore": "EInt",
+      "tipoUml": "Integer",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "cotizaciones",
+      "nombre": "Cotizaciones disponibles",
+      "origen": "dominio",
+      "tipoDominio": "Entero",
+      "tipoEcore": "EInt",
+      "tipoUml": "Integer",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "plazo",
+      "nombre": "Plazo de entrega (días)",
+      "origen": "dominio",
+      "tipoDominio": "Entero",
+      "tipoEcore": "EInt",
+      "tipoUml": "Integer",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "proveedor",
+      "nombre": "Proveedor propuesto",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "0..1",
+      "requerido": false,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "partida",
+      "nombre": "Partida presupuestaria",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "prioridad",
+      "nombre": "Prioridad",
+      "origen": "dominio",
+      "tipoDominio": "Seleccion",
+      "tipoEcore": "EEnum",
+      "tipoUml": "Enum<prioridad>",
+      "multiplicidad": "0..1",
+      "requerido": false,
+      "unico": false,
+      "soloLectura": false,
+      "valoresEnum": [
+        "normal",
+        "urgente",
+        "critica"
+      ]
+    },
+    {
+      "id": "fecha-necesaria",
+      "nombre": "Fecha en que se necesita",
+      "origen": "dominio",
+      "tipoDominio": "Fecha",
+      "tipoEcore": "EDate",
+      "tipoUml": "Date",
+      "multiplicidad": "0..1",
+      "requerido": false,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "documentacion",
+      "nombre": "Documentación adjunta disponible",
+      "origen": "dominio",
+      "tipoDominio": "Booleano",
+      "tipoEcore": "EBoolean",
+      "tipoUml": "Boolean",
+      "multiplicidad": "0..1",
+      "requerido": false,
+      "unico": false,
+      "soloLectura": false
     }
   ],
   "creacion": {
@@ -386,6 +605,669 @@
       "hasta": "cerrada"
     }
   ],
+  "firmas": [
+    {
+      "id": "iniciar-caso",
+      "nombre": "Registrar solicitud",
+      "visibilidad": "public",
+      "actor": "solicitante",
+      "desde": null,
+      "hasta": "solicitada",
+      "parametros": [
+        "actor: Rol",
+        "referencia: EString",
+        "unidad: EString",
+        "objeto: EString",
+        "justificacion: EString",
+        "monto: EInt",
+        "cantidad: EInt",
+        "cotizaciones: EInt",
+        "plazo: EInt",
+        "proveedor: EString",
+        "partida: EString",
+        "prioridad: EEnum",
+        "fecha-necesaria: EDate",
+        "documentacion: EBoolean"
+      ],
+      "retorno": "Compra",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Inicializa estado en solicitada",
+        "Registra evento de creación en historial"
+      ]
+    },
+    {
+      "id": "avalar",
+      "nombre": "Enviar a presupuesto",
+      "visibilidad": "public",
+      "actor": "jefatura",
+      "desde": "solicitada",
+      "hasta": "presupuesto",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida",
+        "JustificacionSuficiente"
+      ],
+      "efectos": [
+        "Cambia estado: solicitada → presupuesto",
+        "Anexa evento auditado por rol jefatura"
+      ]
+    },
+    {
+      "id": "observar",
+      "nombre": "Solicitar ampliación",
+      "visibilidad": "public",
+      "actor": "jefatura",
+      "desde": "solicitada",
+      "hasta": "observada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: solicitada → observada",
+        "Anexa evento auditado por rol jefatura"
+      ]
+    },
+    {
+      "id": "justificar",
+      "nombre": "Registrar ampliación externa",
+      "visibilidad": "public",
+      "actor": "solicitante",
+      "desde": "observada",
+      "hasta": "solicitada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: observada → solicitada",
+        "Anexa evento auditado por rol solicitante"
+      ]
+    },
+    {
+      "id": "retirar",
+      "nombre": "Retirar solicitud",
+      "visibilidad": "public",
+      "actor": "solicitante",
+      "desde": "observada",
+      "hasta": "cancelada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: observada → cancelada",
+        "Anexa evento auditado por rol solicitante"
+      ]
+    },
+    {
+      "id": "denegar",
+      "nombre": "Rechazar solicitud",
+      "visibilidad": "public",
+      "actor": "jefatura",
+      "desde": "solicitada",
+      "hasta": "rechazada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: solicitada → rechazada",
+        "Anexa evento auditado por rol jefatura"
+      ]
+    },
+    {
+      "id": "certificar",
+      "nombre": "Certificar disponibilidad",
+      "visibilidad": "public",
+      "actor": "presupuesto",
+      "desde": "presupuesto",
+      "hasta": "modalidad",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida",
+        "PartidaIdentificada"
+      ],
+      "efectos": [
+        "Cambia estado: presupuesto → modalidad",
+        "Anexa evento auditado por rol presupuesto"
+      ]
+    },
+    {
+      "id": "sinfondos",
+      "nombre": "Rechazar por falta de fondos",
+      "visibilidad": "public",
+      "actor": "presupuesto",
+      "desde": "presupuesto",
+      "hasta": "rechazada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: presupuesto → rechazada",
+        "Anexa evento auditado por rol presupuesto"
+      ]
+    },
+    {
+      "id": "directa",
+      "nombre": "Adjudicar compra directa",
+      "visibilidad": "public",
+      "actor": "compras",
+      "desde": "modalidad",
+      "hasta": "adjudicada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida",
+        "MontoCompraDirecta"
+      ],
+      "efectos": [
+        "Cambia estado: modalidad → adjudicada",
+        "Anexa evento auditado por rol compras"
+      ]
+    },
+    {
+      "id": "competitiva",
+      "nombre": "Enviar a revisión jurídica",
+      "visibilidad": "public",
+      "actor": "compras",
+      "desde": "modalidad",
+      "hasta": "juridica",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida",
+        "UmbralCompetitivo"
+      ],
+      "efectos": [
+        "Cambia estado: modalidad → juridica",
+        "Anexa evento auditado por rol compras"
+      ]
+    },
+    {
+      "id": "cancelar",
+      "nombre": "Cancelar trámite",
+      "visibilidad": "public",
+      "actor": "compras",
+      "desde": "modalidad",
+      "hasta": "cancelada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: modalidad → cancelada",
+        "Anexa evento auditado por rol compras"
+      ]
+    },
+    {
+      "id": "dictamen",
+      "nombre": "Emitir dictamen favorable",
+      "visibilidad": "public",
+      "actor": "juridico",
+      "desde": "juridica",
+      "hasta": "comite",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: juridica → comite",
+        "Anexa evento auditado por rol juridico"
+      ]
+    },
+    {
+      "id": "devolver",
+      "nombre": "Devolver a compras",
+      "visibilidad": "public",
+      "actor": "juridico",
+      "desde": "juridica",
+      "hasta": "modalidad",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: juridica → modalidad",
+        "Anexa evento auditado por rol juridico"
+      ]
+    },
+    {
+      "id": "objecion",
+      "nombre": "Rechazar por objeción jurídica",
+      "visibilidad": "public",
+      "actor": "juridico",
+      "desde": "juridica",
+      "hasta": "rechazada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: juridica → rechazada",
+        "Anexa evento auditado por rol juridico"
+      ]
+    },
+    {
+      "id": "adjudicar",
+      "nombre": "Adjudicar por comité",
+      "visibilidad": "public",
+      "actor": "comite",
+      "desde": "comite",
+      "hasta": "adjudicada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida",
+        "CotizacionesComite"
+      ],
+      "efectos": [
+        "Cambia estado: comite → adjudicada",
+        "Anexa evento auditado por rol comite"
+      ]
+    },
+    {
+      "id": "desierta",
+      "nombre": "Declarar proceso desierto",
+      "visibilidad": "public",
+      "actor": "comite",
+      "desde": "comite",
+      "hasta": "cancelada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: comite → cancelada",
+        "Anexa evento auditado por rol comite"
+      ]
+    },
+    {
+      "id": "emitir",
+      "nombre": "Emitir orden de compra",
+      "visibilidad": "public",
+      "actor": "compras",
+      "desde": "adjudicada",
+      "hasta": "ordenada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida",
+        "ProveedorIdentificado"
+      ],
+      "efectos": [
+        "Cambia estado: adjudicada → ordenada",
+        "Anexa evento auditado por rol compras"
+      ]
+    },
+    {
+      "id": "recibir",
+      "nombre": "Confirmar recepción conforme",
+      "visibilidad": "public",
+      "actor": "bodega",
+      "desde": "ordenada",
+      "hasta": "recibida",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: ordenada → recibida",
+        "Anexa evento auditado por rol bodega"
+      ]
+    },
+    {
+      "id": "incidencia",
+      "nombre": "Registrar recepción no conforme",
+      "visibilidad": "public",
+      "actor": "bodega",
+      "desde": "ordenada",
+      "hasta": "incidencia",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: ordenada → incidencia",
+        "Anexa evento auditado por rol bodega"
+      ]
+    },
+    {
+      "id": "subsanar",
+      "nombre": "Registrar subsanación del proveedor",
+      "visibilidad": "public",
+      "actor": "compras",
+      "desde": "incidencia",
+      "hasta": "ordenada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: incidencia → ordenada",
+        "Anexa evento auditado por rol compras"
+      ]
+    },
+    {
+      "id": "anular",
+      "nombre": "Anular orden",
+      "visibilidad": "public",
+      "actor": "compras",
+      "desde": "incidencia",
+      "hasta": "cancelada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: incidencia → cancelada",
+        "Anexa evento auditado por rol compras"
+      ]
+    },
+    {
+      "id": "enviarcontable",
+      "nombre": "Enviar expediente a contabilidad",
+      "visibilidad": "public",
+      "actor": "compras",
+      "desde": "recibida",
+      "hasta": "contabilidad",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: recibida → contabilidad",
+        "Anexa evento auditado por rol compras"
+      ]
+    },
+    {
+      "id": "contabilizar",
+      "nombre": "Autorizar contabilización",
+      "visibilidad": "public",
+      "actor": "contabilidad",
+      "desde": "contabilidad",
+      "hasta": "pago",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida",
+        "ReferenciaContable"
+      ],
+      "efectos": [
+        "Cambia estado: contabilidad → pago",
+        "Anexa evento auditado por rol contabilidad"
+      ]
+    },
+    {
+      "id": "revisar",
+      "nombre": "Devolver expediente",
+      "visibilidad": "public",
+      "actor": "contabilidad",
+      "desde": "contabilidad",
+      "hasta": "recibida",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: contabilidad → recibida",
+        "Anexa evento auditado por rol contabilidad"
+      ]
+    },
+    {
+      "id": "pagar",
+      "nombre": "Registrar pago",
+      "visibilidad": "public",
+      "actor": "tesoreria",
+      "desde": "pago",
+      "hasta": "pagada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: pago → pagada",
+        "Anexa evento auditado por rol tesoreria"
+      ]
+    },
+    {
+      "id": "cerrar",
+      "nombre": "Cerrar expediente",
+      "visibilidad": "public",
+      "actor": "compras",
+      "desde": "pagada",
+      "hasta": "cerrada",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "MontoValido",
+        "CantidadValida",
+        "PlazoValido",
+        "CotizacionesValidas",
+        "ReferenciaValida"
+      ],
+      "efectos": [
+        "Cambia estado: pagada → cerrada",
+        "Anexa evento auditado por rol compras"
+      ]
+    }
+  ],
+  "relaciones": [
+    {
+      "origen": "Compra",
+      "destino": "EventoHistorial",
+      "multiplicidadOrigen": "1..1",
+      "multiplicidadDestino": "1..*",
+      "rol": "historial",
+      "tipo": "composicion"
+    },
+    {
+      "origen": "ActorRol",
+      "destino": "Compra",
+      "multiplicidadOrigen": "1..1",
+      "multiplicidadDestino": "0..*",
+      "rol": "ejecutaTransiciones",
+      "tipo": "asociacion"
+    }
+  ],
   "restricciones": [
     {
       "id": "MontoValido",
@@ -403,6 +1285,7 @@
           "campo": "monto",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 250000
         }
       ],
@@ -424,6 +1307,7 @@
           "campo": "cantidad",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 10000
         }
       ],
@@ -445,6 +1329,7 @@
           "campo": "plazo",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 180
         }
       ],
@@ -466,6 +1351,7 @@
           "campo": "cotizaciones",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 30
         }
       ],
@@ -532,6 +1418,7 @@
           "campo": "cotizaciones",
           "acceso": "value",
           "operador": ">=",
+          "conector": "and",
           "valor": 1
         }
       ],
@@ -553,6 +1440,7 @@
           "campo": "cotizaciones",
           "acceso": "value",
           "operador": ">=",
+          "conector": "and",
           "valor": 3
         }
       ],

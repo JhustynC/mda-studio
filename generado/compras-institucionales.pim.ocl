@@ -1,0 +1,18 @@
+-- Especificación OCL 2.4 generada por MDA Studio
+-- Modelo PIM: Compras institucionales (org.mda.studio.compras_institucionales)
+package org::mda::studio::compras_institucionales
+
+  context Compra inv MontoValido: self.monto >= 1 and self.monto <= 250000
+  context Compra inv CantidadValida: self.cantidad >= 1 and self.cantidad <= 10000
+  context Compra inv PlazoValido: self.plazo >= 1 and self.plazo <= 180
+  context Compra inv CotizacionesValidas: self.cotizaciones >= 0 and self.cotizaciones <= 30
+  context Compra inv ReferenciaValida: self.referencia.size() >= 4
+  context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() >= 20
+  context Compra::certificar() pre PartidaIdentificada: self.partida.size() >= 4
+  context Compra::directa() pre MontoCompraDirecta: self.monto < 10000 and self.cotizaciones >= 1
+  context Compra::competitiva() pre UmbralCompetitivo: self.monto >= 10000 and self.cotizaciones >= 3
+  context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones >= 3
+  context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() >= 3
+  context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() >= 6
+
+endpackage

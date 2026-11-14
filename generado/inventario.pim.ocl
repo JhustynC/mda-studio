@@ -1,0 +1,7 @@
+-- Especificación OCL 2.4 generada por MDA Studio
+-- Modelo PIM: Inventario de laboratorio (org.mda.studio.inventario)
+package org::mda::studio::inventario
+
+  context Producto inv StockNoNegativo: self.stock >= 0
+
+endpackage

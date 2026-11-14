@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    name="inventario"
+    nsURI="http://mda.studio/models/inventario/1.0"
+    nsPrefix="inventario">
+  <eClassifiers xsi:type="ecore:EClass" name="Producto">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="StockNoNegativo"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+      <details key="StockNoNegativo" value="context Producto inv StockNoNegativo: self.stock &gt;= 0"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" upperBound="1" iD="true" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="nombre" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="sku" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="categoria" lowerBound="1" upperBound="1" eType="#//Producto_categoria"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="stock" lowerBound="1" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="ubicacion" lowerBound="0" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="reposicion" lowerBound="0" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="activo" lowerBound="0" upperBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eOperations name="crear" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="StockNoNegativo"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="consultar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+    </eOperations>
+    <eOperations name="editar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="StockNoNegativo"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="eliminar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Producto_categoria">
+    <eLiterals name="equipos" value="0" literal="equipos"/>
+    <eLiterals name="consumibles" value="1" literal="consumibles"/>
+    <eLiterals name="repuestos" value="2" literal="repuestos"/>
+  </eClassifiers>
+</ecore:EPackage>

@@ -62,11 +62,16 @@
     "nombre": "text",
     "objetivo": "text",
     "entidad": "class",
+    "paquete": "text",
+    "estereotipo": "text",
     "roles": [
       "Actor"
     ],
     "propiedades": [
       "Dato"
+    ],
+    "atributos": [
+      "AtributoPim"
     ],
     "creacion": "Inicio",
     "estados": [
@@ -75,10 +80,57 @@
     "operaciones": [
       "Transicion"
     ],
+    "firmas": [
+      "FirmaOperacion"
+    ],
+    "relaciones": [
+      "RelacionPim"
+    ],
     "restricciones": [
       "Restriccion"
     ],
     "integracion?": "IntegracionPim"
+  },
+  "AtributoPim": {
+    "id": "id",
+    "nombre": "text",
+    "origen": "attributeOrigin",
+    "tipoDominio": "text",
+    "tipoEcore": "ecoreType",
+    "tipoUml": "text",
+    "multiplicidad": "multiplicity",
+    "requerido": "bool",
+    "unico": "bool",
+    "soloLectura": "bool",
+    "valoresEnum?": [
+      "id"
+    ]
+  },
+  "FirmaOperacion": {
+    "id": "id",
+    "nombre": "text",
+    "visibilidad": "visibility",
+    "actor?": "nullableId",
+    "desde?": "nullableId",
+    "hasta?": "nullableId",
+    "parametros": [
+      "text"
+    ],
+    "retorno": "text",
+    "guardas": [
+      "class"
+    ],
+    "efectos": [
+      "text"
+    ]
+  },
+  "RelacionPim": {
+    "origen": "class",
+    "destino": "class",
+    "multiplicidadOrigen": "multiplicity",
+    "multiplicidadDestino": "multiplicity",
+    "rol": "text",
+    "tipo": "relationKind"
   },
   "Restriccion": {
     "id": "class",
@@ -94,7 +146,9 @@
     "campo": "id",
     "acceso": "access",
     "operador": "operator",
-    "valor": "int"
+    "valor": "ruleValue",
+    "campoDerecho?": "id",
+    "conector?": "logicalOperator"
   },
   "PSM": {
     "id": "id",
@@ -103,7 +157,9 @@
     "entidad": "class",
     "plataforma": "text",
     "presentacion": "presentation",
+    "arquitectura": "ArquitecturaPsm",
     "almacen": "Almacen",
+    "esquemaSql": "EsquemaSql",
     "roles": [
       "Actor"
     ],
@@ -122,6 +178,36 @@
     ],
     "integracion?": "IntegracionPsm"
   },
+  "ArquitecturaPsm": {
+    "patronUi": "text",
+    "disposicion": "text",
+    "contenedores": [
+      "text"
+    ],
+    "adaptadorDatos": "text",
+    "seguridad": "text"
+  },
+  "EsquemaSql": {
+    "motor": "text",
+    "tablas": [
+      "TablaSql"
+    ]
+  },
+  "TablaSql": {
+    "nombre": "text",
+    "descripcion": "text",
+    "columnas": [
+      "ColumnaSql"
+    ],
+    "checks": [
+      "text"
+    ]
+  },
+  "ColumnaSql": {
+    "nombre": "text",
+    "tipo": "text",
+    "restricciones": "text"
+  },
   "Almacen": {
     "tipo": "text",
     "clave": "text"
@@ -130,7 +216,11 @@
     "id": "id",
     "nombre": "text",
     "control": "control",
+    "tipoSql": "text",
     "requerido": "bool",
+    "atributosHtml": [
+      "text"
+    ],
     "opciones?": [
       "Opcion"
     ]
@@ -158,14 +248,25 @@
     "nombre": "text",
     "objetivo": "text",
     "entidad": "class",
+    "paquete": "text",
+    "estereotipo": "text",
     "propiedades": [
       "Dato"
+    ],
+    "atributos": [
+      "AtributoPim"
     ],
     "unicos": [
       "id"
     ],
     "operaciones": [
       "crudOperation"
+    ],
+    "firmas": [
+      "FirmaOperacion"
+    ],
+    "relaciones": [
+      "RelacionPim"
     ],
     "restricciones": [
       "Restriccion"
@@ -179,7 +280,9 @@
     "entidad": "class",
     "plataforma": "text",
     "presentacion": "table",
+    "arquitectura": "ArquitecturaPsm",
     "almacen": "Almacen",
+    "esquemaSql": "EsquemaSql",
     "campos": [
       "CampoWeb"
     ],

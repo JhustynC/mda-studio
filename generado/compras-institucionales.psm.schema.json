@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mda.studio/schemas/compras-institucionales.schema.json",
+  "title": "Compra",
+  "description": "Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.",
+  "type": "object",
+  "required": [
+    "referencia",
+    "unidad",
+    "objeto",
+    "justificacion",
+    "monto",
+    "cantidad",
+    "cotizaciones",
+    "plazo",
+    "partida"
+  ],
+  "properties": {
+    "referencia": {
+      "title": "Referencia interna",
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 4
+    },
+    "unidad": {
+      "title": "Unidad solicitante",
+      "type": "string",
+      "maxLength": 300
+    },
+    "objeto": {
+      "title": "Objeto de la compra",
+      "type": "string",
+      "maxLength": 300
+    },
+    "justificacion": {
+      "title": "Justificación",
+      "type": "string",
+      "maxLength": 300
+    },
+    "monto": {
+      "title": "Monto estimado (USD)",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 250000
+    },
+    "cantidad": {
+      "title": "Unidades",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "cotizaciones": {
+      "title": "Cotizaciones disponibles",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30
+    },
+    "plazo": {
+      "title": "Plazo de entrega (días)",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 180
+    },
+    "proveedor": {
+      "title": "Proveedor propuesto",
+      "type": "string",
+      "maxLength": 300
+    },
+    "partida": {
+      "title": "Partida presupuestaria",
+      "type": "string",
+      "maxLength": 300
+    },
+    "prioridad": {
+      "title": "Prioridad",
+      "type": "string",
+      "enum": [
+        "normal",
+        "urgente",
+        "critica"
+      ]
+    },
+    "fecha-necesaria": {
+      "title": "Fecha en que se necesita",
+      "type": "string",
+      "format": "date"
+    },
+    "documentacion": {
+      "title": "Documentación adjunta disponible",
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

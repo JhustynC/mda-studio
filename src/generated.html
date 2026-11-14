@@ -9,9 +9,23 @@
 <body>
 <main id="application">
   <header>
-    <div><p class="product">MDA STUDIO / APLICACIÓN GENERADA</p><h1 id="app-title"></h1><p id="app-description" class="muted"></p></div>
+    <div><p class="product">MDA STUDIO · APLICACIÓN EJECUTABLE (M2T)</p><h1 id="app-title"></h1><p id="app-description" class="muted"></p></div>
     <label class="role">Rol de demostración<select id="app-role" aria-describedby="app-role-help"></select><small class="muted" id="app-role-help">Simula quién realiza la tarea.</small></label>
   </header>
+  <section id="db-bar" class="db-bar" aria-label="Conexión a Base de Datos y Archivo">
+    <div class="db-info">
+      <span id="db-badge" class="db-badge">BD IndexedDB activa</span>
+      <span id="db-status-text" class="muted">Sincronizado en base de datos local del navegador.</span>
+    </div>
+    <div class="db-actions">
+      <button type="button" id="db-connect-file" class="primary-outline">Conectar archivo (.db.json)</button>
+      <button type="button" id="db-import-btn">Importar BD (.json)</button>
+      <input type="file" id="db-import-input" accept=".json,application/json" hidden>
+      <button type="button" id="db-export-json">Guardar BD (.db.json)</button>
+      <button type="button" id="db-export-sql">Volcado SQL (.sql)</button>
+      <button type="button" id="db-inspect-btn">Ver tablas / SQL</button>
+    </div>
+  </section>
   <nav id="app-nav" aria-label="Módulos de la aplicación" hidden>
     <button type="button" data-module="requests" aria-pressed="true">Solicitudes</button>
     <button type="button" data-module="catalog" aria-pressed="false">Inventario</button>
@@ -38,6 +52,13 @@
   <dialog id="crud-delete" aria-labelledby="crud-delete-title">
     <h2 id="crud-delete-title">¿Eliminar el registro?</h2><p id="crud-delete-name"></p>
     <div class="action-bar"><button id="crud-delete-cancel" type="button" autofocus>Cancelar</button><button id="crud-delete-confirm" type="button" class="danger">Confirmar eliminación</button></div>
+  </dialog>
+  <dialog id="db-dialog" aria-labelledby="db-dialog-title">
+    <div class="section-head">
+      <div><h2 id="db-dialog-title">Inspector de Base de Datos y Sentencias SQL</h2><p class="muted" id="db-dialog-subtitle"></p></div>
+      <button type="button" id="db-dialog-close">Cerrar</button>
+    </div>
+    <pre id="db-dialog-sql" class="db-code"></pre>
   </dialog>
 </main>
 <script>{{SCRIPT}}</script>

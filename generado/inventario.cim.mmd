@@ -1,0 +1,15 @@
+classDiagram
+  class Producto {
+    <<CRUD Catalog>>
+    +Texto nombre [1..1]
+    +Texto sku [1..1] [UNIQUE]
+    +Seleccion categoria [1..1]
+    +Entero stock [1..1]
+    +Texto ubicacion [0..1]
+    +Fecha reposicion [0..1]
+    +Booleano activo [0..1]
+    +crear() Producto
+    +consultar(filtro) List~Producto~
+    +editar(id) Producto
+    +eliminar(id) Boolean
+  }

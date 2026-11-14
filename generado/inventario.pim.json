@@ -4,6 +4,8 @@
   "nombre": "Inventario de laboratorio",
   "objetivo": "Consulta y actualiza el catálogo de productos y sus existencias.",
   "entidad": "Producto",
+  "paquete": "org.mda.studio.inventario",
+  "estereotipo": "«Entity, CrudCatalog»",
   "propiedades": [
     {
       "id": "nombre",
@@ -59,6 +61,109 @@
       "tipo": "Booleano"
     }
   ],
+  "atributos": [
+    {
+      "id": "id",
+      "nombre": "Identificador UUID",
+      "origen": "sistema",
+      "tipoDominio": "UUID",
+      "tipoEcore": "EString",
+      "tipoUml": "UUID «PK»",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": true,
+      "soloLectura": true
+    },
+    {
+      "id": "nombre",
+      "nombre": "Producto",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "sku",
+      "nombre": "Código SKU",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": true,
+      "soloLectura": false
+    },
+    {
+      "id": "categoria",
+      "nombre": "Categoría",
+      "origen": "dominio",
+      "tipoDominio": "Seleccion",
+      "tipoEcore": "EEnum",
+      "tipoUml": "Enum<categoria>",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false,
+      "valoresEnum": [
+        "equipos",
+        "consumibles",
+        "repuestos"
+      ]
+    },
+    {
+      "id": "stock",
+      "nombre": "Stock disponible",
+      "origen": "dominio",
+      "tipoDominio": "Entero",
+      "tipoEcore": "EInt",
+      "tipoUml": "Integer",
+      "multiplicidad": "1..1",
+      "requerido": true,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "ubicacion",
+      "nombre": "Ubicación",
+      "origen": "dominio",
+      "tipoDominio": "Texto",
+      "tipoEcore": "EString",
+      "tipoUml": "String",
+      "multiplicidad": "0..1",
+      "requerido": false,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "reposicion",
+      "nombre": "Fecha de reposición",
+      "origen": "dominio",
+      "tipoDominio": "Fecha",
+      "tipoEcore": "EDate",
+      "tipoUml": "Date",
+      "multiplicidad": "0..1",
+      "requerido": false,
+      "unico": false,
+      "soloLectura": false
+    },
+    {
+      "id": "activo",
+      "nombre": "Producto activo",
+      "origen": "dominio",
+      "tipoDominio": "Booleano",
+      "tipoEcore": "EBoolean",
+      "tipoUml": "Boolean",
+      "multiplicidad": "0..1",
+      "requerido": false,
+      "unico": false,
+      "soloLectura": false
+    }
+  ],
   "unicos": [
     "sku"
   ],
@@ -68,6 +173,91 @@
     "editar",
     "eliminar"
   ],
+  "firmas": [
+    {
+      "id": "crear",
+      "nombre": "Crear Producto",
+      "visibilidad": "public",
+      "actor": null,
+      "desde": null,
+      "hasta": null,
+      "parametros": [
+        "nombre: EString",
+        "sku: EString",
+        "categoria: EEnum",
+        "stock: EInt",
+        "ubicacion: EString",
+        "reposicion: EDate",
+        "activo: EBoolean"
+      ],
+      "retorno": "Producto",
+      "guardas": [
+        "StockNoNegativo"
+      ],
+      "efectos": [
+        "Persiste nueva instancia de Producto",
+        "Verifica unicidad de: sku"
+      ]
+    },
+    {
+      "id": "consultar",
+      "nombre": "Consultar catálogo",
+      "visibilidad": "public",
+      "actor": null,
+      "desde": null,
+      "hasta": null,
+      "parametros": [
+        "filtro: EString"
+      ],
+      "retorno": "EList<Producto>",
+      "guardas": [],
+      "efectos": [
+        "Filtra registros por coincidencia de texto"
+      ]
+    },
+    {
+      "id": "editar",
+      "nombre": "Actualizar Producto",
+      "visibilidad": "public",
+      "actor": null,
+      "desde": null,
+      "hasta": null,
+      "parametros": [
+        "id: EString",
+        "nombre: EString",
+        "sku: EString",
+        "categoria: EEnum",
+        "stock: EInt",
+        "ubicacion: EString",
+        "reposicion: EDate",
+        "activo: EBoolean"
+      ],
+      "retorno": "Producto",
+      "guardas": [
+        "StockNoNegativo"
+      ],
+      "efectos": [
+        "Actualiza atributos manteniendo identidad UUID"
+      ]
+    },
+    {
+      "id": "eliminar",
+      "nombre": "Eliminar Producto",
+      "visibilidad": "public",
+      "actor": null,
+      "desde": null,
+      "hasta": null,
+      "parametros": [
+        "id: EString"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [],
+      "efectos": [
+        "Remueve la instancia si no existen referencias activas"
+      ]
+    }
+  ],
+  "relaciones": [],
   "restricciones": [
     {
       "id": "StockNoNegativo",

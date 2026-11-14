@@ -3,31 +3,111 @@
   "nombre": "Inventario de laboratorio",
   "objetivo": "Consulta y actualiza el catálogo de productos y sus existencias.",
   "entidad": "Producto",
-  "plataforma": "HTML5 / JavaScript ES2022 / Web Storage",
+  "plataforma": "HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL",
   "tipo": "crud",
   "presentacion": "tabla",
+  "arquitectura": {
+    "patronUi": "Data Grid CRUD Tabular (Formulario + Tabla Filtrable)",
+    "disposicion": "Formulario de captura multi-columna superior + Tabla de registros con búsqueda instantánea y diálogo de confirmación de borrado.",
+    "contenedores": [
+      "Formulario de Alta/Edición (7 controles)",
+      "Barra de búsqueda en tiempo real",
+      "Tabla de datos con columnas: Producto, Código SKU, Categoría, Stock disponible, Ubicación, Fecha de reposición, Producto activo + Acciones",
+      "Panel de conexión a Base de Datos IndexedDB / Archivo (.db.json y .sql)"
+    ],
+    "adaptadorDatos": "IndexedDB (almacén de objetos) + Sincronización con Archivo Local (.db.json / .sql) + Fallback localStorage",
+    "seguridad": "Validación de unicidad (sku) e invariantes OCL en cliente antes de confirmar transacción"
+  },
   "almacen": {
-    "tipo": "localStorage",
+    "tipo": "IndexedDB + Archivo (.db.json / .sql) + localStorage",
     "clave": "mda.registros.proyecto.example-inventario.inventario"
+  },
+  "esquemaSql": {
+    "motor": "SQL Estándar (PostgreSQL / SQLite3) + Almacén Transaccional IndexedDB",
+    "tablas": [
+      {
+        "nombre": "producto",
+        "descripcion": "Tabla de catálogo CRUD para Producto",
+        "columnas": [
+          {
+            "nombre": "id",
+            "tipo": "VARCHAR(64)",
+            "restricciones": "PRIMARY KEY NOT NULL"
+          },
+          {
+            "nombre": "nombre",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "sku",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL UNIQUE"
+          },
+          {
+            "nombre": "categoria",
+            "tipo": "VARCHAR(64)",
+            "restricciones": "NOT NULL CHECK (categoria IN ('equipos', 'consumibles', 'repuestos'))"
+          },
+          {
+            "nombre": "stock",
+            "tipo": "INTEGER",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "ubicacion",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NULL"
+          },
+          {
+            "nombre": "reposicion",
+            "tipo": "DATE",
+            "restricciones": "NULL"
+          },
+          {
+            "nombre": "activo",
+            "tipo": "BOOLEAN",
+            "restricciones": "NULL"
+          }
+        ],
+        "checks": [
+          "CONSTRAINT chk_stocknonegativo CHECK (stock >= 0)"
+        ]
+      }
+    ]
   },
   "campos": [
     {
       "id": "nombre",
       "nombre": "Producto",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "sku",
       "nombre": "Código SKU",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "categoria",
       "nombre": "Categoría",
       "control": "select",
+      "tipoSql": "VARCHAR(64)",
       "requerido": true,
+      "atributosHtml": [
+        "required"
+      ],
       "opciones": [
         {
           "id": "equipos",
@@ -47,25 +127,40 @@
       "id": "stock",
       "nombre": "Stock disponible",
       "control": "number",
-      "requerido": true
+      "tipoSql": "INTEGER",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "step=\"1\"",
+        "inputmode=\"numeric\"",
+        "min=\"0\""
+      ]
     },
     {
       "id": "ubicacion",
       "nombre": "Ubicación",
       "control": "text",
-      "requerido": false
+      "tipoSql": "VARCHAR(300)",
+      "requerido": false,
+      "atributosHtml": [
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "reposicion",
       "nombre": "Fecha de reposición",
       "control": "date",
-      "requerido": false
+      "tipoSql": "DATE",
+      "requerido": false,
+      "atributosHtml": []
     },
     {
       "id": "activo",
       "nombre": "Producto activo",
       "control": "checkbox",
-      "requerido": false
+      "tipoSql": "BOOLEAN",
+      "requerido": false,
+      "atributosHtml": []
     }
   ],
   "unicos": [

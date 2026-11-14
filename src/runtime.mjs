@@ -1,4 +1,4 @@
-export function application(model, validators, catalogValidators) {
+export function application(model, validators, catalogValidators, sqlSchemaDdl = '') {
   const root = document.querySelector('#application');
   const $ = selector => root.querySelector(selector);
   const crud = model.tipo === 'crud';
@@ -15,17 +15,118 @@ export function application(model, validators, catalogValidators) {
   let selected = null;
   let records = [];
   let durable = true;
-  try {
-    const stored = JSON.parse(localStorage.getItem(model.almacen.clave) ?? 'null');
-    if (link && stored && Array.isArray(stored.records) && Array.isArray(stored.products) && Array.isArray(stored.movements)) {
+  let fileHandle = null;
+  let idbDatabase = null;
+
+  function filterValidRecords(list) {
+    if (!Array.isArray(list)) return [];
+    return list.filter(record =>
+      record && typeof record.id === 'string' && record.values && (crud || (Array.isArray(record.history) && stateNames.has(record.state))));
+  }
+
+  function applyStoredPayload(stored) {
+    if (!stored) return;
+    if (link && Array.isArray(stored.records) && Array.isArray(stored.products) && Array.isArray(stored.movements)) {
       products = stored.products;
       movements = stored.movements;
+      records = filterValidRecords(stored.records);
+    } else if (Array.isArray(stored.records)) {
+      records = filterValidRecords(stored.records);
+    } else if (Array.isArray(stored)) {
+      records = filterValidRecords(stored);
     }
-    const storedRecords = link ? stored?.records : stored;
-    if (Array.isArray(storedRecords)) records = storedRecords.filter(record =>
-      record && typeof record.id === 'string' && record.values && (crud || (Array.isArray(record.history) && stateNames.has(record.state))));
+  }
+
+  try {
+    const stored = JSON.parse(localStorage.getItem(model.almacen.clave) ?? 'null');
+    applyStoredPayload(stored);
   } catch {
     durable = false;
+  }
+
+  function currentPayload(nextRecords = records, nextProducts = products, nextMovements = movements) {
+    return {
+      schemaVersion: 1,
+      modelId: model.id,
+      entity: model.entidad,
+      updatedAt: new Date().toISOString(),
+      records: nextRecords,
+      ...(link ? { products: nextProducts, movements: nextMovements } : {}),
+    };
+  }
+
+  function updateDbStatus(extra = '') {
+    const badge = $('#db-badge');
+    const text = $('#db-status-text');
+    if (!badge || !text) return;
+    const countText = crud
+      ? records.length + ' registros'
+      : records.length + ' casos' + (link ? ' · ' + products.length + ' productos · ' + movements.length + ' movimientos' : '');
+    if (fileHandle) {
+      badge.textContent = 'Archivo BD conectado: ' + fileHandle.name;
+      badge.dataset.file = 'true';
+      text.textContent = 'Sincronización automática en disco + IndexedDB (' + countText + ').' + extra;
+    } else if (idbDatabase) {
+      badge.textContent = 'BD IndexedDB activa';
+      badge.dataset.file = 'false';
+      text.textContent = 'Almacén transaccional IndexedDB (' + countText + ').' + extra;
+    } else {
+      badge.textContent = durable ? 'Almacén Local' : 'Memoria de sesión';
+      badge.dataset.file = 'false';
+      text.textContent = 'Persistencia en navegador (' + countText + ').' + extra;
+    }
+  }
+
+  function initIndexedDb() {
+    if (!globalThis.indexedDB) return;
+    try {
+      const request = indexedDB.open('mda_studio_runtime_db', 1);
+      request.onupgradeneeded = event => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('models_data')) {
+          db.createObjectStore('models_data', { keyPath: 'storageKey' });
+        }
+      };
+      request.onsuccess = event => {
+        idbDatabase = event.target.result;
+        const tx = idbDatabase.transaction('models_data', 'readonly');
+        const store = tx.objectStore('models_data');
+        const getReq = store.get(model.almacen.clave);
+        getReq.onsuccess = () => {
+          if (getReq.result?.payload && !records.length && !products.length) {
+            applyStoredPayload(getReq.result.payload);
+            refreshCurrentView();
+          } else if (records.length || products.length) {
+            writeIndexedDb(currentPayload());
+          }
+          updateDbStatus();
+        };
+      };
+    } catch {
+      /* fallback to localStorage */
+    }
+  }
+
+  function writeIndexedDb(payload) {
+    if (!idbDatabase) return;
+    try {
+      const tx = idbDatabase.transaction('models_data', 'readwrite');
+      tx.objectStore('models_data').put({ storageKey: model.almacen.clave, payload });
+    } catch {
+      /* ignore idb write error */
+    }
+  }
+
+  async function syncFileHandle(payload) {
+    if (!fileHandle) return;
+    try {
+      const writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(payload, null, 2) + '\n');
+      await writable.close();
+      updateDbStatus(' Guardado en archivo.');
+    } catch {
+      notify('No se pudo escribir automáticamente en el archivo conectado.', true);
+    }
   }
 
   function element(tag, label, className) {
@@ -42,6 +143,7 @@ export function application(model, validators, catalogValidators) {
   }
 
   function persist(next, nextProducts = products, nextMovements = movements) {
+    const payload = currentPayload(next, nextProducts, nextMovements);
     if (durable) {
       try {
         localStorage.setItem(model.almacen.clave, JSON.stringify(link ? { records: next, products: nextProducts, movements: nextMovements } : next));
@@ -52,7 +154,80 @@ export function application(model, validators, catalogValidators) {
     records = next;
     products = nextProducts;
     movements = nextMovements;
-    return durable ? '' : ' Los cambios se conservan en esta pestaña.';
+    writeIndexedDb(payload);
+    syncFileHandle(payload);
+    updateDbStatus();
+    return fileHandle ? ' Sincronizado en ' + fileHandle.name + '.' : durable ? '' : ' Los cambios se conservan en esta pestaña.';
+  }
+
+  function sqlLiteral(val) {
+    if (val === null || val === undefined) return 'NULL';
+    if (typeof val === 'number') return String(val);
+    if (typeof val === 'boolean') return val ? 'TRUE' : 'FALSE';
+    return "'" + String(val).replace(/'/g, "''") + "'";
+  }
+
+  function sqlIdent(name) {
+    return String(name).replace(/-/g, '_').toLowerCase();
+  }
+
+  function generateSqlDump() {
+    const lines = [
+      sqlSchemaDdl.trim(),
+      '',
+      '-- =================================================================',
+      '-- VOLCADO DE DATOS ACTIVOS (INSERT INTO) · ' + new Date().toISOString(),
+      '-- =================================================================',
+    ];
+    if (link) {
+      const catTable = sqlIdent(catalog.entidad);
+      const catCols = ['id', ...catalog.campos.map(c => sqlIdent(c.id))];
+      lines.push('', '-- Registros de catálogo: ' + catalog.entidad + ' (' + products.length + ')');
+      for (const prod of products) {
+        const vals = [sqlLiteral(prod.id), ...catalog.campos.map(c => sqlLiteral(prod.values[c.id]))];
+        lines.push('INSERT INTO ' + catTable + ' (' + catCols.join(', ') + ') VALUES (' + vals.join(', ') + ');');
+      }
+    }
+
+    const mainTable = sqlIdent(model.entidad);
+    const mainCols = ['id', ...(crud ? [] : ['estado_actual']), ...model.campos.map(c => sqlIdent(c.id))];
+    lines.push('', '-- Registros principales: ' + model.entidad + ' (' + records.length + ')');
+    for (const rec of records) {
+      const vals = [
+        sqlLiteral(rec.id),
+        ...(crud ? [] : [sqlLiteral(rec.state)]),
+        ...model.campos.map(c => sqlLiteral(rec.values[c.id])),
+      ];
+      lines.push('INSERT INTO ' + mainTable + ' (' + mainCols.join(', ') + ') VALUES (' + vals.join(', ') + ');');
+      if (!crud && Array.isArray(rec.history)) {
+        for (const ev of rec.history) {
+          lines.push(
+            'INSERT INTO ' + mainTable + '_historial (caso_id, accion, rol_actor, fecha_hora) VALUES (' +
+            [sqlLiteral(rec.id), sqlLiteral(ev.action), sqlLiteral(ev.role), sqlLiteral(ev.at)].join(', ') + ');',
+          );
+        }
+      }
+    }
+
+    if (link && movements.length) {
+      lines.push('', '-- Movimientos de inventario (' + movements.length + ')');
+      for (const mov of movements) {
+        lines.push(
+          'INSERT INTO ' + mainTable + '_movimientos_stock (caso_id, producto_sku, transicion, unidades, saldo_resultante, fecha_hora) VALUES (' +
+          [sqlLiteral(mov.request), sqlLiteral(mov.sku), sqlLiteral(mov.action), sqlLiteral(mov.units), sqlLiteral(mov.stock), sqlLiteral(mov.at)].join(', ') + ');',
+        );
+      }
+    }
+    return lines.join('\n') + '\n';
+  }
+
+  function downloadFile(content, filename, mime) {
+    const url = URL.createObjectURL(new Blob([content], { type: mime }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   function showDate(iso) {
@@ -66,7 +241,7 @@ export function application(model, validators, catalogValidators) {
 
   function violations(values, operation, definition = model, rules = validators) {
     return definition.validadores.filter(rule => {
-      if (rule.tipo === 'pre' && rule.operacion !== operation) return false;
+      if ((rule.tipo === 'pre' || rule.tipo === 'post') && rule.operacion !== operation) return false;
       return !rules[rule.id](values);
     }).map(rule => rule.fuente.split(': ').at(-1) + ' (' + rule.id + ')');
   }
@@ -96,13 +271,19 @@ export function application(model, validators, catalogValidators) {
       } else {
         input.type = field.control;
       }
+      if (Array.isArray(field.atributosHtml)) {
+        for (const attr of field.atributosHtml) {
+          const m = /^(min|max|minlength|maxlength)="(-?\d+)"$/.exec(attr);
+          if (m) input.setAttribute(m[1], m[2]);
+        }
+      }
       if (field.control === 'number') {
         input.step = '1';
         input.inputMode = 'numeric';
         input.placeholder = '0';
       } else if (field.control === 'text') {
         input.placeholder = field.nombre;
-        input.maxLength = 300;
+        if (!input.hasAttribute('maxlength')) input.maxLength = 300;
       }
       if (field.control === 'checkbox') {
         label.className = 'checkbox-field';
@@ -147,7 +328,7 @@ export function application(model, validators, catalogValidators) {
         values[field.id] = inputValue && field.control === 'number' ? Number(inputValue) : inputValue || null;
       }
       const errors = catalogView && link ? violations(values, null, catalog, catalogValidators) : violations(values, null);
-      if (errors.length) return notify('Restricción incumplida: ' + errors.join(' · '), true);
+      if (errors.length) return notify('Restricción OCL incumplida: ' + errors.join(' · '), true);
       if (catalogView) return saveRecord(values);
       if (link && !products.some(product => product.id === values[link.referencia])) return notify('Selecciona un producto del inventario.', true);
       if (link && values[link.cantidad] <= 0) return notify('La cantidad del préstamo debe ser mayor que cero.', true);
@@ -161,7 +342,7 @@ export function application(model, validators, catalogValidators) {
       selected = record.id;
       form.reset();
       render();
-      notify('Caso creado.' + saved);
+      notify('Caso creado en la base de datos.' + saved);
     };
   }
 
@@ -206,7 +387,7 @@ export function application(model, validators, catalogValidators) {
     const saved = link ? persist(records, next) : persist(next);
     setEditing(null);
     renderCrud();
-    notify((previous ? 'Registro actualizado.' : 'Registro creado.') + saved);
+    notify((previous ? 'Registro actualizado en BD.' : 'Registro creado en BD.') + saved);
   }
 
   function requestDelete(record) {
@@ -222,7 +403,7 @@ export function application(model, validators, catalogValidators) {
       dialog.close();
       renderCrud();
       $('#crud-search').focus();
-      notify('Registro eliminado.' + saved);
+      notify('Registro eliminado de BD.' + saved);
     };
     dialog.showModal();
   }
@@ -257,7 +438,7 @@ export function application(model, validators, catalogValidators) {
     const latest = records.find(item => item.id === record.id);
     if (action.actor !== role || latest?.state !== action.desde) return;
     const errors = violations(latest.values, action.id);
-    if (errors.length) return notify('Restricción incumplida: ' + errors.join(' · '), true);
+    if (errors.length) return notify('Restricción OCL incumplida: ' + errors.join(' · '), true);
     const next = {
       ...latest, state: action.hasta,
       history: [...latest.history, { action: action.nombre, role, at: new Date().toISOString() }],
@@ -363,6 +544,17 @@ export function application(model, validators, catalogValidators) {
     renderDetail(records.find(record => record.id === selected));
   }
 
+  function refreshCurrentView() {
+    if (crud) {
+      renderCrud();
+    } else if (link) {
+      const activeMod = $('#app-nav button[aria-pressed="true"]')?.dataset.module ?? 'requests';
+      showModule(activeMod);
+    } else {
+      render();
+    }
+  }
+
   function showModule(module) {
     catalogView = module === 'catalog';
     const requests = module === 'requests';
@@ -395,6 +587,58 @@ export function application(model, validators, catalogValidators) {
     if (durable) notify('');
   }
 
+  $('#db-connect-file').onclick = async () => {
+    if (typeof window.showSaveFilePicker === 'function') {
+      try {
+        fileHandle = await window.showSaveFilePicker({
+          suggestedName: model.id + '.db.json',
+          types: [{ description: 'Base de datos JSON MDA', accept: { 'application/json': ['.json'] } }],
+        });
+        await syncFileHandle(currentPayload());
+        notify('Archivo de base de datos «' + fileHandle.name + '» conectado en vivo.');
+        return;
+      } catch (err) {
+        if (err?.name === 'AbortError') return;
+      }
+    }
+    downloadFile(JSON.stringify(currentPayload(), null, 2) + '\n', model.id + '.db.json', 'application/json');
+    notify('Base de datos descargada como ' + model.id + '.db.json (abre la app en una pestaña nueva para conexión directa en disco).');
+  };
+
+  $('#db-import-btn').onclick = () => $('#db-import-input').click();
+  $('#db-import-input').onchange = async event => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      applyStoredPayload(parsed);
+      persist(records, products, movements);
+      refreshCurrentView();
+      notify('Base de datos importada desde «' + file.name + '».');
+    } catch {
+      notify('El archivo seleccionado no es una base de datos JSON válida.', true);
+    } finally {
+      event.target.value = '';
+    }
+  };
+
+  $('#db-export-json').onclick = () => {
+    downloadFile(JSON.stringify(currentPayload(), null, 2) + '\n', model.id + '.db.json', 'application/json');
+    notify('Volcado JSON guardado (' + model.id + '.db.json).');
+  };
+
+  $('#db-export-sql').onclick = () => {
+    downloadFile(generateSqlDump(), model.id + '.datos.sql', 'application/sql;charset=utf-8');
+    notify('Volcado SQL DDL + INSERT guardado (' + model.id + '.datos.sql).');
+  };
+
+  $('#db-inspect-btn').onclick = () => {
+    $('#db-dialog-subtitle').textContent = 'Esquema relacional DDL y sentencias INSERT en tiempo real para ' + model.nombre;
+    $('#db-dialog-sql').textContent = generateSqlDump();
+    $('#db-dialog').showModal();
+  };
+  $('#db-dialog-close').onclick = () => $('#db-dialog').close();
+
   $('#app-title').textContent = model.nombre;
   root.dataset.presentation = board ? 'tablero' : 'bandeja';
   if (board) $('#app-cases-title').textContent = 'Tablero por estado';
@@ -415,6 +659,8 @@ export function application(model, validators, catalogValidators) {
       for (const button of $('#app-nav').querySelectorAll('button')) button.onclick = () => showModule(button.dataset.module);
     }
   }
+  initIndexedDb();
+  updateDbStatus();
   if (crud) { showModule('catalog'); return; }
   $('#app-form-title').textContent = model.formulario.nombre;
   for (const actor of model.roles) {

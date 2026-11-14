@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mda.studio/schemas/gestion-laboratorio.schema.json",
+  "title": "Prestamo",
+  "description": "Administra equipos y tramita préstamos con existencias compartidas.",
+  "type": "object",
+  "required": [
+    "solicitante",
+    "equipo",
+    "cantidad",
+    "dias",
+    "motivo"
+  ],
+  "properties": {
+    "solicitante": {
+      "title": "Solicitante",
+      "type": "string",
+      "maxLength": 300
+    },
+    "equipo": {
+      "title": "Equipo del inventario",
+      "type": "string"
+    },
+    "cantidad": {
+      "title": "Cantidad",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "dias": {
+      "title": "Días de préstamo",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    },
+    "motivo": {
+      "title": "Motivo",
+      "type": "string",
+      "maxLength": 300
+    }
+  },
+  "additionalProperties": false
+}

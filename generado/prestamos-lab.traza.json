@@ -1,73 +1,73 @@
 [
   {
-    "cim": "datos.solicitante",
-    "pim": "Prestamo.solicitante",
-    "psm": "campos.solicitante",
-    "app": "input[type=text]"
+    "cim": "datos.solicitante (Texto)",
+    "pim": "Prestamo.solicitante : EString [1..1]",
+    "psm": "campos.solicitante (text / VARCHAR(300))",
+    "app": "<input type=\"text\">"
   },
   {
-    "cim": "datos.equipo",
-    "pim": "Prestamo.equipo",
-    "psm": "campos.equipo",
-    "app": "input[type=text]"
+    "cim": "datos.equipo (Texto)",
+    "pim": "Prestamo.equipo : EString [1..1]",
+    "psm": "campos.equipo (text / VARCHAR(300))",
+    "app": "<input type=\"text\">"
   },
   {
-    "cim": "datos.cantidad",
-    "pim": "Prestamo.cantidad",
-    "psm": "campos.cantidad",
-    "app": "input[type=number]"
+    "cim": "datos.cantidad (Entero)",
+    "pim": "Prestamo.cantidad : EInt [1..1]",
+    "psm": "campos.cantidad (number / INTEGER)",
+    "app": "<input type=\"number\">"
   },
   {
-    "cim": "datos.dias",
-    "pim": "Prestamo.dias",
-    "psm": "campos.dias",
-    "app": "input[type=number]"
+    "cim": "datos.dias (Entero)",
+    "pim": "Prestamo.dias : EInt [1..1]",
+    "psm": "campos.dias (number / INTEGER)",
+    "app": "<input type=\"number\">"
   },
   {
-    "cim": "datos.motivo",
-    "pim": "Prestamo.motivo",
-    "psm": "campos.motivo",
-    "app": "input[type=text]"
+    "cim": "datos.motivo (Texto)",
+    "pim": "Prestamo.motivo : EString [1..1]",
+    "psm": "campos.motivo (text / VARCHAR(300))",
+    "app": "<input type=\"text\">"
   },
   {
-    "cim": "transiciones.aprobar",
-    "pim": "operaciones.aprobar",
-    "psm": "acciones.aprobar",
-    "app": "solicitado → aprobado"
+    "cim": "transiciones.aprobar (responsable)",
+    "pim": "Prestamo::aprobar() : EBoolean",
+    "psm": "acciones.aprobar [solicitado → aprobado]",
+    "app": "Botón de rol responsable (solicitado → aprobado)"
   },
   {
-    "cim": "transiciones.rechazar",
-    "pim": "operaciones.rechazar",
-    "psm": "acciones.rechazar",
-    "app": "solicitado → rechazado"
+    "cim": "transiciones.rechazar (responsable)",
+    "pim": "Prestamo::rechazar() : EBoolean",
+    "psm": "acciones.rechazar [solicitado → rechazado]",
+    "app": "Botón de rol responsable (solicitado → rechazado)"
   },
   {
-    "cim": "transiciones.entregar",
-    "pim": "operaciones.entregar",
-    "psm": "acciones.entregar",
-    "app": "aprobado → entregado"
+    "cim": "transiciones.entregar (responsable)",
+    "pim": "Prestamo::entregar() : EBoolean",
+    "psm": "acciones.entregar [aprobado → entregado]",
+    "app": "Botón de rol responsable (aprobado → entregado)"
   },
   {
-    "cim": "transiciones.devolver",
-    "pim": "operaciones.devolver",
-    "psm": "acciones.devolver",
-    "app": "entregado → devuelto"
+    "cim": "transiciones.devolver (estudiante)",
+    "pim": "Prestamo::devolver() : EBoolean",
+    "psm": "acciones.devolver [entregado → devuelto]",
+    "app": "Botón de rol estudiante (entregado → devuelto)"
   },
   {
     "cim": "ocl.CantidadValida",
-    "pim": "inv CantidadValida",
-    "psm": "validadores.CantidadValida",
+    "pim": "inv CantidadValida (OCL AST)",
+    "psm": "validadores.CantidadValida + SQL CHECK",
     "app": "validators[\"CantidadValida\"]"
   },
   {
     "cim": "ocl.PlazoValido",
-    "pim": "inv PlazoValido",
-    "psm": "validadores.PlazoValido",
+    "pim": "inv PlazoValido (OCL AST)",
+    "psm": "validadores.PlazoValido + SQL CHECK",
     "app": "validators[\"PlazoValido\"]"
   },
   {
     "cim": "ocl.MotivoSuficiente",
-    "pim": "pre MotivoSuficiente",
+    "pim": "pre MotivoSuficiente (OCL AST)",
     "psm": "validadores.MotivoSuficiente",
     "app": "validators[\"MotivoSuficiente\"]"
   }

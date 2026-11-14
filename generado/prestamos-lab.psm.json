@@ -3,11 +3,106 @@
   "nombre": "Préstamos de laboratorio",
   "objetivo": "Solicitar, aprobar y devolver equipos del laboratorio universitario.",
   "entidad": "Prestamo",
-  "plataforma": "HTML5 / JavaScript ES2022 / Web Storage",
+  "plataforma": "HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL",
   "presentacion": "bandeja",
+  "arquitectura": {
+    "patronUi": "Bandeja Maestro-Detalle (Master-Detail Inbox)",
+    "disposicion": "Layout de dos columnas 50/50: captura y lista cronológica a la izquierda; ficha técnica, acciones por rol e historial a la derecha.",
+    "contenedores": [
+      "Cabecera con selector de Rol RBAC (Estudiante, Responsable)",
+      "Columna izquierda: Formulario de captura (Nueva solicitud) + Bandeja vertical de casos con badge de estado",
+      "Columna derecha: Inspector maestro-detalle, disparadores de transición y línea de tiempo auditada",
+      "Barra de Persistencia en Base de Datos (IndexedDB + Archivo .db.json / .sql)"
+    ],
+    "adaptadorDatos": "IndexedDB + Sincronización en vivo con Archivo de Base de Datos (.db.json / .sql) + Fallback localStorage",
+    "seguridad": "Control de acceso basado en roles (RBAC) para 2 actores y 3 validadores OCL compilados a ES2022"
+  },
   "almacen": {
-    "tipo": "localStorage",
+    "tipo": "IndexedDB + Archivo (.db.json / .sql) + localStorage",
     "clave": "mda.casos.prestamos-lab"
+  },
+  "esquemaSql": {
+    "motor": "SQL Estándar (PostgreSQL / SQLite3) + Almacén Transaccional IndexedDB",
+    "tablas": [
+      {
+        "nombre": "prestamo",
+        "descripcion": "Tabla principal de casos de proceso para Prestamo",
+        "columnas": [
+          {
+            "nombre": "id",
+            "tipo": "VARCHAR(64)",
+            "restricciones": "PRIMARY KEY NOT NULL"
+          },
+          {
+            "nombre": "estado_actual",
+            "tipo": "VARCHAR(48)",
+            "restricciones": "NOT NULL DEFAULT 'solicitado'"
+          },
+          {
+            "nombre": "solicitante",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "equipo",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "cantidad",
+            "tipo": "INTEGER",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "dias",
+            "tipo": "INTEGER",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "motivo",
+            "tipo": "VARCHAR(300)",
+            "restricciones": "NOT NULL"
+          }
+        ],
+        "checks": [
+          "CONSTRAINT chk_prestamo_estado CHECK (estado_actual IN ('solicitado', 'aprobado', 'entregado', 'devuelto', 'rechazado'))",
+          "CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad <= 5)",
+          "CONSTRAINT chk_plazovalido CHECK (dias >= 1 AND dias <= 30)"
+        ]
+      },
+      {
+        "nombre": "prestamo_historial",
+        "descripcion": "Bitácora inmutable de auditoría de transiciones por rol",
+        "columnas": [
+          {
+            "nombre": "id_evento",
+            "tipo": "INTEGER",
+            "restricciones": "PRIMARY KEY AUTOINCREMENT"
+          },
+          {
+            "nombre": "caso_id",
+            "tipo": "VARCHAR(64)",
+            "restricciones": "NOT NULL REFERENCES prestamo(id) ON DELETE CASCADE"
+          },
+          {
+            "nombre": "accion",
+            "tipo": "VARCHAR(120)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "rol_actor",
+            "tipo": "VARCHAR(64)",
+            "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "fecha_hora",
+            "tipo": "TIMESTAMP",
+            "restricciones": "NOT NULL DEFAULT CURRENT_TIMESTAMP"
+          }
+        ],
+        "checks": []
+      }
+    ]
   },
   "roles": [
     {
@@ -24,31 +119,62 @@
       "id": "solicitante",
       "nombre": "Solicitante",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "equipo",
       "nombre": "Equipo",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\""
+      ]
     },
     {
       "id": "cantidad",
       "nombre": "Cantidad",
       "control": "number",
-      "requerido": true
+      "tipoSql": "INTEGER",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "step=\"1\"",
+        "inputmode=\"numeric\"",
+        "min=\"1\"",
+        "max=\"5\""
+      ]
     },
     {
       "id": "dias",
       "nombre": "Días de préstamo",
       "control": "number",
-      "requerido": true
+      "tipoSql": "INTEGER",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "step=\"1\"",
+        "inputmode=\"numeric\"",
+        "min=\"1\"",
+        "max=\"30\""
+      ]
     },
     {
       "id": "motivo",
       "nombre": "Motivo",
       "control": "text",
-      "requerido": true
+      "tipoSql": "VARCHAR(300)",
+      "requerido": true,
+      "atributosHtml": [
+        "required",
+        "maxlength=\"300\""
+      ]
     }
   ],
   "formulario": {
@@ -127,6 +253,7 @@
           "campo": "cantidad",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 5
         }
       ],
@@ -148,6 +275,7 @@
           "campo": "dias",
           "acceso": "value",
           "operador": "<=",
+          "conector": "and",
           "valor": 30
         }
       ],
