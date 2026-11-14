@@ -145,17 +145,22 @@ context Compra inv PrioridadDocumentada: self.prioridad = 'urgente' implies self
   <form id="project-form">
     <h2 id="project-dialog-title">Nuevo proyecto</h2>
     <label>Nombre del proyecto<input id="project-name" name="name" maxlength="100" required autofocus></label>
-    <label>Modelo inicial
-      <select id="project-template" name="template">
-        <option value="blank">Proceso básico</option>
-        <option id="copy-option" value="copy">Copia del último proyecto abierto</option>
-        <option value="example">Ejemplo de préstamos</option>
-        <option value="advanced">Ejemplo de compras</option>
-        <option value="crud">CRUD básico</option>
-        <option value="inventory">Ejemplo de inventario</option>
-        <option value="laboratory">Laboratorio integrado</option>
-      </select>
-    </label>
+    <fieldset class="project-templates" aria-describedby="project-template-help">
+      <legend>Estructura inicial</legend>
+      <p id="project-template-help">Elige qué necesita tu aplicación. Después podrás editar el modelo de negocio.</p>
+      <label class="project-template">
+        <input type="radio" name="template" value="process" checked>
+        <span><strong>Proceso</strong><small>Registra solicitudes y define quién puede moverlas de un estado a otro.</small></span>
+      </label>
+      <label class="project-template">
+        <input type="radio" name="template" value="catalog">
+        <span><strong>Catálogo CRUD</strong><small>Crea, busca, edita y elimina registros en una tabla.</small></span>
+      </label>
+      <label class="project-template">
+        <input type="radio" name="template" value="integrated">
+        <span><strong>Proceso con catálogo</strong><small>Vincula las solicitudes a un inventario. Las entregas descuentan existencias y las devoluciones las reponen.</small></span>
+      </label>
+    </fieldset>
     <div class="dialog-actions">
       <button id="cancel-project" type="button">Cancelar</button>
       <button class="generate" type="submit">Crear proyecto</button>

@@ -126,3 +126,13 @@
 .presentation-current strong{color:var(--stage-accent);font-size:12px}
 .presentation-current p{margin-top:2px}
 @media(max-width:560px){.presentation-options{grid-template-columns:1fr}}
+
+#project-dialog{width:min(530px,calc(100% - 32px));max-height:calc(100dvh - 32px);background:var(--surface)}
+.project-templates{display:grid;gap:8px;min-width:0;margin:0;padding:0;border:0}
+.project-templates legend{padding:0;font-size:13px;font-weight:700}
+#project-template-help{margin:0 0 3px;color:var(--sub);font-size:13px}
+dialog .project-template{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);border-radius:9px;padding:10px 12px;cursor:pointer}
+.project-template:is(:hover,:has(:checked)){background:var(--stripe)}
+.project-template:has(:checked){border-color:var(--sub)}
+.project-template input{flex:none;margin:3px 0 0;accent-color:var(--primary)}
+.project-template small{display:block;margin-top:2px;color:var(--sub);font-size:12px;font-weight:400;line-height:1.4}

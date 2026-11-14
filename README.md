@@ -74,6 +74,10 @@ Los datos pertenecen al navegador que abre el HTML. La vista previa del Studio c
 
 Abre **Gestión de laboratorio** desde Proyectos o la [aplicación generada](generado/gestion-laboratorio.html). El [CIM](models/laboratorio.cim.json) vincula `Prestamo.equipo` con el catálogo de `Producto`. En `integracion` se declaran la clave del catálogo, el campo de existencias, la cantidad y las transiciones de entrada y salida. El [PIM](generado/gestion-laboratorio.pim.json) conserva esa relación y las operaciones. El [PSM](generado/gestion-laboratorio.psm.json) la convierte en un selector de inventario. En [Trazabilidad](generado/gestion-laboratorio.traza.json) puedes seguir los cambios de stock hasta las transiciones.
 
+La demostración abre con cuatro artículos, cinco solicitudes en distintos estados y tres movimientos precargados desde [laboratorio.demo.json](models/laboratorio.demo.json). En **Solicitudes**, abre el caso de Diego Rojas como Estudiante y devuelve los dos microscopios. En **Inventario**, el artículo con código `MIC-DEMO-01` pasa de 4 a 6 unidades, y en **Movimientos** aparece la nueva entrada. Como Responsable, puedes intentar entregar el kit del caso aprobado de Mateo Silva para comprobar el aviso de existencias insuficientes.
+
+Para probar el caso de dos solicitudes que compiten por las mismas unidades:
+
 1. En **Inventario**, crea un microscopio con SKU `MIC-01`, categoría Equipos y stock de **3**.
 2. En **Solicitudes**, como **Estudiante**, registra dos préstamos de **2** unidades para ese microscopio, uno a nombre de Ana y otro de Luis. Usa **3 días** y el motivo **Práctica de laboratorio** en ambos. Cambia a **Responsable** y aprueba los dos casos.
 3. Entrega el primero. El inventario queda en **1**. Intenta entregar el segundo. La aplicación indica que solo queda una unidad y mantiene el caso **Aprobado**. El stock se descuenta al entregar.

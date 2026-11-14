@@ -998,7 +998,7 @@ export function createCompiler(METAMODEL, application) {
     return rows.join('\n') + '\n';
   }
 
-  function generateApp(psm, assets, sqlDdl) {
+  function generateApp(psm, assets, sqlDdl, initialData) {
     const catalogValidators = psm.integracion?.catalogo.validadores.map(emitValidator).join(',\n  ') ?? '';
     return instantiate(assets.html, {
       CSS: assets.css,
@@ -1006,7 +1006,7 @@ export function createCompiler(METAMODEL, application) {
         + 'const sqlSchemaDdl = ' + jsLiteral(sqlDdl) + ';\n'
         + 'const validators = {\n  ' + psm.validadores.map(emitValidator).join(',\n  ') + '\n};\n'
         + 'const catalogValidators = {' + catalogValidators + '};\n'
-        + '(' + application.toString() + ')(model, validators, catalogValidators, sqlSchemaDdl);',
+        + '(' + application.toString() + ')(model, validators, catalogValidators, sqlSchemaDdl, ' + jsLiteral(initialData ?? null) + ');',
     });
   }
 
@@ -1021,7 +1021,7 @@ export function createCompiler(METAMODEL, application) {
     return cim;
   }
 
-  function compile(source, assets, projectId, presentation = 'bandeja') {
+  function compile(source, assets, projectId, presentation = 'bandeja', initialData) {
     const cim = readCim(source);
     const crud = cim.tipo === 'crud';
     const pim = validateCim(cim);
@@ -1090,7 +1090,7 @@ export function createCompiler(METAMODEL, application) {
       psmSchema: generateJsonSchema(psm),
       traceCsv: generateTraceCsv(trace),
     };
-    return { cim, pim, psm, trace, entregables, html: generateApp(psm, assets, psmSql) };
+    return { cim, pim, psm, trace, entregables, html: generateApp(psm, assets, psmSql, initialData) };
   }
 
   function validateCim(cim) {
