@@ -179,6 +179,7 @@ details.side-card{padding:0}details.side-card>summary{display:flex;justify-conte
 .table-wrap tbody tr:nth-child(even){background:var(--stripe)}
 #fields-table .field-group td{background:var(--stripe);color:var(--ink);font-size:12px;font-weight:750;border-top:2px solid var(--line)}
 .field-type{display:inline-block;padding:2px 7px;border-radius:5px;background:var(--stage-bg);color:var(--stage-accent);font:11px/1.5 var(--mono)}
+.catalog-badge{display:inline-block;white-space:nowrap;padding:3px 8px;border:1px solid var(--line);border-radius:6px;background:var(--stage-bg);color:var(--stage-accent);font-size:11px;font-weight:600;line-height:1.4}
 .trace-card .table-wrap th,:root[data-theme="dark"] .trace-card .table-wrap th{background:var(--stripe);color:var(--ink)}
 #trace td:first-child{font-weight:650;color:var(--stage-accent)}
 .illustration-signal{transform-box:fill-box;transform-origin:center}
@@ -2721,7 +2722,7 @@ const compile = (function createCompiler(METAMODEL, application) {
 
     if (catalog && shared.length) {
       const groupRow = make('tr', '', 'field-group');
-      const heading = make('td', catalog.entidad + ' · Catálogo vinculado · ' + shared.length + ' campos');
+      const heading = make('td', catalog.entidad + ' · ' + shared.length + ' campos');
       heading.colSpan = 6;
       groupRow.append(heading);
       rows.append(groupRow);
@@ -2733,7 +2734,7 @@ const compile = (function createCompiler(METAMODEL, application) {
           typeBadge,
           (field.requerido ? 'Obligatorio' : 'Opcional') + (catalog.unicos?.includes(field.id) ? ' · Único' : ''),
           field.opciones?.map(option => option.nombre).join(', ') ?? '—',
-          '—',
+          make('span', 'Catálogo vinculado', 'catalog-badge'),
         ));
       }
     }

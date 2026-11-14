@@ -201,7 +201,7 @@
 
     if (catalog && shared.length) {
       const groupRow = make('tr', '', 'field-group');
-      const heading = make('td', catalog.entidad + ' · Catálogo vinculado · ' + shared.length + ' campos');
+      const heading = make('td', catalog.entidad + ' · ' + shared.length + ' campos');
       heading.colSpan = 6;
       groupRow.append(heading);
       rows.append(groupRow);
@@ -213,7 +213,7 @@
           typeBadge,
           (field.requerido ? 'Obligatorio' : 'Opcional') + (catalog.unicos?.includes(field.id) ? ' · Único' : ''),
           field.opciones?.map(option => option.nombre).join(', ') ?? '—',
-          '—',
+          make('span', 'Catálogo vinculado', 'catalog-badge'),
         ));
       }
     }
