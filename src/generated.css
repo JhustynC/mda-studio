@@ -20,3 +20,10 @@ button{cursor:pointer;font:inherit;font-size:13px;font-weight:650;padding:8px 12
 [data-presentation=tablero] .case[aria-pressed=true]{background:#dfeefb;border-color:#6284a8}
 @media(max-width:700px){[data-presentation=tablero] .layout{grid-template-columns:1fr}[data-presentation=tablero] #app-detail{grid-column:1}}
 form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}form input[type=checkbox]{width:auto;flex:none;accent-color:#18584c}
+[data-presentation=tabla] .layout{display:block}
+[data-presentation=tabla] #app-form{grid-template-columns:repeat(3,minmax(0,1fr))}
+.crud-catalog{margin-top:16px}.crud-toolbar{display:flex;align-items:end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.crud-toolbar h2{margin-bottom:4px}.crud-toolbar label{min-width:min(100%,235px)}
+.crud-table{overflow:auto;border:1px solid #d8e5e0;border-radius:8px}.crud-table table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}.crud-table th{background:#eaf4ef;color:#315a51;white-space:nowrap}.crud-table th,.crud-table td{padding:10px 12px;border-bottom:1px solid #e5eee9}.crud-table td{min-width:80px;overflow-wrap:anywhere}.crud-table tr:last-child td{border-bottom:0}.crud-actions{white-space:nowrap}.crud-actions button+button{margin-left:6px}#crud-empty{margin-top:10px}
+.danger{border-color:#dbc0ba;color:#8f352a}.danger:hover{background:#fff1ed}#crud-delete{width:min(420px,calc(100% - 24px));border:1px solid #c2d3cd;border-radius:12px;padding:20px;color:inherit;background:#fff}#crud-delete::backdrop{background:#132e2b66}#crud-delete .action-bar{margin-top:15px;justify-content:end}
+@media(max-width:700px){[data-presentation=tabla] #app-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:430px){[data-presentation=tabla] #app-form{grid-template-columns:1fr}}
+#app-nav{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}#app-nav button[aria-pressed=true]{background:#18584c;color:#fff;border-color:#18584c}#stock-movements{margin:0;font-variant-numeric:tabular-nums}#stock-movements li{padding:6px 0}

@@ -14,10 +14,12 @@ async function main() {
   const [modelPath, outputPath, ...extra] = process.argv.slice(2);
   if (extra.length) throw new Error('Uso: node generar.mjs [modelo.cim.json] [directorio de salida]');
   const output = outputPath ? resolve(outputPath) : join(here, 'generado');
-  const [source, example, advanced, metamodel, html, css, studioHtml, studioCss, studioJs, diagramCss, editor] = await Promise.all([
+  const [source, example, advanced, stock, lab, metamodel, html, css, studioHtml, studioCss, studioJs, diagramCss, editor] = await Promise.all([
     modelPath ? readFile(resolve(modelPath), 'utf8') : read('models/prestamos.cim.json'),
     read('models/prestamos.cim.json'),
     read('models/compras.cim.json'),
+    read('models/inventario.cim.json'),
+    read('models/laboratorio.cim.json'),
     read('models/metamodelo.json').then(JSON.parse),
     read('src/generated.html'), read('src/generated.css'),
     read('src/studio.html'), read('src/studio.css'), read('src/studio.js'),
@@ -33,12 +35,16 @@ async function main() {
   const compile = createCompiler(metamodel, application);
   const demo = compile(source, templates);
   const purchases = compile(advanced, templates, 'example-compras', 'tablero');
+  const inventory = compile(stock, templates, 'example-inventario');
+  const laboratory = compile(lab, templates, 'example-laboratorio');
   const script = [
     editor.outputFiles[0].text,
     'const TEMPLATES = ' + inline(templates) + ';',
     'const DEMO = ' + inline(source.trim()) + ';',
     'const EXAMPLE = ' + inline(example.trim()) + ';',
     'const ADVANCED = ' + inline(advanced.trim()) + ';',
+    'const INVENTORY = ' + inline(stock.trim()) + ';',
+    'const LABORATORY = ' + inline(lab.trim()) + ';',
     'const METAMODEL = ' + inline(metamodel) + ';',
     'const compile = (' + createCompiler.toString() + ')(METAMODEL, ' + application.toString() + ');',
     studioJs,
@@ -53,7 +59,7 @@ async function main() {
   const studio = studioHtml.replace(/\{\{(CSS|SCRIPT)\}\}/g, (_, key) => key === 'CSS' ? studioCss + '\n' + diagramCss : script) + licenseComment;
   await mkdir(output, { recursive: true });
   const files = { 'index.html': studio };
-  for (const result of [purchases, demo]) {
+  for (const result of [purchases, inventory, laboratory, demo]) {
     const id = result.cim.id;
     const stem = /^(index|con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(id) ? 'proceso-' + id : id;
     files[stem + '.pim.json'] = toJson(result.pim);

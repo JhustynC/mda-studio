@@ -20,7 +20,8 @@
     ],
     "ocl": [
       "text"
-    ]
+    ],
+    "integracion?": "IntegracionCim"
   },
   "Actor": {
     "id": "id",
@@ -31,7 +32,9 @@
     "nombre": "text",
     "tipo": "domainType",
     "requerido?": "bool",
-    "opciones?": ["Opcion"]
+    "opciones?": [
+      "Opcion"
+    ]
   },
   "Opcion": {
     "id": "id",
@@ -74,7 +77,8 @@
     ],
     "restricciones": [
       "Restriccion"
-    ]
+    ],
+    "integracion?": "IntegracionPim"
   },
   "Restriccion": {
     "id": "class",
@@ -115,7 +119,8 @@
     ],
     "validadores": [
       "Restriccion"
-    ]
+    ],
+    "integracion?": "IntegracionPsm"
   },
   "Almacen": {
     "tipo": "text",
@@ -126,6 +131,100 @@
     "nombre": "text",
     "control": "control",
     "requerido": "bool",
-    "opciones?": ["Opcion"]
+    "opciones?": [
+      "Opcion"
+    ]
+  },
+  "CIMCrud": {
+    "version": "version",
+    "tipo": "crudType",
+    "id": "id",
+    "nombre": "text",
+    "objetivo": "text",
+    "entidad": "class",
+    "datos": [
+      "Dato"
+    ],
+    "unicos?": [
+      "id"
+    ],
+    "ocl": [
+      "text"
+    ]
+  },
+  "PIMCrud": {
+    "tipo": "crudType",
+    "id": "id",
+    "nombre": "text",
+    "objetivo": "text",
+    "entidad": "class",
+    "propiedades": [
+      "Dato"
+    ],
+    "unicos": [
+      "id"
+    ],
+    "operaciones": [
+      "crudOperation"
+    ],
+    "restricciones": [
+      "Restriccion"
+    ]
+  },
+  "PSMCrud": {
+    "tipo": "crudType",
+    "id": "id",
+    "nombre": "text",
+    "objetivo": "text",
+    "entidad": "class",
+    "plataforma": "text",
+    "presentacion": "table",
+    "almacen": "Almacen",
+    "campos": [
+      "CampoWeb"
+    ],
+    "unicos": [
+      "id"
+    ],
+    "acciones": [
+      "crudOperation"
+    ],
+    "validadores": [
+      "Restriccion"
+    ]
+  },
+  "IntegracionCim": {
+    "catalogo": "CIMCrud",
+    "referencia": "id",
+    "clave": "id",
+    "existencias": "id",
+    "cantidad": "id",
+    "movimientos": [
+      "Movimiento"
+    ]
+  },
+  "IntegracionPim": {
+    "catalogo": "PIMCrud",
+    "referencia": "id",
+    "clave": "id",
+    "existencias": "id",
+    "cantidad": "id",
+    "movimientos": [
+      "Movimiento"
+    ]
+  },
+  "IntegracionPsm": {
+    "catalogo": "PSMCrud",
+    "referencia": "id",
+    "clave": "id",
+    "existencias": "id",
+    "cantidad": "id",
+    "movimientos": [
+      "Movimiento"
+    ]
+  },
+  "Movimiento": {
+    "transicion": "id",
+    "tipo": "movementType"
   }
 }

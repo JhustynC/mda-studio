@@ -1,0 +1,88 @@
+{
+  "tipo": "crud",
+  "id": "inventario",
+  "nombre": "Inventario de laboratorio",
+  "objetivo": "Consulta y actualiza el catálogo de productos y sus existencias.",
+  "entidad": "Producto",
+  "propiedades": [
+    {
+      "id": "nombre",
+      "nombre": "Producto",
+      "tipo": "Texto",
+      "requerido": true
+    },
+    {
+      "id": "sku",
+      "nombre": "Código SKU",
+      "tipo": "Texto",
+      "requerido": true
+    },
+    {
+      "id": "categoria",
+      "nombre": "Categoría",
+      "tipo": "Seleccion",
+      "requerido": true,
+      "opciones": [
+        {
+          "id": "equipos",
+          "nombre": "Equipos"
+        },
+        {
+          "id": "consumibles",
+          "nombre": "Consumibles"
+        },
+        {
+          "id": "repuestos",
+          "nombre": "Repuestos"
+        }
+      ]
+    },
+    {
+      "id": "stock",
+      "nombre": "Stock disponible",
+      "tipo": "Entero",
+      "requerido": true
+    },
+    {
+      "id": "ubicacion",
+      "nombre": "Ubicación",
+      "tipo": "Texto"
+    },
+    {
+      "id": "reposicion",
+      "nombre": "Fecha de reposición",
+      "tipo": "Fecha"
+    },
+    {
+      "id": "activo",
+      "nombre": "Producto activo",
+      "tipo": "Booleano"
+    }
+  ],
+  "unicos": [
+    "sku"
+  ],
+  "operaciones": [
+    "crear",
+    "consultar",
+    "editar",
+    "eliminar"
+  ],
+  "restricciones": [
+    {
+      "id": "StockNoNegativo",
+      "clase": "Producto",
+      "tipo": "inv",
+      "operacion": null,
+      "expresion": [
+        {
+          "campo": "stock",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 0
+        }
+      ],
+      "fuente": "context Producto inv StockNoNegativo: self.stock >= 0"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "id": "inventario",
+  "nombre": "Inventario de laboratorio",
+  "objetivo": "Consulta y actualiza el catálogo de productos y sus existencias.",
+  "entidad": "Producto",
+  "plataforma": "HTML5 / JavaScript ES2022 / Web Storage",
+  "tipo": "crud",
+  "presentacion": "tabla",
+  "almacen": {
+    "tipo": "localStorage",
+    "clave": "mda.registros.proyecto.example-inventario.inventario"
+  },
+  "campos": [
+    {
+      "id": "nombre",
+      "nombre": "Producto",
+      "control": "text",
+      "requerido": true
+    },
+    {
+      "id": "sku",
+      "nombre": "Código SKU",
+      "control": "text",
+      "requerido": true
+    },
+    {
+      "id": "categoria",
+      "nombre": "Categoría",
+      "control": "select",
+      "requerido": true,
+      "opciones": [
+        {
+          "id": "equipos",
+          "nombre": "Equipos"
+        },
+        {
+          "id": "consumibles",
+          "nombre": "Consumibles"
+        },
+        {
+          "id": "repuestos",
+          "nombre": "Repuestos"
+        }
+      ]
+    },
+    {
+      "id": "stock",
+      "nombre": "Stock disponible",
+      "control": "number",
+      "requerido": true
+    },
+    {
+      "id": "ubicacion",
+      "nombre": "Ubicación",
+      "control": "text",
+      "requerido": false
+    },
+    {
+      "id": "reposicion",
+      "nombre": "Fecha de reposición",
+      "control": "date",
+      "requerido": false
+    },
+    {
+      "id": "activo",
+      "nombre": "Producto activo",
+      "control": "checkbox",
+      "requerido": false
+    }
+  ],
+  "unicos": [
+    "sku"
+  ],
+  "acciones": [
+    "crear",
+    "consultar",
+    "editar",
+    "eliminar"
+  ],
+  "validadores": [
+    {
+      "id": "StockNoNegativo",
+      "clase": "Producto",
+      "tipo": "inv",
+      "operacion": null,
+      "expresion": [
+        {
+          "campo": "stock",
+          "acceso": "value",
+          "operador": ">=",
+          "valor": 0
+        }
+      ],
+      "fuente": "context Producto inv StockNoNegativo: self.stock >= 0"
+    }
+  ]
+}

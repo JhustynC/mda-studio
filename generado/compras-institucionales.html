@@ -26,6 +26,13 @@ button{cursor:pointer;font:inherit;font-size:13px;font-weight:650;padding:8px 12
 [data-presentation=tablero] .case[aria-pressed=true]{background:#dfeefb;border-color:#6284a8}
 @media(max-width:700px){[data-presentation=tablero] .layout{grid-template-columns:1fr}[data-presentation=tablero] #app-detail{grid-column:1}}
 form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}form input[type=checkbox]{width:auto;flex:none;accent-color:#18584c}
+[data-presentation=tabla] .layout{display:block}
+[data-presentation=tabla] #app-form{grid-template-columns:repeat(3,minmax(0,1fr))}
+.crud-catalog{margin-top:16px}.crud-toolbar{display:flex;align-items:end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.crud-toolbar h2{margin-bottom:4px}.crud-toolbar label{min-width:min(100%,235px)}
+.crud-table{overflow:auto;border:1px solid #d8e5e0;border-radius:8px}.crud-table table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}.crud-table th{background:#eaf4ef;color:#315a51;white-space:nowrap}.crud-table th,.crud-table td{padding:10px 12px;border-bottom:1px solid #e5eee9}.crud-table td{min-width:80px;overflow-wrap:anywhere}.crud-table tr:last-child td{border-bottom:0}.crud-actions{white-space:nowrap}.crud-actions button+button{margin-left:6px}#crud-empty{margin-top:10px}
+.danger{border-color:#dbc0ba;color:#8f352a}.danger:hover{background:#fff1ed}#crud-delete{width:min(420px,calc(100% - 24px));border:1px solid #c2d3cd;border-radius:12px;padding:20px;color:inherit;background:#fff}#crud-delete::backdrop{background:#132e2b66}#crud-delete .action-bar{margin-top:15px;justify-content:end}
+@media(max-width:700px){[data-presentation=tabla] #app-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:430px){[data-presentation=tabla] #app-form{grid-template-columns:1fr}}
+#app-nav{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}#app-nav button[aria-pressed=true]{background:#18584c;color:#fff;border-color:#18584c}#stock-movements{margin:0;font-variant-numeric:tabular-nums}#stock-movements li{padding:6px 0}
 </style>
 </head>
 <body>
@@ -34,6 +41,11 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
     <div><p class="product">MDA STUDIO / APLICACIÓN GENERADA</p><h1 id="app-title"></h1><p id="app-description" class="muted"></p></div>
     <label class="role">Rol de demostración<select id="app-role" aria-describedby="app-role-help"></select><small class="muted" id="app-role-help">Simula quién realiza la tarea.</small></label>
   </header>
+  <nav id="app-nav" aria-label="Módulos de la aplicación" hidden>
+    <button type="button" data-module="requests" aria-pressed="true">Solicitudes</button>
+    <button type="button" data-module="catalog" aria-pressed="false">Inventario</button>
+    <button type="button" data-module="ledger" aria-pressed="false">Movimientos</button>
+  </nav>
   <p id="app-notice" role="status" aria-live="polite"></p>
   <div class="layout">
     <div class="column">
@@ -42,6 +54,20 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
     </div>
     <section id="app-detail" tabindex="-1"></section>
   </div>
+  <section id="crud-catalog" class="crud-catalog" hidden aria-labelledby="crud-title">
+    <div class="crud-toolbar"><div><h2 id="crud-title">Registros</h2><p id="crud-count" class="muted" aria-live="polite"></p></div>
+      <label>Buscar registros<input id="crud-search" type="search" placeholder="Escribe un valor…"></label>
+    </div>
+    <div class="crud-table" tabindex="0" role="region" aria-label="Tabla de registros"><table><thead><tr id="crud-columns"></tr></thead><tbody id="crud-rows"></tbody></table></div>
+    <p id="crud-empty" class="muted"></p>
+  </section>
+  <section id="stock-ledger" aria-labelledby="stock-title" hidden><h2 id="stock-title">Movimientos de inventario</h2>
+    <p id="stock-empty" class="muted">Todavía no hay entregas ni devoluciones registradas.</p><ol id="stock-movements"></ol>
+  </section>
+  <dialog id="crud-delete" aria-labelledby="crud-delete-title">
+    <h2 id="crud-delete-title">¿Eliminar el registro?</h2><p id="crud-delete-name"></p>
+    <div class="action-bar"><button id="crud-delete-cancel" type="button" autofocus>Cancelar</button><button id="crud-delete-confirm" type="button" class="danger">Confirmar eliminación</button></div>
+  </dialog>
 </main>
 <script>const model = {"id":"compras-institucionales","nombre":"Compras institucionales","objetivo":"Tramitar compras universitarias desde la solicitud y el control presupuestario hasta la recepción, el pago y el cierre.","entidad":"Compra","plataforma":"HTML5 / JavaScript ES2022 / Web Storage","presentacion":"tablero","almacen":{"tipo":"localStorage","clave":"mda.casos.proyecto.example-compras.compras-institucionales"},"roles":[{"id":"solicitante","nombre":"Solicitante"},{"id":"jefatura","nombre":"Jefatura"},{"id":"presupuesto","nombre":"Presupuesto"},{"id":"compras","nombre":"Compras"},{"id":"juridico","nombre":"Jurídico"},{"id":"comite","nombre":"Comité"},{"id":"bodega","nombre":"Bodega"},{"id":"contabilidad","nombre":"Contabilidad"},{"id":"tesoreria","nombre":"Tesorería"}],"campos":[{"id":"referencia","nombre":"Referencia interna","control":"text","requerido":true},{"id":"unidad","nombre":"Unidad solicitante","control":"text","requerido":true},{"id":"objeto","nombre":"Objeto de la compra","control":"text","requerido":true},{"id":"justificacion","nombre":"Justificación","control":"text","requerido":true},{"id":"monto","nombre":"Monto estimado (USD)","control":"number","requerido":true},{"id":"cantidad","nombre":"Unidades","control":"number","requerido":true},{"id":"cotizaciones","nombre":"Cotizaciones disponibles","control":"number","requerido":true},{"id":"plazo","nombre":"Plazo de entrega (días)","control":"number","requerido":true},{"id":"proveedor","nombre":"Proveedor propuesto","control":"text","requerido":false},{"id":"partida","nombre":"Partida presupuestaria","control":"text","requerido":true},{"id":"prioridad","nombre":"Prioridad","control":"select","requerido":false,"opciones":[{"nombre":"Normal","id":"normal"},{"nombre":"Urgente","id":"urgente"},{"nombre":"Crítica","id":"critica"}]},{"id":"fecha-necesaria","nombre":"Fecha en que se necesita","control":"date","requerido":false},{"id":"documentacion","nombre":"Documentación adjunta disponible","control":"checkbox","requerido":false}],"formulario":{"actor":"solicitante","estado":"solicitada","nombre":"Registrar solicitud"},"estados":[{"id":"solicitada","nombre":"Revisión de jefatura"},{"id":"observada","nombre":"Ampliación pendiente"},{"id":"presupuesto","nombre":"Control de presupuesto"},{"id":"modalidad","nombre":"Selección de modalidad"},{"id":"juridica","nombre":"Revisión jurídica"},{"id":"comite","nombre":"Evaluación del comité"},{"id":"adjudicada","nombre":"Adjudicada"},{"id":"ordenada","nombre":"Orden emitida"},{"id":"incidencia","nombre":"Incidencia de recepción"},{"id":"recibida","nombre":"Recibida"},{"id":"contabilidad","nombre":"Revisión contable"},{"id":"pago","nombre":"Pendiente de pago"},{"id":"pagada","nombre":"Pagada"},{"id":"cerrada","nombre":"Cerrada","final":true},{"id":"rechazada","nombre":"Rechazada","final":true},{"id":"cancelada","nombre":"Cancelada","final":true}],"acciones":[{"id":"avalar","nombre":"Enviar a presupuesto","actor":"jefatura","desde":"solicitada","hasta":"presupuesto"},{"id":"observar","nombre":"Solicitar ampliación","actor":"jefatura","desde":"solicitada","hasta":"observada"},{"id":"justificar","nombre":"Registrar ampliación externa","actor":"solicitante","desde":"observada","hasta":"solicitada"},{"id":"retirar","nombre":"Retirar solicitud","actor":"solicitante","desde":"observada","hasta":"cancelada"},{"id":"denegar","nombre":"Rechazar solicitud","actor":"jefatura","desde":"solicitada","hasta":"rechazada"},{"id":"certificar","nombre":"Certificar disponibilidad","actor":"presupuesto","desde":"presupuesto","hasta":"modalidad"},{"id":"sinfondos","nombre":"Rechazar por falta de fondos","actor":"presupuesto","desde":"presupuesto","hasta":"rechazada"},{"id":"directa","nombre":"Adjudicar compra directa","actor":"compras","desde":"modalidad","hasta":"adjudicada"},{"id":"competitiva","nombre":"Enviar a revisión jurídica","actor":"compras","desde":"modalidad","hasta":"juridica"},{"id":"cancelar","nombre":"Cancelar trámite","actor":"compras","desde":"modalidad","hasta":"cancelada"},{"id":"dictamen","nombre":"Emitir dictamen favorable","actor":"juridico","desde":"juridica","hasta":"comite"},{"id":"devolver","nombre":"Devolver a compras","actor":"juridico","desde":"juridica","hasta":"modalidad"},{"id":"objecion","nombre":"Rechazar por objeción jurídica","actor":"juridico","desde":"juridica","hasta":"rechazada"},{"id":"adjudicar","nombre":"Adjudicar por comité","actor":"comite","desde":"comite","hasta":"adjudicada"},{"id":"desierta","nombre":"Declarar proceso desierto","actor":"comite","desde":"comite","hasta":"cancelada"},{"id":"emitir","nombre":"Emitir orden de compra","actor":"compras","desde":"adjudicada","hasta":"ordenada"},{"id":"recibir","nombre":"Confirmar recepción conforme","actor":"bodega","desde":"ordenada","hasta":"recibida"},{"id":"incidencia","nombre":"Registrar recepción no conforme","actor":"bodega","desde":"ordenada","hasta":"incidencia"},{"id":"subsanar","nombre":"Registrar subsanación del proveedor","actor":"compras","desde":"incidencia","hasta":"ordenada"},{"id":"anular","nombre":"Anular orden","actor":"compras","desde":"incidencia","hasta":"cancelada"},{"id":"enviarcontable","nombre":"Enviar expediente a contabilidad","actor":"compras","desde":"recibida","hasta":"contabilidad"},{"id":"contabilizar","nombre":"Autorizar contabilización","actor":"contabilidad","desde":"contabilidad","hasta":"pago"},{"id":"revisar","nombre":"Devolver expediente","actor":"contabilidad","desde":"contabilidad","hasta":"recibida"},{"id":"pagar","nombre":"Registrar pago","actor":"tesoreria","desde":"pago","hasta":"pagada"},{"id":"cerrar","nombre":"Cerrar expediente","actor":"compras","desde":"pagada","hasta":"cerrada"}],"validadores":[{"id":"MontoValido","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"monto","acceso":"value","operador":">=","valor":1},{"campo":"monto","acceso":"value","operador":"\u003c=","valor":250000}],"fuente":"context Compra inv MontoValido: self.monto >= 1 and self.monto \u003c= 250000"},{"id":"CantidadValida","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"cantidad","acceso":"value","operador":">=","valor":1},{"campo":"cantidad","acceso":"value","operador":"\u003c=","valor":10000}],"fuente":"context Compra inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 10000"},{"id":"PlazoValido","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"plazo","acceso":"value","operador":">=","valor":1},{"campo":"plazo","acceso":"value","operador":"\u003c=","valor":180}],"fuente":"context Compra inv PlazoValido: self.plazo >= 1 and self.plazo \u003c= 180"},{"id":"CotizacionesValidas","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"cotizaciones","acceso":"value","operador":">=","valor":0},{"campo":"cotizaciones","acceso":"value","operador":"\u003c=","valor":30}],"fuente":"context Compra inv CotizacionesValidas: self.cotizaciones >= 0 and self.cotizaciones \u003c= 30"},{"id":"ReferenciaValida","clase":"Compra","tipo":"inv","operacion":null,"expresion":[{"campo":"referencia","acceso":"size","operador":">=","valor":4}],"fuente":"context Compra inv ReferenciaValida: self.referencia.size() >= 4"},{"id":"JustificacionSuficiente","clase":"Compra","tipo":"pre","operacion":"avalar","expresion":[{"campo":"justificacion","acceso":"size","operador":">=","valor":20}],"fuente":"context Compra::avalar() pre JustificacionSuficiente: self.justificacion.size() >= 20"},{"id":"PartidaIdentificada","clase":"Compra","tipo":"pre","operacion":"certificar","expresion":[{"campo":"partida","acceso":"size","operador":">=","valor":4}],"fuente":"context Compra::certificar() pre PartidaIdentificada: self.partida.size() >= 4"},{"id":"MontoCompraDirecta","clase":"Compra","tipo":"pre","operacion":"directa","expresion":[{"campo":"monto","acceso":"value","operador":"\u003c","valor":10000},{"campo":"cotizaciones","acceso":"value","operador":">=","valor":1}],"fuente":"context Compra::directa() pre MontoCompraDirecta: self.monto \u003c 10000 and self.cotizaciones >= 1"},{"id":"UmbralCompetitivo","clase":"Compra","tipo":"pre","operacion":"competitiva","expresion":[{"campo":"monto","acceso":"value","operador":">=","valor":10000},{"campo":"cotizaciones","acceso":"value","operador":">=","valor":3}],"fuente":"context Compra::competitiva() pre UmbralCompetitivo: self.monto >= 10000 and self.cotizaciones >= 3"},{"id":"CotizacionesComite","clase":"Compra","tipo":"pre","operacion":"adjudicar","expresion":[{"campo":"cotizaciones","acceso":"value","operador":">=","valor":3}],"fuente":"context Compra::adjudicar() pre CotizacionesComite: self.cotizaciones >= 3"},{"id":"ProveedorIdentificado","clase":"Compra","tipo":"pre","operacion":"emitir","expresion":[{"campo":"proveedor","acceso":"size","operador":">=","valor":3}],"fuente":"context Compra::emitir() pre ProveedorIdentificado: self.proveedor.size() >= 3"},{"id":"ReferenciaContable","clase":"Compra","tipo":"pre","operacion":"contabilizar","expresion":[{"campo":"referencia","acceso":"size","operador":">=","valor":6}],"fuente":"context Compra::contabilizar() pre ReferenciaContable: self.referencia.size() >= 6"}]};
 const validators = {
@@ -58,19 +84,33 @@ const validators = {
   "ProveedorIdentificado": (values) => (values["proveedor"] != null && Array.from(values["proveedor"] ?? "").length >= 3),
   "ReferenciaContable": (values) => (values["referencia"] != null && Array.from(values["referencia"] ?? "").length >= 6)
 };
-(function application(model, validators) {
+const catalogValidators = {};
+(function application(model, validators, catalogValidators) {
   const root = document.querySelector('#application');
   const $ = selector => root.querySelector(selector);
-  const stateNames = new Map(model.estados.map(state => [state.id, state.nombre]));
+  const crud = model.tipo === 'crud';
+  const link = model.integracion;
+  const catalog = link?.catalogo ?? model;
+  let catalogView = crud;
+  let products = [];
+  let movements = [];
+  const stateNames = new Map((model.estados ?? []).map(state => [state.id, state.nombre]));
   const board = model.presentacion === 'tablero';
-  let role = model.formulario.actor;
+  let role = model.formulario?.actor;
+  let editing = null;
+  const controls = new Map();
   let selected = null;
   let records = [];
   let durable = true;
   try {
-    const stored = JSON.parse(localStorage.getItem(model.almacen.clave) ?? '[]');
-    if (Array.isArray(stored)) records = stored.filter(record =>
-      record && typeof record.id === 'string' && record.values && Array.isArray(record.history) && stateNames.has(record.state));
+    const stored = JSON.parse(localStorage.getItem(model.almacen.clave) ?? 'null');
+    if (link && stored && Array.isArray(stored.records) && Array.isArray(stored.products) && Array.isArray(stored.movements)) {
+      products = stored.products;
+      movements = stored.movements;
+    }
+    const storedRecords = link ? stored?.records : stored;
+    if (Array.isArray(storedRecords)) records = storedRecords.filter(record =>
+      record && typeof record.id === 'string' && record.values && (crud || (Array.isArray(record.history) && stateNames.has(record.state))));
   } catch {
     durable = false;
   }
@@ -88,15 +128,17 @@ const validators = {
     notice.dataset.error = String(error);
   }
 
-  function persist(next) {
+  function persist(next, nextProducts = products, nextMovements = movements) {
     if (durable) {
       try {
-        localStorage.setItem(model.almacen.clave, JSON.stringify(next));
+        localStorage.setItem(model.almacen.clave, JSON.stringify(link ? { records: next, products: nextProducts, movements: nextMovements } : next));
       } catch {
         durable = false;
       }
     }
     records = next;
+    products = nextProducts;
+    movements = nextMovements;
     return durable ? '' : ' Los cambios se conservan en esta pestaña.';
   }
 
@@ -104,31 +146,36 @@ const validators = {
     return new Date(iso).toLocaleString('es', { dateStyle: 'short', timeStyle: 'short' });
   }
 
-  function describe(record) {
-    const title = model.campos.map(field => record.values[field.id]).find(value => typeof value === 'string' && value.length);
+  function describe(record, fields = model.campos) {
+    const title = fields.map(field => record.values[field.id]).find(value => typeof value === 'string' && value.length);
     return title ?? model.entidad;
   }
 
-  function violations(values, operation) {
-    return model.validadores.filter(rule => {
+  function violations(values, operation, definition = model, rules = validators) {
+    return definition.validadores.filter(rule => {
       if (rule.tipo === 'pre' && rule.operacion !== operation) return false;
-      return !validators[rule.id](values);
+      return !rules[rule.id](values);
     }).map(rule => rule.fuente.split(': ').at(-1) + ' (' + rule.id + ')');
   }
 
   function renderForm(form) {
-    const controls = new Map();
-    for (const field of model.campos) {
+    const fields = catalogView ? catalog.campos : model.campos;
+    form.replaceChildren();
+    controls.clear();
+    for (const field of fields) {
       const label = element('label', field.nombre);
-      const input = element(field.control === 'select' ? 'select' : 'input');
+      const reference = link && !catalogView && field.id === link.referencia;
+      const input = element(reference || field.control === 'select' ? 'select' : 'input');
       controls.set(field.id, input);
       input.name = field.id;
       input.required = field.requerido;
-      if (field.control === 'select') {
+      if (reference || field.control === 'select') {
         const empty = element('option', 'Selecciona una opción');
         empty.value = '';
         input.append(empty);
-        for (const choice of field.opciones) {
+        const options = reference ? products.map(product => ({ id: product.id, nombre: describe(product, catalog.campos) + ' · ' +
+          product.values[link.clave] + ' (' + product.values[link.existencias] + ' disponibles)' })) : field.opciones;
+        for (const choice of options) {
           const option = element('option', choice.nombre);
           option.value = choice.id;
           input.append(option);
@@ -153,14 +200,23 @@ const validators = {
       label.append(input);
       form.append(label);
     }
-    const submit = element('button', 'Crear caso', 'primary');
+    const submit = element('button', catalogView ? 'Crear registro' : 'Crear caso', 'primary');
+    submit.id = 'app-submit';
     submit.type = 'submit';
     form.append(submit);
-    form.addEventListener('submit', event => {
+    if (catalogView) {
+      const cancel = element('button', 'Cancelar edición');
+      cancel.id = 'crud-cancel-edit';
+      cancel.type = 'button';
+      cancel.hidden = true;
+      cancel.onclick = () => { setEditing(null); notify(''); };
+      form.append(cancel);
+    }
+    form.onsubmit = event => {
       event.preventDefault();
-      if (role !== model.formulario.actor) return;
+      if (!catalogView && role !== model.formulario.actor) return;
       const values = Object.create(null);
-      for (const field of model.campos) {
+      for (const field of fields) {
         const input = controls.get(field.id);
         if (field.control === 'checkbox') {
           if (field.requerido && !input.checked) return notify('Marca ' + field.nombre + '.', true);
@@ -172,16 +228,19 @@ const validators = {
         if (field.control === 'number' && inputValue && !Number.isSafeInteger(Number(inputValue))) {
           return notify(field.nombre + ' debe ser un entero válido.', true);
         }
-        if (field.control === 'select' && inputValue && !field.opciones.some(choice => choice.id === inputValue)) {
+        if (field.opciones && inputValue && !field.opciones.some(choice => choice.id === inputValue)) {
           return notify('Selecciona una opción válida para ' + field.nombre + '.', true);
         }
         values[field.id] = inputValue && field.control === 'number' ? Number(inputValue) : inputValue || null;
       }
-      const errors = violations(values, null);
+      const errors = catalogView && link ? violations(values, null, catalog, catalogValidators) : violations(values, null);
       if (errors.length) return notify('Restricción incumplida: ' + errors.join(' · '), true);
+      if (catalogView) return saveRecord(values);
+      if (link && !products.some(product => product.id === values[link.referencia])) return notify('Selecciona un producto del inventario.', true);
+      if (link && values[link.cantidad] <= 0) return notify('La cantidad del préstamo debe ser mayor que cero.', true);
       const now = new Date().toISOString();
       const record = {
-        id: globalThis.crypto?.randomUUID?.() ?? String(Date.now()) + '-' + String(Math.random()).slice(2),
+        id: newId(),
         values, state: model.formulario.estado,
         history: [{ action: model.formulario.nombre, role, at: now }],
       };
@@ -190,7 +249,95 @@ const validators = {
       form.reset();
       render();
       notify('Caso creado.' + saved);
-    });
+    };
+  }
+
+  function newId() { return globalThis.crypto?.randomUUID?.() ?? String(Date.now()) + '-' + String(Math.random()).slice(2); }
+
+  function displayValue(field, value) {
+    if (typeof value === 'boolean') return value ? 'Sí' : 'No';
+    return field.opciones?.find(choice => choice.id === value)?.nombre ?? value ?? '—';
+  }
+
+  function setEditing(record) {
+    editing = record?.id ?? null;
+    $('#app-form').reset();
+    $('#app-form-title').textContent = record ? 'Editar registro' : 'Nuevo registro';
+    $('#app-submit').textContent = record ? 'Guardar cambios' : 'Crear registro';
+    $('#crud-cancel-edit').hidden = !record;
+    if (!record) return;
+    for (const field of catalog.campos) {
+      const input = controls.get(field.id);
+      if (field.control === 'checkbox') input.checked = record.values[field.id] === true;
+      else input.value = record.values[field.id] ?? '';
+    }
+    controls.values().next().value?.focus();
+  }
+
+  function saveRecord(values) {
+    const entries = link ? products : records;
+    if (link && values[link.existencias] < 0) return notify('Las existencias no pueden ser negativas.', true);
+    const normalize = value => typeof value === 'string' ? value.trim().toLocaleLowerCase('es') : value;
+    for (const key of catalog.unicos) {
+      if (entries.some(record => record.id !== editing && normalize(record.values[key]) === normalize(values[key]))) {
+        return notify('Valor duplicado para ' + catalog.campos.find(field => field.id === key).nombre + '.', true);
+      }
+    }
+    const previous = entries.find(record => record.id === editing);
+    if (editing && !previous) {
+      setEditing(null);
+      return notify('El registro ya no está disponible.', true);
+    }
+    const record = { id: previous?.id ?? newId(), values };
+    const next = previous ? entries.map(item => item.id === record.id ? record : item) : [record, ...entries];
+    const saved = link ? persist(records, next) : persist(next);
+    setEditing(null);
+    renderCrud();
+    notify((previous ? 'Registro actualizado.' : 'Registro creado.') + saved);
+  }
+
+  function requestDelete(record) {
+    if (link && records.some(item => item.values[link.referencia] === record.id)) {
+      return notify('El producto está vinculado a una solicitud y su historial debe conservarse.', true);
+    }
+    const dialog = $('#crud-delete');
+    $('#crud-delete-name').textContent = 'Se eliminará «' + describe(record, catalog.campos) + '».';
+    $('#crud-delete-confirm').onclick = () => {
+      const entries = (link ? products : records).filter(item => item.id !== record.id);
+      const saved = link ? persist(records, entries) : persist(entries);
+      if (editing === record.id) setEditing(null);
+      dialog.close();
+      renderCrud();
+      $('#crud-search').focus();
+      notify('Registro eliminado.' + saved);
+    };
+    dialog.showModal();
+  }
+
+  function renderCrud() {
+    const query = $('#crud-search').value.trim().toLocaleLowerCase('es');
+    const entries = link ? products : records;
+    const matching = entries.filter(record => catalog.campos.some(field =>
+      String(displayValue(field, record.values[field.id])).toLocaleLowerCase('es').includes(query)));
+    const rows = document.createDocumentFragment();
+    for (const record of matching) {
+      const row = element('tr');
+      for (const field of catalog.campos) row.append(element('td', displayValue(field, record.values[field.id])));
+      const actions = element('td', undefined, 'crud-actions');
+      const edit = element('button', 'Editar');
+      edit.setAttribute('aria-label', 'Editar ' + describe(record, catalog.campos));
+      edit.onclick = () => { notify(''); setEditing(record); };
+      const remove = element('button', 'Eliminar', 'danger');
+      remove.setAttribute('aria-label', 'Eliminar ' + describe(record, catalog.campos));
+      remove.onclick = () => requestDelete(record);
+      actions.append(edit, remove);
+      row.append(actions);
+      rows.append(row);
+    }
+    $('#crud-rows').replaceChildren(rows);
+    $('#crud-count').textContent = matching.length + ' de ' + entries.length + ' registros';
+    $('#crud-empty').hidden = matching.length > 0;
+    $('#crud-empty').textContent = query ? 'No hay coincidencias.' : 'Todavía no hay registros.';
   }
 
   function transition(record, action) {
@@ -202,9 +349,34 @@ const validators = {
       ...latest, state: action.hasta,
       history: [...latest.history, { action: action.nombre, role, at: new Date().toISOString() }],
     };
-    const saved = persist(records.map(item => item.id === next.id ? next : item));
+    const nextRecords = records.map(item => item.id === next.id ? next : item);
+    const effect = link?.movimientos.find(entry => entry.transicion === action.id);
+    const saved = effect ? persistMovement(nextRecords, latest, effect) : persist(nextRecords);
+    if (saved === undefined) return;
     render();
     notify(action.nombre + ' → ' + stateNames.get(next.state) + '.' + saved);
+  }
+
+  function persistMovement(nextRecords, request, effect) {
+    const product = products.find(item => item.id === request.values[link.referencia]);
+    const quantity = request.values[link.cantidad];
+    if (!product || !Number.isSafeInteger(quantity) || quantity <= 0) {
+      notify('La solicitud no tiene un producto y cantidad válidos.', true);
+      return;
+    }
+    const units = effect.tipo === 'salida' ? -quantity : quantity;
+    const stock = product.values[link.existencias] + units;
+    if (!Number.isSafeInteger(stock) || stock < 0) {
+      notify('No se puede aplicar el movimiento. Existencias disponibles: ' + product.values[link.existencias] + '.', true);
+      return;
+    }
+    const values = { ...product.values, [link.existencias]: stock };
+    const errors = violations(values, null, catalog, catalogValidators);
+    if (errors.length) { notify('Restricción de inventario: ' + errors.join(' · '), true); return; }
+    const nextProducts = products.map(item => item.id === product.id ? { ...item, values } : item);
+    const movement = { request: request.id, requester: describe(request), sku: values[link.clave], name: describe(product, catalog.campos),
+      units, stock, action: effect.transicion, at: new Date().toISOString() };
+    return persist(nextRecords, nextProducts, [movement, ...movements]);
   }
 
   function renderDetail(record) {
@@ -218,9 +390,8 @@ const validators = {
     const fields = element('dl');
     for (const field of model.campos) {
       const value = record.values[field.id];
-      const display = typeof value === 'boolean' ? (value ? 'Sí' : 'No') :
-        field.opciones?.find(choice => choice.id === value)?.nombre ?? value ?? '—';
-      fields.append(element('dt', field.nombre), element('dd', display));
+      const product = link && field.id === link.referencia ? products.find(item => item.id === value) : null;
+      fields.append(element('dt', field.nombre), element('dd', product ? describe(product, catalog.campos) : displayValue(field, value)));
     }
     detail.append(fields);
     const actions = model.acciones.filter(action => action.desde === record.state && action.actor === role);
@@ -279,11 +450,59 @@ const validators = {
     renderDetail(records.find(record => record.id === selected));
   }
 
+  function showModule(module) {
+    catalogView = module === 'catalog';
+    const requests = module === 'requests';
+    editing = null;
+    root.dataset.presentation = catalogView ? 'tabla' : model.presentacion;
+    $('.layout').hidden = !requests && !catalogView;
+    $('#app-role').closest('label').hidden = !requests;
+    $('#app-cases').hidden = !requests;
+    $('#app-detail').hidden = !requests;
+    $('#crud-catalog').hidden = !catalogView;
+    $('#stock-ledger').hidden = module !== 'ledger';
+    for (const button of $('#app-nav').querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.module === module));
+    if (requests || catalogView) renderForm($('#app-form'));
+    if (requests) {
+      $('#app-form-title').textContent = model.formulario.nombre;
+      render();
+    } else if (catalogView) {
+      $('#app-create').hidden = false;
+      $('#app-form-title').textContent = 'Nuevo registro';
+      renderCrud();
+    } else {
+      const items = movements.map(item => {
+        const action = model.acciones.find(edge => edge.id === item.action)?.nombre ?? item.action;
+        return element('li', [showDate(item.at), action, item.requester, item.name, item.sku,
+          (item.units > 0 ? '+' : '') + item.units, 'Disponibles: ' + item.stock].filter(Boolean).join(' · '));
+      });
+      $('#stock-movements').replaceChildren(...items);
+      $('#stock-empty').hidden = items.length > 0;
+    }
+    if (durable) notify('');
+  }
+
   $('#app-title').textContent = model.nombre;
   root.dataset.presentation = board ? 'tablero' : 'bandeja';
   if (board) $('#app-cases-title').textContent = 'Tablero por estado';
   document.title = model.nombre;
   $('#app-description').textContent = model.objetivo;
+  if (!link && !crud) renderForm($('#app-form'));
+  if (!durable) notify('El almacenamiento local no está disponible. Los cambios se conservan en esta pestaña.');
+  if (crud || link) {
+    for (const name of [...catalog.campos.map(field => field.nombre), 'Acciones']) {
+      const cell = element('th', name);
+      cell.scope = 'col';
+      $('#crud-columns').append(cell);
+    }
+    $('#crud-search').oninput = renderCrud;
+    $('#crud-delete-cancel').onclick = () => $('#crud-delete').close();
+    if (link) {
+      $('#app-nav').hidden = false;
+      for (const button of $('#app-nav').querySelectorAll('button')) button.onclick = () => showModule(button.dataset.module);
+    }
+  }
+  if (crud) { showModule('catalog'); return; }
   $('#app-form-title').textContent = model.formulario.nombre;
   for (const actor of model.roles) {
     const option = element('option', actor.nombre);
@@ -296,9 +515,8 @@ const validators = {
     notify('');
     render();
   };
-  renderForm($('#app-form'));
-  render();
-  if (!durable) notify('El almacenamiento local no está disponible. Los cambios se conservan en esta pestaña.');
-})(model, validators);</script>
+  if (link) showModule('requests');
+  else render();
+})(model, validators, catalogValidators);</script>
 </body>
 </html>

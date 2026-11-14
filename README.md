@@ -1,10 +1,10 @@
 # MDA Studio
 
-Proyecto de interciclo de Nuevos Paradigmas de Programación. Modela un proceso de negocio en JSON o desde un diagrama y genera una aplicación web autónoma con formularios, transiciones por rol, validación y registro de casos. Incluye dos ejemplos, Préstamos de laboratorio y Compras institucionales.
+Proyecto de interciclo de Nuevos Paradigmas de Programación. Genera aplicaciones web autónomas desde modelos. Puedes crear procesos con formularios y transiciones por rol, o catálogos CRUD con altas, consulta, edición y eliminación. Incluye Gestión de laboratorio, Préstamos de laboratorio, Compras institucionales e Inventario de laboratorio.
 
 ## Abrir la demostración
 
-Clona el repositorio o descárgalo como ZIP y extráelo. Abre [generado/index.html](generado/index.html) con Edge o Chrome desde tu equipo. El HTML ya incluye el compilador y las plantillas, así que puedes probar el Studio sin instalar dependencias ni iniciar un servidor. También puedes abrir directamente las aplicaciones de [Préstamos](generado/prestamos-lab.html) y [Compras](generado/compras-institucionales.html).
+Clona el repositorio o descárgalo como ZIP y extráelo. Abre [generado/index.html](generado/index.html) con Edge o Chrome desde tu equipo. El HTML ya incluye el compilador y las plantillas, así que puedes probar el Studio sin instalar dependencias ni iniciar un servidor. Para ver la integración completa, abre [Gestión de laboratorio](generado/gestion-laboratorio.html). También puedes ejecutar los ejemplos de [Inventario](generado/inventario.html), [Préstamos](generado/prestamos-lab.html) y [Compras](generado/compras-institucionales.html).
 
 Para regenerar desde PowerShell en la carpeta del proyecto, usa Node.js 22 o posterior. Instala las dependencias de compilación con `npm ci` la primera vez. El HTML que se entrega ya incluye CodeMirror y se puede abrir sin conexión.
 
@@ -18,7 +18,9 @@ El segundo comando permite indicar otro modelo y otro directorio de salida. Si e
 
 ## Trabajar con varios proyectos
 
-La pantalla **Proyectos** muestra los ejemplos de préstamos y compras, junto con los proyectos locales que crees. Abre uno para entrar al editor. Usa **← Proyectos** para volver a la biblioteca. **Nuevo proyecto** permite partir de un proceso básico, copiar el último proyecto abierto o usar cualquiera de los dos ejemplos. El título de la aplicación se define en `nombre` dentro del CIM.
+Desde **Proyectos**, abre **Recursos del Studio** para consultar la **Guía de inicio** o explorar el **Metamodelo base**. La guía acompaña la creación de un primer proceso. El explorador muestra las estructuras de CIM, PIM y PSM y permite descargar el metamodelo en JSON.
+
+La pantalla **Proyectos** reúne los ejemplos y los proyectos locales que crees. Abre uno para entrar al editor. Usa **← Proyectos** para volver a la biblioteca. **Nuevo proyecto** permite partir de un proceso básico, un CRUD básico, una copia del último proyecto abierto o un ejemplo. El título de la aplicación se define en `nombre` dentro del CIM.
 
 El Studio guarda cada borrador, incluso mientras el JSON está incompleto, en el almacenamiento de este navegador. Al cambiar de proyecto, restaura su CIM y calcula sus propias salidas. Desde **Descargar** puedes guardar el CIM, PIM, PSM o HTML del proyecto activo. Para trasladar un proyecto, descarga su CIM, crea un proyecto en el otro navegador e importa ese archivo. Los HTML generados para proyectos distintos usan claves locales de casos independientes, incluso si sus CIM tienen el mismo identificador.
 
@@ -43,7 +45,7 @@ MDA Studio implementa el recorrido **CIM → PIM → PSM → aplicación** con u
 | 07 · Generación M2T | El PSM alimenta una plantilla que genera HTML, CSS y JavaScript con el flujo y sus validadores. | [Plantilla](src/generated.html) · [HTML de Préstamos](generado/prestamos-lab.html) |
 | 08 · Ejecución y pruebas | La aplicación se ejecuta en el navegador. El guion permite verificar transiciones, historial y el rechazo de solicitudes que incumplen una regla. | [Guion para exponer](#guion-para-exponer) |
 
-La [trazabilidad](generado/prestamos-lab.traza.json) permite seguir cada campo, transición y regla desde el CIM hasta la aplicación. En la versión actual, cada proyecto modela un tipo de caso. La aplicación usa almacenamiento local y un selector para simular los actores durante la demostración.
+La [trazabilidad](generado/prestamos-lab.traza.json) permite seguir cada campo, transición y regla desde el CIM hasta la aplicación. Cada proyecto puede definir un flujo, una entidad CRUD o un flujo con un catálogo vinculado. Las aplicaciones guardan los datos en el navegador. Los proyectos de procesos incluyen un selector para simular actores durante la demostración.
 
 ### Posible extensión para el equipo
 
@@ -55,6 +57,25 @@ Podemos añadir un segundo destino de generación que transforme el mismo PIM en
 - Los datos se declaran con `Texto`, `Entero`, `Fecha`, `Seleccion` o `Booleano`. En `Seleccion`, declara una lista `opciones` de objetos con `id` y `nombre`. Cada transición indica quién actúa, de qué estado parte y adónde lleva. Abre **Manual** en el Studio para ver un tutorial y un ejemplo completo de campo.
 - El evaluador implementa un subconjunto de OCL. Admite invariantes `context Clase inv Nombre: ...` y precondiciones `context Clase::operacion() pre Nombre: ...`. Soporta comparaciones con enteros, `self.campo.size()` en texto y conjunciones con `and`. Una comparación sobre un campo ausente no se cumple. Una expresión fuera de este subconjunto produce un error de generación.
 - Las invariantes se verifican al crear el caso y antes de cada transición. La precondición `MotivoSuficiente` se comprueba al intentar aprobar. Su regla exige al menos ocho caracteres.
+
+## Generar un CRUD
+
+Desde **Proyectos**, abre **Inventario de laboratorio** o crea un proyecto con **CRUD básico**. En **CIM → Estructura** puedes editar los campos y las reglas. En **CIM → Editar JSON** puedes consultar o modificar el modelo fuente.
+
+El [CIM de inventario](models/inventario.cim.json) declara `tipo: "crud"`, la entidad `Producto`, sus datos, la unicidad de SKU y la invariante de stock no negativo. El [PIM](generado/inventario.pim.json) contiene las cuatro operaciones lógicas y el [PSM](generado/inventario.psm.json) incorpora la tabla web, los controles y el almacenamiento. La [aplicación generada](generado/inventario.html) permite buscar, crear, editar y eliminar registros. El stock se actualiza editando el registro y las reglas se comprueban al guardar.
+
+Los datos pertenecen al navegador que abre el HTML. La vista previa del Studio conserva registros durante su ejecución. El ejemplo representa un catálogo con una entidad y existencias editables.
+
+## Gestión de laboratorio integrada
+
+Abre **Gestión de laboratorio** desde Proyectos o la [aplicación generada](generado/gestion-laboratorio.html). El [CIM](models/laboratorio.cim.json) vincula `Prestamo.equipo` con el catálogo de `Producto`. En `integracion` se declaran la clave del catálogo, el campo de existencias, la cantidad y las transiciones de entrada y salida. El [PIM](generado/gestion-laboratorio.pim.json) conserva esa relación y las operaciones. El [PSM](generado/gestion-laboratorio.psm.json) la convierte en un selector de inventario. En [Trazabilidad](generado/gestion-laboratorio.traza.json) puedes seguir los cambios de stock hasta las transiciones.
+
+1. En **Inventario**, crea un microscopio con SKU `MIC-01`, categoría Equipos y stock de **3**.
+2. En **Solicitudes**, como **Estudiante**, registra dos préstamos de **2** unidades para ese microscopio, uno a nombre de Ana y otro de Luis. Usa **3 días** y el motivo **Práctica de laboratorio** en ambos. Cambia a **Responsable** y aprueba los dos casos.
+3. Entrega el primero. El inventario queda en **1**. Intenta entregar el segundo. La aplicación indica que solo queda una unidad y mantiene el caso **Aprobado**. El stock se descuenta al entregar.
+4. Devuelve el primero como **Estudiante**. El inventario vuelve a **3** y en **Movimientos** puedes consultar el descuento y la reposición. Abre **Trazabilidad** en el Studio y elige **Integración** para ver cómo se generaron el selector y ambos movimientos.
+
+El compilador comprueba que las transiciones de entrada y salida estén correctamente ordenadas y que ningún camino termine con unidades pendientes de devolver. La aplicación guarda solicitudes, productos y movimientos juntos en el almacenamiento local de un navegador. El alcance es una demostración de una sola sesión, con roles simulados y un catálogo por flujo.
 
 ## Guion para exponer
 

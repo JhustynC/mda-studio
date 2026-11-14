@@ -1,0 +1,134 @@
+[
+  {
+    "cim": "datos.solicitante",
+    "pim": "Prestamo.solicitante",
+    "psm": "campos.solicitante",
+    "app": "input[type=text]"
+  },
+  {
+    "cim": "datos.equipo",
+    "pim": "Prestamo.equipo",
+    "psm": "campos.equipo",
+    "app": "Selector de inventario"
+  },
+  {
+    "cim": "datos.cantidad",
+    "pim": "Prestamo.cantidad",
+    "psm": "campos.cantidad",
+    "app": "input[type=number]"
+  },
+  {
+    "cim": "datos.dias",
+    "pim": "Prestamo.dias",
+    "psm": "campos.dias",
+    "app": "input[type=number]"
+  },
+  {
+    "cim": "datos.motivo",
+    "pim": "Prestamo.motivo",
+    "psm": "campos.motivo",
+    "app": "input[type=text]"
+  },
+  {
+    "cim": "transiciones.aprobar",
+    "pim": "operaciones.aprobar",
+    "psm": "acciones.aprobar",
+    "app": "solicitado → aprobado"
+  },
+  {
+    "cim": "transiciones.rechazar",
+    "pim": "operaciones.rechazar",
+    "psm": "acciones.rechazar",
+    "app": "solicitado → rechazado"
+  },
+  {
+    "cim": "transiciones.entregar",
+    "pim": "operaciones.entregar",
+    "psm": "acciones.entregar",
+    "app": "aprobado → entregado"
+  },
+  {
+    "cim": "transiciones.devolver",
+    "pim": "operaciones.devolver",
+    "psm": "acciones.devolver",
+    "app": "entregado → devuelto"
+  },
+  {
+    "cim": "ocl.CantidadValida",
+    "pim": "inv CantidadValida",
+    "psm": "validadores.CantidadValida",
+    "app": "validators[\"CantidadValida\"]"
+  },
+  {
+    "cim": "ocl.PlazoValido",
+    "pim": "inv PlazoValido",
+    "psm": "validadores.PlazoValido",
+    "app": "validators[\"PlazoValido\"]"
+  },
+  {
+    "cim": "ocl.MotivoSuficiente",
+    "pim": "pre MotivoSuficiente",
+    "psm": "validadores.MotivoSuficiente",
+    "app": "validators[\"MotivoSuficiente\"]"
+  },
+  {
+    "cim": "integracion.catalogo.datos.nombre",
+    "pim": "integracion.catalogo.propiedades.nombre",
+    "psm": "integracion.catalogo.campos.nombre",
+    "app": "Inventario · Producto"
+  },
+  {
+    "cim": "integracion.catalogo.datos.sku",
+    "pim": "integracion.catalogo.propiedades.sku",
+    "psm": "integracion.catalogo.campos.sku",
+    "app": "Inventario · Código SKU"
+  },
+  {
+    "cim": "integracion.catalogo.datos.categoria",
+    "pim": "integracion.catalogo.propiedades.categoria",
+    "psm": "integracion.catalogo.campos.categoria",
+    "app": "Inventario · Categoría"
+  },
+  {
+    "cim": "integracion.catalogo.datos.stock",
+    "pim": "integracion.catalogo.propiedades.stock",
+    "psm": "integracion.catalogo.campos.stock",
+    "app": "Inventario · Stock disponible"
+  },
+  {
+    "cim": "integracion.catalogo.datos.ubicacion",
+    "pim": "integracion.catalogo.propiedades.ubicacion",
+    "psm": "integracion.catalogo.campos.ubicacion",
+    "app": "Inventario · Ubicación"
+  },
+  {
+    "cim": "integracion.catalogo.datos.reposicion",
+    "pim": "integracion.catalogo.propiedades.reposicion",
+    "psm": "integracion.catalogo.campos.reposicion",
+    "app": "Inventario · Fecha de reposición"
+  },
+  {
+    "cim": "integracion.catalogo.datos.activo",
+    "pim": "integracion.catalogo.propiedades.activo",
+    "psm": "integracion.catalogo.campos.activo",
+    "app": "Inventario · Producto activo"
+  },
+  {
+    "cim": "integracion.referencia",
+    "pim": "Prestamo.equipo → Producto.sku",
+    "psm": "integracion.referencia",
+    "app": "Selector de inventario compartido"
+  },
+  {
+    "cim": "integracion.movimientos.entregar",
+    "pim": "operaciones.entregar",
+    "psm": "integracion.movimientos.entregar",
+    "app": "Descontar existencias"
+  },
+  {
+    "cim": "integracion.movimientos.devolver",
+    "pim": "operaciones.devolver",
+    "psm": "integracion.movimientos.devolver",
+    "app": "Reponer existencias"
+  }
+]

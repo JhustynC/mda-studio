@@ -150,12 +150,21 @@ export function createDiagram(root, { read, validate, change, editJson }) {
 
   function applyZoom(value) {
     zoom = Math.max(0.12, Math.min(1.7, value));
-    scene.style.transform = 'scale(' + zoom + ')';
+    scene.style.transform = 'translate(-50%, -50%) scale(' + zoom + ')';
     $('#diagram-scroller').style.width = Math.ceil(width * zoom) + 'px';
     $('#diagram-scroller').style.height = Math.ceil(height * zoom) + 'px';
     $('#diagram-zoom').textContent = Math.round(zoom * 100) + '%';
     $('#diagram-minus').disabled = zoom <= 0.12;
     $('#diagram-plus').disabled = zoom >= 1.7;
+  }
+
+  function zoomAt(value, clientX, clientY) {
+    const previous = scene.getBoundingClientRect();
+    const anchorX = (clientX - previous.left) / zoom;
+    const anchorY = (clientY - previous.top) / zoom;
+    applyZoom(value);
+    const next = scene.getBoundingClientRect();
+    viewport.scrollBy(next.left + anchorX * zoom - clientX, next.top + anchorY * zoom - clientY);
   }
 
   function fit() {
@@ -168,7 +177,7 @@ export function createDiagram(root, { read, validate, change, editJson }) {
     switch (kind) {
       case 'inicio': return [item.nombre, nameOf('actores', item.actor) + ' → ' + nameOf('estados', item.estado)];
       case 'transiciones': return [item.nombre, nameOf('estados', item.desde) + ' → ' + nameOf('estados', item.hasta) + ' · ' + nameOf('actores', item.actor)];
-      case 'datos': return [item.nombre, item.tipo + (item.requerido ? ' · Obligatorio' : ' · Opcional') + (item.opciones ? ' · ' + item.opciones.length + ' opciones' : '')];
+      case 'datos': return [item.nombre, item.tipo + (model.unicos?.includes(item.id) ? ' · Único' : '') + (item.requerido ? ' · Obligatorio' : ' · Opcional') + (item.opciones ? ' · ' + item.opciones.length + ' opciones' : '')];
       case 'estados': return [item.nombre, item.id + (item.final ? ' · Final' : '')];
       case 'ocl': {
         const match = rulePattern.exec(item.trim());
@@ -187,7 +196,10 @@ export function createDiagram(root, { read, validate, change, editJson }) {
     $('#diagram-add').hidden = section === 'inicio';
     $('#diagram-add').textContent = '+ ' + singular;
     $('#diagram-add').setAttribute('aria-label', 'Añadir ' + singular);
-    for (const tab of $('#diagram-tabs').children) tab.setAttribute('aria-pressed', String(tab.dataset.section === section));
+    for (const tab of $('#diagram-tabs').children) {
+      tab.hidden = model.tipo === 'crud' && !['datos', 'ocl'].includes(tab.dataset.section);
+      tab.setAttribute('aria-pressed', String(tab.dataset.section === section));
+    }
     const items = section === 'inicio' ? [model.inicio] : model[section];
     const list = $('#diagram-items');
     list.replaceChildren();
@@ -236,11 +248,36 @@ export function createDiagram(root, { read, validate, change, editJson }) {
       error.replaceChildren(details);
       error.hidden = false;
     }
-    $('#diagram-stats').textContent = model.estados.length + ' estados · ' + model.transiciones.length + ' transiciones';
-    const filter = $('#diagram-actor');
-    actorOptions(filter, model.actores, model.actores.some(actor => actor.id === filter.value) ? filter.value : '', 'Todos');
-    renderGraph();
+    const crud = model.tipo === 'crud';
+    $('#diagram-heading').textContent = crud ? 'Estructura de la entidad' : 'Flujo del proceso';
+    for (const selector of ['#diagram-viewport', '#diagram-tools', '#diagram-legend']) $(selector).hidden = crud;
+    $('#diagram-crud').hidden = !crud;
+    if (crud) {
+      if (!['datos', 'ocl'].includes(section)) section = 'datos';
+      $('#diagram-stats').textContent = model.datos.length + ' campos · ' + model.ocl.length + ' reglas';
+      renderEntity();
+    } else {
+      $('#diagram-stats').textContent = model.estados.length + ' estados · ' + model.transiciones.length + ' transiciones';
+      const filter = $('#diagram-actor');
+      actorOptions(filter, model.actores, model.actores.some(actor => actor.id === filter.value) ? filter.value : '', 'Todos');
+      renderGraph();
+    }
     renderList();
+  }
+
+  function renderEntity() {
+    const card = el('div', undefined, 'diagram-entity');
+    const heading = el('div', undefined, 'diagram-entity-head');
+    heading.append(el('span', 'ENTIDAD'), el('h4', model.entidad),
+      el('p', 'Crear · Consultar · Editar · Eliminar'));
+    const fields = el('div', undefined, 'diagram-entity-fields');
+    model.datos.forEach((field, index) => {
+      const row = button('', () => openEditor('datos', index));
+      row.append(el('strong', field.nombre), el('span', field.tipo + (model.unicos?.includes(field.id) ? ' · Único' : '')));
+      fields.append(row);
+    });
+    card.append(heading, fields);
+    $('#diagram-crud').replaceChildren(card);
   }
 
   function formField(key, label, value = '', options = {}) {
@@ -286,7 +323,11 @@ export function createDiagram(root, { read, validate, change, editJson }) {
         formField('nombre', 'Nombre de la regla', name, { pattern: '[A-Za-z][A-Za-z0-9_]*' });
         const selector = formField('regla', 'Alcance', ruleType ?? 'inv',
           { list: [{ id: 'inv', nombre: 'Invariante de ' + model.entidad }, { id: 'pre', nombre: 'Precondición de una transición' }] });
-        const operations = formField('operacion', 'Transición', operation ?? '', { list: model.transiciones, placeholder: 'Selecciona una transición' });
+        const operations = formField('operacion', 'Transición', operation ?? '', { list: model.transiciones ?? [], placeholder: 'Selecciona una transición' });
+        if (model.tipo === 'crud') {
+          selector.value = 'inv';
+          selector.parentElement.hidden = true;
+        }
         const sync = () => { operations.parentElement.hidden = selector.value !== 'pre'; operations.required = selector.value === 'pre'; };
         selector.onchange = sync;
         sync();
@@ -307,6 +348,7 @@ export function createDiagram(root, { read, validate, change, editJson }) {
       if (kind === 'datos') {
         const type = formField('tipo', 'Tipo', item.tipo ?? 'Texto', { list: types.map(id => ({ id, nombre: id === 'Seleccion' ? 'Selección' : id })) });
         formField('requerido', 'Campo obligatorio', item.requerido, { checkbox: true });
+        if (model.tipo === 'crud') formField('unico', 'Valor único', model.unicos?.includes(item.id), { checkbox: true });
         const choices = formField('opciones', 'Opciones (una por línea: identificador | etiqueta)',
           item.opciones?.map(option => option.id + ' | ' + option.nombre).join('\n'), { multiline: 4, placeholder: 'normal | Normal\nurgente | Urgente' });
         const sync = () => { choices.parentElement.hidden = type.value !== 'Seleccion'; choices.required = type.value === 'Seleccion'; };
@@ -335,12 +377,22 @@ export function createDiagram(root, { read, validate, change, editJson }) {
   }
 
   function replaceReferences(next, kind, oldId, newId) {
-    if (kind === 'actores' && next.inicio.actor === oldId) next.inicio.actor = newId;
-    if (kind === 'estados' && next.inicio.estado === oldId) next.inicio.estado = newId;
-    for (const edge of next.transiciones) {
-      if (kind === 'actores' && edge.actor === oldId) edge.actor = newId;
-      if (kind === 'estados' && edge.desde === oldId) edge.desde = newId;
-      if (kind === 'estados' && edge.hasta === oldId) edge.hasta = newId;
+    if (next.tipo !== 'crud') {
+      if (kind === 'actores' && next.inicio.actor === oldId) next.inicio.actor = newId;
+      if (kind === 'estados' && next.inicio.estado === oldId) next.inicio.estado = newId;
+      for (const edge of next.transiciones) {
+        if (kind === 'actores' && edge.actor === oldId) edge.actor = newId;
+        if (kind === 'estados' && edge.desde === oldId) edge.desde = newId;
+        if (kind === 'estados' && edge.hasta === oldId) edge.hasta = newId;
+      }
+    }
+    if (next.integracion) {
+      if (kind === 'transiciones') {
+        for (const movement of next.integracion.movimientos) if (movement.transicion === oldId) movement.transicion = newId;
+      }
+      if (kind === 'datos') {
+        for (const property of ['referencia', 'cantidad']) if (next.integracion[property] === oldId) next.integracion[property] = newId;
+      }
     }
     if (kind === 'transiciones') next.ocl = next.ocl.map(rule => rule.replaceAll('::' + oldId + '()', '::' + newId + '()'));
     if (kind === 'datos') next.ocl = next.ocl.map(rule =>
@@ -389,6 +441,14 @@ export function createDiagram(root, { read, validate, change, editJson }) {
           if (kind === 'datos') {
             Object.assign(item, { tipo: get('tipo'), requerido: data.has('requerido') });
             if (item.tipo === 'Seleccion') item.opciones = fieldOptions(get('opciones'));
+            if (next.tipo === 'crud') {
+              const unique = data.has('unico');
+              if (unique && (!item.requerido || !['Texto', 'Entero'].includes(item.tipo))) {
+                throw new Error('Un campo único debe ser obligatorio y de tipo Texto o Entero.');
+              }
+              next.unicos = (next.unicos ?? []).filter(id => id !== next.datos[index]?.id);
+              if (unique) next.unicos.push(item.id);
+            }
           }
           const oldId = next[kind][index]?.id;
           next[kind][index] = item;
@@ -413,6 +473,7 @@ export function createDiagram(root, { read, validate, change, editJson }) {
         return;
       }
     }
+    if (kind === 'datos' && next.unicos) next.unicos = next.unicos.filter(id => id !== item.id);
     next[kind].splice(index, 1);
     try { save(next); } catch (error) { showFormError(error); }
   };
@@ -429,6 +490,13 @@ export function createDiagram(root, { read, validate, change, editJson }) {
   $('#diagram-minus').onclick = () => applyZoom(zoom / 1.2);
   $('#diagram-plus').onclick = () => applyZoom(zoom * 1.2);
   $('#diagram-fit').onclick = fit;
+  viewport.addEventListener('wheel', event => {
+    if (!hasLayout || !event.deltaY) return;
+    event.preventDefault();
+    const units = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? viewport.clientHeight : 1;
+    const delta = Math.max(-200, Math.min(200, event.deltaY * units));
+    zoomAt(zoom * Math.exp(-delta * 0.002), event.clientX, event.clientY);
+  }, { passive: false });
   let pan;
   viewport.addEventListener('pointerdown', event => {
     const bounds = viewport.getBoundingClientRect();

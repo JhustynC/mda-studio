@@ -1,0 +1,80 @@
+[
+  {
+    "cim": "datos.nombre",
+    "pim": "Producto.nombre",
+    "psm": "campos.nombre",
+    "app": "input[type=text]"
+  },
+  {
+    "cim": "datos.sku",
+    "pim": "Producto.sku",
+    "psm": "campos.sku",
+    "app": "input[type=text]"
+  },
+  {
+    "cim": "datos.categoria",
+    "pim": "Producto.categoria",
+    "psm": "campos.categoria",
+    "app": "select"
+  },
+  {
+    "cim": "datos.stock",
+    "pim": "Producto.stock",
+    "psm": "campos.stock",
+    "app": "input[type=number]"
+  },
+  {
+    "cim": "datos.ubicacion",
+    "pim": "Producto.ubicacion",
+    "psm": "campos.ubicacion",
+    "app": "input[type=text]"
+  },
+  {
+    "cim": "datos.reposicion",
+    "pim": "Producto.reposicion",
+    "psm": "campos.reposicion",
+    "app": "input[type=date]"
+  },
+  {
+    "cim": "datos.activo",
+    "pim": "Producto.activo",
+    "psm": "campos.activo",
+    "app": "input[type=checkbox]"
+  },
+  {
+    "cim": "tipo.crud",
+    "pim": "operaciones.crear",
+    "psm": "acciones.crear",
+    "app": "crear"
+  },
+  {
+    "cim": "tipo.crud",
+    "pim": "operaciones.consultar",
+    "psm": "acciones.consultar",
+    "app": "consultar"
+  },
+  {
+    "cim": "tipo.crud",
+    "pim": "operaciones.editar",
+    "psm": "acciones.editar",
+    "app": "editar"
+  },
+  {
+    "cim": "tipo.crud",
+    "pim": "operaciones.eliminar",
+    "psm": "acciones.eliminar",
+    "app": "eliminar"
+  },
+  {
+    "cim": "unicos.sku",
+    "pim": "unicos.sku",
+    "psm": "unicos.sku",
+    "app": "Valor único al crear y editar"
+  },
+  {
+    "cim": "ocl.StockNoNegativo",
+    "pim": "inv StockNoNegativo",
+    "psm": "validadores.StockNoNegativo",
+    "app": "validators[\"StockNoNegativo\"]"
+  }
+]

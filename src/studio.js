@@ -31,7 +31,10 @@
     source: DEMO,
   };
   const advancedProject = { id: 'example-compras', name: JSON.parse(ADVANCED).nombre, source: ADVANCED };
-  const projects = new Map([[initialProject.id, initialProject], [advancedProject.id, advancedProject]]);
+  const inventoryProject = { id: 'example-inventario', name: JSON.parse(INVENTORY).nombre, source: INVENTORY };
+  const laboratoryProject = { id: 'example-laboratorio', name: JSON.parse(LABORATORY).nombre, source: LABORATORY };
+  const examples = new Map([[initialProject.id, DEMO], [advancedProject.id, ADVANCED], [inventoryProject.id, INVENTORY], [laboratoryProject.id, LABORATORY]]);
+  const projects = new Map([laboratoryProject, initialProject, advancedProject, inventoryProject].map(project => [project.id, project]));
   let active = initialProject;
   let canSave = true;
   let result;
@@ -49,6 +52,7 @@
     app: ['Aplicación generada', 'Prueba el proceso aquí o descarga un HTML ejecutable.'],
   };
   const typeNames = {
+    movementType: 'Salida o entrada de inventario', crudType: 'crud', crudOperation: 'Crear, consultar, editar o eliminar', table: 'tabla',
     version: 'Versión 1', id: 'Identificador', nullableId: 'Identificador o nulo',
     class: 'Nombre de clase', text: 'Texto', bool: 'Booleano', int: 'Entero',
     domainType: 'Texto, Entero, Fecha, Seleccion o Booleano', ruleType: 'inv o pre', access: 'value o size',
@@ -96,12 +100,15 @@
       $('#fields-caption').textContent = 'Genera un modelo válido para consultar sus campos.';
       return;
     }
+    const catalog = model.integracion?.catalogo;
     const fields = model.datos ?? model.propiedades ?? model.campos;
+    const shared = catalog?.datos ?? catalog?.propiedades ?? catalog?.campos ?? [];
     const changed = source.value !== draft;
     $('#fields-caption').textContent = model.entidad + ' · ' + fields.length + ' campos' +
+      (catalog ? ' / ' + catalog.entidad + ' · ' + shared.length + ' campos' : '') +
       (changed ? ' · Última generación válida' : '');
-    for (const field of fields) {
-      rows.append(tableRow(field.nombre, field.id, field.tipo ?? field.control,
+    for (const [entity, group] of [[model.entidad, fields], [catalog?.entidad, shared]]) for (const field of group) {
+      rows.append(tableRow(catalog ? entity + ' · ' + field.nombre : field.nombre, field.id, field.tipo ?? field.control,
         field.requerido ? 'Obligatorio' : 'Opcional', field.opciones?.map(option => option.nombre).join(', ') ?? '—'));
     }
   }
@@ -145,6 +152,7 @@
   }
 
   function showLibrary() {
+    $('#guide').hidden = true;
     $('#library').hidden = false;
     $('#editor').hidden = true;
     $('#compile').hidden = true;
@@ -153,7 +161,7 @@
     for (const project of projects.values()) {
       const card = make('article', '');
       card.className = 'project-card';
-      const sample = project.id === initialProject.id || project.id === advancedProject.id;
+      const sample = examples.has(project.id);
       let summary = 'Borrador de modelo CIM';
       try {
         const model = JSON.parse(project.source);
@@ -302,6 +310,10 @@
     $('#view-subtitle').textContent = views[next][1];
     const fieldView = next !== 'app' && modelFormat === 'fields';
     const diagramView = next === 'model' && modelFormat === 'diagram';
+    const crud = result?.cim.tipo === 'crud';
+    $('#show-diagram').textContent = crud ? 'Estructura' : 'Diagrama';
+    $('#flow-card').hidden = crud;
+    $('#integration-card').hidden = !result?.cim.integracion;
     $('#model-format').hidden = next === 'app';
     $('#show-fields').setAttribute('aria-pressed', String(fieldView));
     $('#show-json').setAttribute('aria-pressed', String(modelFormat === 'json'));
@@ -321,7 +333,7 @@
     $('#app-panel').hidden = next !== 'app';
     $('#model-summary').hidden = next === 'app' || diagramView;
     $('.workspace').classList.toggle('full-width', next === 'app' || diagramView);
-    $('#presentation-panel').hidden = !['psm', 'app'].includes(next);
+    $('#presentation-panel').hidden = result?.cim.tipo === 'crud' || !['psm', 'app'].includes(next);
     $('#download').hidden = !result && next !== 'model';
     if (fieldView) renderFields();
     if (diagramView) diagram.show(source.value, active.id);
@@ -377,6 +389,19 @@
   function renderSummary(cim) {
     $('#title').textContent = cim.nombre;
     $('#description').textContent = cim.objetivo;
+    if (cim.integracion) {
+      const link = cim.integracion;
+      const steps = link.movimientos.map(movement => make('li', cim.transiciones.find(edge => edge.id === movement.transicion).nombre +
+        (movement.tipo === 'salida' ? ' · Descuenta existencias' : ' · Repone existencias')));
+      $('#integration-link').textContent = cim.entidad + '.' + link.referencia + ' → ' + link.catalogo.entidad + '.' + link.clave;
+      $('#integration-movements').replaceChildren(...steps);
+    }
+    if (cim.tipo !== 'crud') renderFlowSummary(cim);
+    renderRuleSummary();
+    renderTrace();
+  }
+
+  function renderFlowSummary(cim) {
     const roleFilter = $('#flow-role');
     const previous = roleFilter.value;
     const all = make('option', 'Todos los actores');
@@ -390,6 +415,9 @@
     if (cim.actores.some(actor => actor.id === previous)) roleFilter.value = previous;
     $('#flow-count').textContent = cim.transiciones.length + ' transiciones';
     renderFlow();
+  }
+
+  function renderRuleSummary() {
     const rules = $('#rules');
     rules.replaceChildren();
     for (const rule of result.pim.restricciones) {
@@ -403,7 +431,6 @@
     }
     if (!rules.children.length) rules.append(make('li', 'El modelo no declara restricciones.'));
     $('#rules-count').textContent = result.pim.restricciones.length + ' reglas';
-    renderTrace();
   }
 
   function renderTrace() {
@@ -436,7 +463,7 @@
   function build(openApp) {
     try {
       const presentation = $('#presentation').value;
-      if (source.value !== draft || result?.psm.presentacion !== presentation) {
+      if (source.value !== draft || (result?.cim.tipo !== 'crud' && result?.psm.presentacion !== presentation)) {
         result = compile(source.value, assets, active.id === initialProject.id ? undefined : active.id, presentation);
         draft = source.value;
       }
@@ -475,31 +502,24 @@
     showLibrary();
     $('#new-project').focus();
   };
-  let guideFromEditor = false;
   let guideScroll = 0;
   $('#open-guide').onclick = () => {
     if (!$('#guide').hidden) return;
-    guideFromEditor = !$('#editor').hidden;
     guideScroll = window.scrollY;
-    $('#guide-origin').textContent = guideFromEditor ? 'al editor' : 'a proyectos';
     $('#library').hidden = true;
-    $('#editor').hidden = true;
-    $('#compile').hidden = true;
     $('#guide').hidden = false;
     $('#guide-title').focus();
     window.scrollTo(0, 0);
   };
   $('#close-guide').onclick = () => {
     $('#guide').hidden = true;
-    $('#library').hidden = guideFromEditor;
-    $('#editor').hidden = !guideFromEditor;
-    $('#compile').hidden = !guideFromEditor;
+    $('#library').hidden = false;
     $('#open-guide').focus({ preventScroll: true });
     window.scrollTo(0, guideScroll);
   };
   $('#guide-new-project').onclick = () => {
-    $('#guide').hidden = true;
     showLibrary();
+    $('#new-project').focus();
     $('#new-project').click();
   };
   for (const link of document.querySelectorAll('.guide-index a')) {
@@ -531,9 +551,13 @@
     const template = $('#project-template').value;
     let modelSource = active.source;
     if (template !== 'copy') {
-      const model = template === 'example' || template === 'advanced'
-        ? { ...JSON.parse(template === 'advanced' ? ADVANCED : EXAMPLE), id: 'proceso-' + id, nombre: name }
-        : basicModel(name, id);
+      const samples = { example: EXAMPLE, advanced: ADVANCED, inventory: INVENTORY, laboratory: LABORATORY };
+      const model = samples[template]
+        ? { ...JSON.parse(samples[template]), id: 'modelo-' + id, nombre: name }
+        : template === 'crud'
+          ? { version: 1, tipo: 'crud', id: 'modelo-' + id, nombre: name, objetivo: 'Gestionar los registros de ' + name + '.',
+              entidad: 'Registro', datos: [{ id: 'nombre', nombre: 'Nombre', tipo: 'Texto', requerido: true }], ocl: [] }
+          : basicModel(name, id);
       modelSource = JSON.stringify(model, null, 2);
     }
     const presentation = template === 'advanced' ? 'tablero' :
@@ -553,10 +577,10 @@
   $('#show-json').onclick = () => { modelFormat = 'json'; view(current); };
   $('#show-diagram').onclick = () => { modelFormat = 'diagram'; view('model'); };
   for (const type of Object.keys(METAMODEL)) {
-    if (!['CIM', 'PIM', 'PSM'].includes(type)) $('#metamodel-types').append(make('option', type));
+    if (!['CIM', 'PIM', 'PSM', 'CIMCrud', 'PIMCrud', 'PSMCrud'].includes(type)) $('#metamodel-types').append(make('option', type));
   }
   $('#open-metamodel').onclick = () => {
-    $('#metamodel-structure').value = current === 'model' || current === 'app' ? 'CIM' : current.toUpperCase();
+    $('#metamodel-structure').value = 'CIM';
     renderMetamodel();
     $('#metamodel-dialog').showModal();
   };
@@ -578,7 +602,7 @@
   }
   $('#trace-prev').onclick = () => { tracePage--; renderTrace(); };
   $('#trace-next').onclick = () => { tracePage++; renderTrace(); };
-  $('#reset').onclick = () => markDraft(active.id === advancedProject.id ? ADVANCED : EXAMPLE);
+  $('#reset').onclick = () => markDraft(examples.get(active.id) ?? (result?.cim.tipo === 'crud' ? INVENTORY : EXAMPLE));
   $('#load-button').onclick = () => $('#load').click();
   $('#load').onchange = async event => {
     const file = event.target.files[0];
