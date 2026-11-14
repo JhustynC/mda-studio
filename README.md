@@ -18,19 +18,27 @@ El segundo comando permite indicar otro modelo y otro directorio de salida. Si e
 
 ## Trabajar con varios proyectos
 
+Usa **Oscuro** o **Claro** en la barra superior para cambiar el tema. El Studio sigue la preferencia del sistema hasta que elijas un tema y recuerda tu elección en el navegador. La vista previa adopta el tema del Studio. Las aplicaciones HTML abiertas por separado siguen el tema del sistema.
+
 Desde **Proyectos**, abre **Recursos del Studio** para consultar la **Guía de inicio** o explorar el **Metamodelo base**. La guía acompaña la creación de un primer proceso. El explorador muestra las estructuras de CIM, PIM y PSM y permite descargar el metamodelo en JSON.
 
-La pantalla **Proyectos** reúne los ejemplos y los proyectos locales que crees. Abre uno para entrar al editor. Usa **← Proyectos** para volver a la biblioteca. **Nuevo proyecto** permite partir de un proceso básico, un CRUD básico, una copia del último proyecto abierto o un ejemplo. El título de la aplicación se define en `nombre` dentro del CIM.
+La pantalla **Proyectos** reúne los ejemplos y los proyectos locales que crees. El buscador encuentra proyectos por nombre, descripción o tipo. Las tarjetas identifican si se trata de un proceso, un catálogo CRUD o una integración de proceso e inventario. Abre uno para entrar al editor. Usa **← Proyectos** para volver a la biblioteca. **Nuevo proyecto** permite partir de un proceso básico, un CRUD básico, una copia del último proyecto abierto o un ejemplo. El título de la aplicación se define en `nombre` dentro del CIM.
 
 El Studio guarda cada borrador, incluso mientras el JSON está incompleto, en el almacenamiento de este navegador. Al cambiar de proyecto, restaura su CIM y calcula sus propias salidas. Desde **Descargar** puedes guardar el CIM, PIM, PSM o HTML del proyecto activo. Para trasladar un proyecto, descarga su CIM, crea un proyecto en el otro navegador e importa ese archivo. Los HTML generados para proyectos distintos usan claves locales de casos independientes, incluso si sus CIM tienen el mismo identificador.
 
 En el editor, **Proceso de negocio** y **Restricciones OCL** se despliegan al seleccionarlos. El proceso puede filtrarse por actor. La trazabilidad se puede buscar por texto y filtrar por campos, transiciones o reglas. La descarga JSON incluye todas las filas.
 
-**CIM → Editar JSON** usa CodeMirror 6 con colores de sintaxis, números de línea, bloques plegables, búsqueda y diagnósticos de sintaxis. Usa `Ctrl+Enter` para generar desde el editor. **PIM** y **PSM** ofrecen **Inspeccionar JSON**, un árbol de solo lectura con secciones plegables. Sus archivos se descargan con **Descargar**.
+Las tablas de **Campos y tipos** agrupan los datos por entidad cuando el proyecto vincula un catálogo a un proceso. En **Gestión de laboratorio**, puedes distinguir los campos de Préstamo y Producto en cada etapa. La aplicación generada muestra las entradas y salidas de stock en **Movimientos**, con su cantidad y las existencias resultantes.
 
-En **PSM** o **Aplicación**, usa **Presentación de la aplicación** para elegir entre la bandeja y el tablero agrupado por estado. El Studio recuerda la selección por proyecto. La elección entra al PSM como `presentacion` y se incluye en el HTML exportado. Compras abre en tablero y préstamos en bandeja. Cambiar la presentación vuelve a cargar la vista previa y reinicia sus casos de prueba.
+**CIM → Editar JSON** usa CodeMirror 6 con colores de sintaxis, números de línea, bloques plegables, búsqueda y diagnósticos de sintaxis. Usa `Ctrl+Enter` para validar el CIM y ver el PIM desde el editor. **PIM** y **PSM** ofrecen **Inspeccionar JSON**, un árbol de solo lectura con secciones plegables. Sus archivos se descargan con **Descargar**.
+
+En **PSM**, elige cómo se mostrarán los casos. La **Lista de casos (bandeja)** muestra cada solicitud junto a su estado. El **Tablero por estado** agrupa las solicitudes que están en la misma etapa. Los ejemplos visuales muestran cómo se ven los mismos casos en las dos opciones.
+
+La vista previa indica la opción activa y permite volver al PSM para cambiarla. El Studio recuerda la elección por proyecto y la guarda en el PSM y en el HTML exportado. Al cambiarla se reinician los casos de prueba de la vista previa. Los proyectos CRUD usan su tabla de registros.
 
 ## Las ocho etapas del proyecto
+
+En el editor, sigue **Validar y ver PIM → Ver PSM → Generar aplicación**. Los botones para volver y la barra de etapas permiten revisar el recorrido. El CIM es el modelo editable y el compilador actualiza el PIM y el PSM a partir de su última versión válida. Si hay un error en el CIM, el Studio muestra el diagnóstico antes de avanzar.
 
 MDA Studio implementa el recorrido **CIM → PIM → PSM → aplicación** con un DSL, un metamodelo y un compilador propios. La propuesta de clase orienta las etapas. Esta implementación usa JavaScript y genera una aplicación web autónoma.
 
@@ -81,7 +89,7 @@ El compilador comprueba que las transiciones de entrada y salida estén correcta
 
 1. Abre el Studio. Muestra el CIM, los actores y las ramas de aprobación y rechazo.
 2. Abre PIM y PSM. Señala cómo `cantidad` pasa de dato de negocio a propiedad lógica, luego a control HTML de tipo `number`. Muestra la misma fila en Trazabilidad.
-3. Pulsa **Generar aplicación**. Como Estudiante, intenta crear un caso con seis unidades y observa que `CantidadValida` lo bloquea. Usa dos unidades, cinco días y **Práctica de óptica** como motivo para crearlo.
+3. Desde el PSM, pulsa **Generar aplicación**. Como Estudiante, intenta crear un caso con seis unidades y observa que `CantidadValida` lo bloquea. Usa dos unidades, cinco días y **Práctica de óptica** como motivo para crearlo.
 4. Cambia a Responsable, aprueba el caso y registra la entrega. Vuelve a Estudiante para registrar la devolución. Muestra el historial. La rama alternativa permite rechazar un caso pendiente.
 5. Vuelve al CIM y cambia el límite de unidades de `5` a `3`, o añade un campo `curso` de tipo `Texto`. Genera de nuevo y muestra el cambio en el formulario o en la validación. Descarga el HTML para demostrar que se ejecuta por separado.
 

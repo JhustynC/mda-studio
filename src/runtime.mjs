@@ -235,7 +235,11 @@ export function application(model, validators, catalogValidators) {
     const rows = document.createDocumentFragment();
     for (const record of matching) {
       const row = element('tr');
-      for (const field of catalog.campos) row.append(element('td', displayValue(field, record.values[field.id])));
+      for (const field of catalog.campos) {
+        const cell = element('td', displayValue(field, record.values[field.id]));
+        if (field.id === link?.existencias) cell.dataset.stock = '';
+        row.append(cell);
+      }
       const actions = element('td', undefined, 'crud-actions');
       const edit = element('button', 'Editar');
       edit.setAttribute('aria-label', 'Editar ' + describe(record, catalog.campos));
@@ -357,7 +361,7 @@ export function application(model, validators, catalogValidators) {
     const inbox = $('#app-inbox');
     inbox.replaceChildren();
     $('#app-count').textContent = records.length + (records.length === 1 ? ' caso' : ' casos');
-    if (!records.length) inbox.append(element('p', 'Todavía no hay casos.', 'muted'));
+    if (!records.length) inbox.append(element('p', role === model.formulario.actor ? 'Completa el formulario para registrar el primer caso.' : 'Aquí aparecerán los casos cuando se registren.', 'app-empty'));
     if (board) renderBoard(inbox);
     else for (const record of records) inbox.append(caseButton(record));
     renderDetail(records.find(record => record.id === selected));
@@ -386,18 +390,32 @@ export function application(model, validators, catalogValidators) {
     } else {
       const items = movements.map(item => {
         const action = model.acciones.find(edge => edge.id === item.action)?.nombre ?? item.action;
-        return element('li', [showDate(item.at), action, item.requester, item.name, item.sku,
-          (item.units > 0 ? '+' : '') + item.units, 'Disponibles: ' + item.stock].filter(Boolean).join(' · '));
+        const row = element('li', undefined, 'movement');
+        row.dataset.direction = item.units > 0 ? 'in' : 'out';
+        const direction = element('span', item.units > 0 ? '↙' : '↗', 'movement-direction');
+        direction.setAttribute('aria-hidden', 'true');
+        const copy = element('div', undefined, 'movement-copy');
+        copy.append(element('strong', action + ' · ' + item.name),
+          element('span', [item.sku, item.requester, showDate(item.at)].filter(Boolean).join(' · ')));
+        const totals = element('div', undefined, 'movement-totals');
+        totals.append(element('strong', (item.units > 0 ? '+' : '') + item.units + ' unidades'),
+          element('span', 'Disponibles: ' + item.stock));
+        row.append(direction, copy, totals);
+        return row;
       });
       $('#stock-movements').replaceChildren(...items);
       $('#stock-empty').hidden = items.length > 0;
     }
+    const panel = $(requests ? '.layout' : catalogView ? '#crud-catalog' : '#stock-ledger');
+    panel.classList.remove('module-enter');
+    requestAnimationFrame(() => panel.classList.add('module-enter'));
     if (durable) notify('');
   }
 
   $('#app-title').textContent = model.nombre;
   root.dataset.presentation = board ? 'tablero' : 'bandeja';
-  if (board) $('#app-cases-title').textContent = 'Tablero por estado';
+  $('#app-cases-title').textContent = board ? 'Tablero por estado' : 'Lista de casos';
+  $('#app-cases-help').textContent = board ? 'Los casos se agrupan por su estado.' : 'Cada caso muestra su estado al lado.';
   document.title = model.nombre;
   $('#app-description').textContent = model.objetivo;
   if (!link && !crud) renderForm($('#app-form'));

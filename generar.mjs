@@ -14,7 +14,7 @@ async function main() {
   const [modelPath, outputPath, ...extra] = process.argv.slice(2);
   if (extra.length) throw new Error('Uso: node generar.mjs [modelo.cim.json] [directorio de salida]');
   const output = outputPath ? resolve(outputPath) : join(here, 'generado');
-  const [source, example, advanced, stock, lab, metamodel, html, css, studioHtml, studioCss, studioJs, diagramCss, editor] = await Promise.all([
+  const [source, example, advanced, stock, lab, metamodel, html, css, studioHtml, studioCss, studioJs, diagramCss, themeCss, editor] = await Promise.all([
     modelPath ? readFile(resolve(modelPath), 'utf8') : read('models/prestamos.cim.json'),
     read('models/prestamos.cim.json'),
     read('models/compras.cim.json'),
@@ -23,7 +23,7 @@ async function main() {
     read('models/metamodelo.json').then(JSON.parse),
     read('src/generated.html'), read('src/generated.css'),
     read('src/studio.html'), read('src/studio.css'), read('src/studio.js'),
-    read('src/diagram.css'),
+    read('src/diagram.css'), read('src/theme.css'),
     build({
       entryPoints: [join(here, 'src/json-editor.mjs')],
       bundle: true, minify: true, format: 'iife', globalName: 'MdaJsonEditor',
@@ -56,7 +56,7 @@ async function main() {
   const notices = await Promise.all([...packagePaths].sort().map(async path =>
     path.slice('node_modules/'.length) + '\n' + await read(path + '/LICENSE')));
   const licenseComment = '<!-- Licencias del editor\n' + notices.join('\n\n').replace(/-->/g, '-- >') + '\n-->';
-  const studio = studioHtml.replace(/\{\{(CSS|SCRIPT)\}\}/g, (_, key) => key === 'CSS' ? studioCss + '\n' + diagramCss : script) + licenseComment;
+  const studio = studioHtml.replace(/\{\{(CSS|SCRIPT)\}\}/g, (_, key) => key === 'CSS' ? studioCss + '\n' + diagramCss + '\n' + themeCss : script) + licenseComment;
   await mkdir(output, { recursive: true });
   const files = { 'index.html': studio };
   for (const result of [purchases, inventory, laboratory, demo]) {

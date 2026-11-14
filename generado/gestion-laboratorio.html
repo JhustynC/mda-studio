@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aplicación generada</title>
+<script>
+  if (!document.documentElement.dataset.theme) {
+    const preference = matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => { document.documentElement.dataset.theme = preference.matches ? 'dark' : 'light'; };
+    apply();
+    preference.addEventListener('change', apply);
+  }
+</script>
 <style>:root{font-family:"Segoe UI",system-ui,sans-serif;color:#152e30;background:#eff5f3;font-synthesis:none}
 *{box-sizing:border-box}body{margin:0}main{max-width:1100px;margin:auto;padding:32px clamp(16px,4vw,48px)}
 header{display:flex;justify-content:space-between;align-items:end;gap:24px}h1{font-size:clamp(26px,5vw,42px);margin:6px 0}h2{font-size:17px;margin:0 0 14px}h3{font-size:21px;margin:0 0 8px}h4{margin:20px 0 8px}p{margin:0}.product{font-size:10px;letter-spacing:.14em;font-weight:750;color:#216a5b}.muted{color:#4d6664;font-size:13px}
@@ -33,24 +41,77 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
 .danger{border-color:#dbc0ba;color:#8f352a}.danger:hover{background:#fff1ed}#crud-delete{width:min(420px,calc(100% - 24px));border:1px solid #c2d3cd;border-radius:12px;padding:20px;color:inherit;background:#fff}#crud-delete::backdrop{background:#132e2b66}#crud-delete .action-bar{margin-top:15px;justify-content:end}
 @media(max-width:700px){[data-presentation=tabla] #app-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:430px){[data-presentation=tabla] #app-form{grid-template-columns:1fr}}
 #app-nav{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}#app-nav button[aria-pressed=true]{background:#18584c;color:#fff;border-color:#18584c}#stock-movements{margin:0;font-variant-numeric:tabular-nums}#stock-movements li{padding:6px 0}
+
+:root[data-theme="dark"]{--ink:#e5f0ea;--sub:#a9c0b6;--line:#345148;--teal:#94d8bb;--dark-bg:#101b19;--dark-panel:#172622;--dark-raised:#20332d;--dark-input:#121f1b;--dark-selected:#28473d;--dark-selected-border:#5c9b84;--dark-link:#a4dec6;--dark-danger:#ffc0b4;--dark-warning:#f2d098;color:var(--ink);background:var(--dark-bg);color-scheme:dark;}
+:root[data-theme="dark"] :is(section,#crud-delete){background:var(--dark-panel);border-color:var(--line);color:var(--ink)}
+:root[data-theme="dark"] :is(.muted,dt,ol){color:var(--sub)}
+:root[data-theme="dark"] .product,#app-notice{color:var(--teal)}
+:root[data-theme="dark"] #app-notice[data-error=true]{color:var(--dark-danger)}
+:root[data-theme="dark"] :is(input,select){background:var(--dark-input);border-color:#5c8576}
+:root[data-theme="dark"] button{background:var(--dark-raised);color:var(--ink);border-color:var(--line)}
+:root[data-theme="dark"] :is(.primary,#app-nav button[aria-pressed=true],[data-presentation=tablero] .primary){background:#9adbc0;color:#102d25;border-color:#9adbc0}
+:root[data-theme="dark"] .primary:hover{background:#b8ead4;color:#102d25}
+:root[data-theme="dark"] :is(.case[aria-pressed=true],[data-presentation=tablero] .case[aria-pressed=true],.state){background:var(--dark-selected);border-color:var(--dark-selected-border);color:var(--ink)}
+:root[data-theme="dark"] .crud-table,.crud-table th,.crud-table td,[data-presentation=tablero] header{border-color:var(--line)}
+:root[data-theme="dark"] :is(.crud-table th,[data-presentation=tablero] #app-cases,[data-presentation=tablero] .board-lane){background:var(--dark-raised);color:var(--ink);border-color:var(--line)}
+:root[data-theme="dark"] [data-presentation=tablero] :is(.product,.board-lane h3){color:var(--teal)}
+:root[data-theme="dark"] .danger{color:var(--dark-danger);border-color:#8a514a}:root[data-theme="dark"] .danger:hover{background:#422822}
+:root{font-family:"Inter","Segoe UI",system-ui,sans-serif;background:#f1f4fa;color:#182342;--app-line:#d9e2ee;--app-sub:#52627d;--app-stripe:#f5f7fc;--app-panel:#fff;--app-tint:#eaf1ff;--app-accent:#3459ac}
+:root[data-theme="dark"]{--ink:#edf1fc;--sub:#b5c0d8;--line:#374661;--dark-bg:#101625;--dark-panel:#192235;--dark-raised:#24334f;--dark-input:#141d2f;--dark-selected:#2d4165;--dark-selected-border:#758ebd;--teal:#b4c9ff;--app-line:var(--line);--app-sub:var(--sub);--app-stripe:#202c42;--app-panel:var(--dark-panel);--app-tint:#283b60;--app-accent:#bed0ff}
+#application>header{position:relative;overflow:hidden;isolation:isolate;padding:28px clamp(17px,4vw,34px);border-radius:15px;background:linear-gradient(114deg,#18264d,#263b68);color:#f6f8ff;align-items:center;border:0}
+#application>header h1{font-size:clamp(27px,5vw,42px);margin:0 0 8px;letter-spacing:-.035em;line-height:1.08}
+#application>header .muted{color:#dbe5fc;line-height:1.55}
+#application>header .role{position:relative;flex:none;background:#324875;border-radius:9px;padding:10px 12px;color:#fff}
+#application>header .role select{background:#1b2b50;color:#eef4ff;border-color:#8297c1}#application>header .role small{font-size:11px}
+.app-decoration{position:absolute;z-index:-1;right:0;top:0;width:min(44%,360px);height:100%;opacity:.55;pointer-events:none}
+#app-nav{gap:0;border-bottom:1px solid var(--app-line);margin-top:14px}
+#app-nav button,:root[data-theme="dark"] #app-nav button{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--app-sub);padding:12px 16px;display:inline-flex;gap:7px;align-items:center}
+#app-nav button[aria-pressed=true],:root[data-theme="dark"] #app-nav button[aria-pressed=true]{color:var(--app-accent);background:var(--app-tint);border-color:var(--app-accent);border-radius:7px 7px 0 0}
+#app-nav svg{width:17px;height:17px}
+#app-create,#app-cases,#app-detail,#crud-catalog,#stock-ledger{border-color:var(--app-line)}
+#app-create{border-top:3px solid var(--app-accent)}
+#app-detail{border-top:3px solid #8972bc}
+#app-form-title,#crud-title,#stock-title{font-size:18px}#crud-catalog,#stock-ledger{background:var(--app-panel)}
+.crud-table{border-color:var(--app-line)}.crud-table th,:root[data-theme="dark"] .crud-table th{background:var(--app-tint);color:var(--app-accent);border-color:var(--app-line);font-size:12px}
+.crud-table td{border-color:var(--app-line)}.crud-table tbody tr:nth-child(even){background:var(--app-stripe)}
+.crud-table td:first-child{font-weight:650}.crud-table td[data-stock]{font-variant-numeric:tabular-nums;color:var(--app-accent);font-weight:750}
+#crud-empty,#stock-empty,.app-empty{padding:13px 12px;border:1px dashed var(--app-line);border-radius:8px;background:var(--app-stripe);color:var(--app-sub);line-height:1.5}
+#stock-movements{list-style:none;padding:0;display:grid;gap:0}
+#stock-movements .movement{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;border-bottom:1px solid var(--app-line);padding:12px 4px}
+.movement:last-child{border-bottom:0!important}.movement-direction{display:grid;place-items:center;width:33px;height:33px;border-radius:50%;font-size:16px;font-weight:750;background:var(--app-tint);color:var(--app-accent)}
+.movement-copy{display:grid;gap:3px;min-width:0}.movement-copy strong{font-size:14px;color:var(--ink,#182342)}.movement-copy span,.movement-totals span{font-size:11px;color:var(--app-sub)}.movement-totals{display:grid;text-align:right;gap:3px}.movement-totals strong{font-size:15px;color:var(--app-accent)}
+:root:not([data-theme="dark"]) .primary{background:#3153a5;border-color:#3153a5;color:#fff}
+:root[data-theme="dark"] .primary{background:#a9bfff;border-color:#a9bfff;color:#16264a}
+@media(prefers-reduced-motion:no-preference){.module-enter{animation:module-enter .2s ease-out both}}
+@keyframes module-enter{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(max-width:550px){#application>header{align-items:start}.app-decoration{opacity:.23}#app-nav button,:root[data-theme="dark"] #app-nav button{padding:10px 8px;gap:5px;font-size:12px}}
+.movement[data-direction="out"] .movement-direction{background:#fff0d9;color:#81531f}
+.movement[data-direction="in"] .movement-direction{background:#e0f3ea;color:#175d4c}
+:root[data-theme="dark"] .movement[data-direction="out"] .movement-direction{background:#443520;color:#f4ce91}
+:root[data-theme="dark"] .movement[data-direction="in"] .movement-direction{background:#234237;color:#a6e9cb}
+#app-notice{color:#235c49}
+:root[data-theme="dark"] #app-notice{color:var(--teal)}
+:root[data-theme="dark"] #app-notice[data-error=true]{color:var(--dark-danger)}
+#app-cases-help{margin:-5px 0 12px}
 </style>
 </head>
 <body>
 <main id="application">
   <header>
-    <div><p class="product">MDA STUDIO / APLICACIÓN GENERADA</p><h1 id="app-title"></h1><p id="app-description" class="muted"></p></div>
+    <svg class="app-decoration" viewBox="0 0 350 175" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true"><g stroke="#a4bcf4" stroke-width="1.2"><path d="M80 139h58q12 0 12-12V68q0-12 12-12h69m-81 54h109m-28-54h26q12 0 12 12v70h41"/><rect x="32" y="118" width="49" height="43" rx="9" fill="#38568c"/><rect x="230" y="33" width="53" height="45" rx="10" fill="#3d5587"/><rect x="255" y="94" width="48" height="34" rx="8" fill="#476397"/><rect x="305" y="121" width="43" height="35" rx="8" fill="#45678e"/></g><path d="M46 134h20m-20 10h13m196-99v22m-11-11h22m1 55h23m24 27h18" stroke="#c9dbff" stroke-linecap="round" stroke-width="2"/></svg>
+    <div><h1 id="app-title"></h1><p id="app-description" class="muted"></p></div>
     <label class="role">Rol de demostración<select id="app-role" aria-describedby="app-role-help"></select><small class="muted" id="app-role-help">Simula quién realiza la tarea.</small></label>
   </header>
   <nav id="app-nav" aria-label="Módulos de la aplicación" hidden>
-    <button type="button" data-module="requests" aria-pressed="true">Solicitudes</button>
-    <button type="button" data-module="catalog" aria-pressed="false">Inventario</button>
-    <button type="button" data-module="ledger" aria-pressed="false">Movimientos</button>
+    <button type="button" data-module="requests" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19V5h14M5 12h8v6h6M16 3l3 2-3 2m0 9 3 2-3 2"/></svg>Solicitudes</button>
+    <button type="button" data-module="catalog" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v13H4zM3 4h18v3M9 11h6m-6 5h6"/></svg>Inventario</button>
+    <button type="button" data-module="ledger" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10m-9-12v4m0 1v4m0 1v4"/></svg>Movimientos</button>
   </nav>
   <p id="app-notice" role="status" aria-live="polite"></p>
   <div class="layout">
     <div class="column">
       <section id="app-create"><h2 id="app-form-title"></h2><form id="app-form"></form></section>
-      <section id="app-cases"><div class="section-head"><h2 id="app-cases-title">Casos</h2><span id="app-count" class="muted"></span></div><div id="app-inbox"></div></section>
+      <section id="app-cases"><div class="section-head"><h2 id="app-cases-title">Casos</h2><span id="app-count" class="muted"></span></div><p id="app-cases-help" class="muted"></p><div id="app-inbox"></div></section>
     </div>
     <section id="app-detail" tabindex="-1"></section>
   </div>
@@ -69,7 +130,14 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
     <div class="action-bar"><button id="crud-delete-cancel" type="button" autofocus>Cancelar</button><button id="crud-delete-confirm" type="button" class="danger">Confirmar eliminación</button></div>
   </dialog>
 </main>
-<script>const model = {"id":"gestion-laboratorio","nombre":"Gestión de laboratorio","objetivo":"Administra equipos y tramita préstamos con existencias compartidas.","entidad":"Prestamo","plataforma":"HTML5 / JavaScript ES2022 / Web Storage","presentacion":"bandeja","almacen":{"tipo":"localStorage","clave":"mda.casos.proyecto.example-laboratorio.gestion-laboratorio"},"roles":[{"id":"estudiante","nombre":"Estudiante"},{"id":"responsable","nombre":"Responsable"}],"campos":[{"id":"solicitante","nombre":"Solicitante","control":"text","requerido":true},{"id":"equipo","nombre":"Equipo del inventario","control":"select","requerido":true},{"id":"cantidad","nombre":"Cantidad","control":"number","requerido":true},{"id":"dias","nombre":"Días de préstamo","control":"number","requerido":true},{"id":"motivo","nombre":"Motivo","control":"text","requerido":true}],"formulario":{"actor":"estudiante","estado":"solicitado","nombre":"Nueva solicitud"},"estados":[{"id":"solicitado","nombre":"En revisión"},{"id":"aprobado","nombre":"Aprobado"},{"id":"entregado","nombre":"Entregado"},{"id":"devuelto","nombre":"Devuelto","final":true},{"id":"rechazado","nombre":"Rechazado","final":true}],"acciones":[{"id":"aprobar","nombre":"Aprobar","actor":"responsable","desde":"solicitado","hasta":"aprobado"},{"id":"rechazar","nombre":"Rechazar","actor":"responsable","desde":"solicitado","hasta":"rechazado"},{"id":"entregar","nombre":"Registrar entrega","actor":"responsable","desde":"aprobado","hasta":"entregado"},{"id":"devolver","nombre":"Registrar devolución","actor":"estudiante","desde":"entregado","hasta":"devuelto"}],"validadores":[{"id":"CantidadValida","clase":"Prestamo","tipo":"inv","operacion":null,"expresion":[{"campo":"cantidad","acceso":"value","operador":">=","valor":1},{"campo":"cantidad","acceso":"value","operador":"\u003c=","valor":5}],"fuente":"context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 5"},{"id":"PlazoValido","clase":"Prestamo","tipo":"inv","operacion":null,"expresion":[{"campo":"dias","acceso":"value","operador":">=","valor":1},{"campo":"dias","acceso":"value","operador":"\u003c=","valor":30}],"fuente":"context Prestamo inv PlazoValido: self.dias >= 1 and self.dias \u003c= 30"},{"id":"MotivoSuficiente","clase":"Prestamo","tipo":"pre","operacion":"aprobar","expresion":[{"campo":"motivo","acceso":"size","operador":">=","valor":8}],"fuente":"context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8"}],"integracion":{"catalogo":{"id":"inventario","nombre":"Inventario compartido","objetivo":"Consulta y actualiza el catálogo de productos y sus existencias.","entidad":"Producto","plataforma":"HTML5 / JavaScript ES2022 / Web Storage","tipo":"crud","presentacion":"tabla","almacen":{"tipo":"localStorage","clave":"mda.registros.proyecto.example-laboratorio.inventario"},"campos":[{"id":"nombre","nombre":"Producto","control":"text","requerido":true},{"id":"sku","nombre":"Código SKU","control":"text","requerido":true},{"id":"categoria","nombre":"Categoría","control":"select","requerido":true,"opciones":[{"id":"equipos","nombre":"Equipos"},{"id":"consumibles","nombre":"Consumibles"},{"id":"repuestos","nombre":"Repuestos"}]},{"id":"stock","nombre":"Stock disponible","control":"number","requerido":true},{"id":"ubicacion","nombre":"Ubicación","control":"text","requerido":false},{"id":"reposicion","nombre":"Fecha de reposición","control":"date","requerido":false},{"id":"activo","nombre":"Producto activo","control":"checkbox","requerido":false}],"unicos":["sku"],"acciones":["crear","consultar","editar","eliminar"],"validadores":[{"id":"StockNoNegativo","clase":"Producto","tipo":"inv","operacion":null,"expresion":[{"campo":"stock","acceso":"value","operador":">=","valor":0}],"fuente":"context Producto inv StockNoNegativo: self.stock >= 0"}]},"referencia":"equipo","clave":"sku","existencias":"stock","cantidad":"cantidad","movimientos":[{"transicion":"entregar","tipo":"salida"},{"transicion":"devolver","tipo":"entrada"}]}};
+<script>
+  if (window.parent !== window) window.addEventListener('message', event => {
+    const { type, theme } = event.data ?? {};
+    if (event.source === window.parent && type === 'mda-preview-theme' && (theme === 'dark' || theme === 'light')) {
+      document.documentElement.dataset.theme = theme;
+    }
+  });
+  const model = {"id":"gestion-laboratorio","nombre":"Gestión de laboratorio","objetivo":"Administra equipos y tramita préstamos con existencias compartidas.","entidad":"Prestamo","plataforma":"HTML5 / JavaScript ES2022 / Web Storage","presentacion":"bandeja","almacen":{"tipo":"localStorage","clave":"mda.casos.proyecto.example-laboratorio.gestion-laboratorio"},"roles":[{"id":"estudiante","nombre":"Estudiante"},{"id":"responsable","nombre":"Responsable"}],"campos":[{"id":"solicitante","nombre":"Solicitante","control":"text","requerido":true},{"id":"equipo","nombre":"Equipo del inventario","control":"select","requerido":true},{"id":"cantidad","nombre":"Cantidad","control":"number","requerido":true},{"id":"dias","nombre":"Días de préstamo","control":"number","requerido":true},{"id":"motivo","nombre":"Motivo","control":"text","requerido":true}],"formulario":{"actor":"estudiante","estado":"solicitado","nombre":"Nueva solicitud"},"estados":[{"id":"solicitado","nombre":"En revisión"},{"id":"aprobado","nombre":"Aprobado"},{"id":"entregado","nombre":"Entregado"},{"id":"devuelto","nombre":"Devuelto","final":true},{"id":"rechazado","nombre":"Rechazado","final":true}],"acciones":[{"id":"aprobar","nombre":"Aprobar","actor":"responsable","desde":"solicitado","hasta":"aprobado"},{"id":"rechazar","nombre":"Rechazar","actor":"responsable","desde":"solicitado","hasta":"rechazado"},{"id":"entregar","nombre":"Registrar entrega","actor":"responsable","desde":"aprobado","hasta":"entregado"},{"id":"devolver","nombre":"Registrar devolución","actor":"estudiante","desde":"entregado","hasta":"devuelto"}],"validadores":[{"id":"CantidadValida","clase":"Prestamo","tipo":"inv","operacion":null,"expresion":[{"campo":"cantidad","acceso":"value","operador":">=","valor":1},{"campo":"cantidad","acceso":"value","operador":"\u003c=","valor":5}],"fuente":"context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 5"},{"id":"PlazoValido","clase":"Prestamo","tipo":"inv","operacion":null,"expresion":[{"campo":"dias","acceso":"value","operador":">=","valor":1},{"campo":"dias","acceso":"value","operador":"\u003c=","valor":30}],"fuente":"context Prestamo inv PlazoValido: self.dias >= 1 and self.dias \u003c= 30"},{"id":"MotivoSuficiente","clase":"Prestamo","tipo":"pre","operacion":"aprobar","expresion":[{"campo":"motivo","acceso":"size","operador":">=","valor":8}],"fuente":"context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8"}],"integracion":{"catalogo":{"id":"inventario","nombre":"Inventario compartido","objetivo":"Consulta y actualiza el catálogo de productos y sus existencias.","entidad":"Producto","plataforma":"HTML5 / JavaScript ES2022 / Web Storage","tipo":"crud","presentacion":"tabla","almacen":{"tipo":"localStorage","clave":"mda.registros.proyecto.example-laboratorio.inventario"},"campos":[{"id":"nombre","nombre":"Producto","control":"text","requerido":true},{"id":"sku","nombre":"Código SKU","control":"text","requerido":true},{"id":"categoria","nombre":"Categoría","control":"select","requerido":true,"opciones":[{"id":"equipos","nombre":"Equipos"},{"id":"consumibles","nombre":"Consumibles"},{"id":"repuestos","nombre":"Repuestos"}]},{"id":"stock","nombre":"Stock disponible","control":"number","requerido":true},{"id":"ubicacion","nombre":"Ubicación","control":"text","requerido":false},{"id":"reposicion","nombre":"Fecha de reposición","control":"date","requerido":false},{"id":"activo","nombre":"Producto activo","control":"checkbox","requerido":false}],"unicos":["sku"],"acciones":["crear","consultar","editar","eliminar"],"validadores":[{"id":"StockNoNegativo","clase":"Producto","tipo":"inv","operacion":null,"expresion":[{"campo":"stock","acceso":"value","operador":">=","valor":0}],"fuente":"context Producto inv StockNoNegativo: self.stock >= 0"}]},"referencia":"equipo","clave":"sku","existencias":"stock","cantidad":"cantidad","movimientos":[{"transicion":"entregar","tipo":"salida"},{"transicion":"devolver","tipo":"entrada"}]}};
 const validators = {
   "CantidadValida": (values) => (values["cantidad"] != null && values["cantidad"] >= 1) && (values["cantidad"] != null && values["cantidad"] <= 5),
   "PlazoValido": (values) => (values["dias"] != null && values["dias"] >= 1) && (values["dias"] != null && values["dias"] <= 30),
@@ -313,7 +381,11 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     const rows = document.createDocumentFragment();
     for (const record of matching) {
       const row = element('tr');
-      for (const field of catalog.campos) row.append(element('td', displayValue(field, record.values[field.id])));
+      for (const field of catalog.campos) {
+        const cell = element('td', displayValue(field, record.values[field.id]));
+        if (field.id === link?.existencias) cell.dataset.stock = '';
+        row.append(cell);
+      }
       const actions = element('td', undefined, 'crud-actions');
       const edit = element('button', 'Editar');
       edit.setAttribute('aria-label', 'Editar ' + describe(record, catalog.campos));
@@ -435,7 +507,7 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     const inbox = $('#app-inbox');
     inbox.replaceChildren();
     $('#app-count').textContent = records.length + (records.length === 1 ? ' caso' : ' casos');
-    if (!records.length) inbox.append(element('p', 'Todavía no hay casos.', 'muted'));
+    if (!records.length) inbox.append(element('p', role === model.formulario.actor ? 'Completa el formulario para registrar el primer caso.' : 'Aquí aparecerán los casos cuando se registren.', 'app-empty'));
     if (board) renderBoard(inbox);
     else for (const record of records) inbox.append(caseButton(record));
     renderDetail(records.find(record => record.id === selected));
@@ -464,18 +536,32 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     } else {
       const items = movements.map(item => {
         const action = model.acciones.find(edge => edge.id === item.action)?.nombre ?? item.action;
-        return element('li', [showDate(item.at), action, item.requester, item.name, item.sku,
-          (item.units > 0 ? '+' : '') + item.units, 'Disponibles: ' + item.stock].filter(Boolean).join(' · '));
+        const row = element('li', undefined, 'movement');
+        row.dataset.direction = item.units > 0 ? 'in' : 'out';
+        const direction = element('span', item.units > 0 ? '↙' : '↗', 'movement-direction');
+        direction.setAttribute('aria-hidden', 'true');
+        const copy = element('div', undefined, 'movement-copy');
+        copy.append(element('strong', action + ' · ' + item.name),
+          element('span', [item.sku, item.requester, showDate(item.at)].filter(Boolean).join(' · ')));
+        const totals = element('div', undefined, 'movement-totals');
+        totals.append(element('strong', (item.units > 0 ? '+' : '') + item.units + ' unidades'),
+          element('span', 'Disponibles: ' + item.stock));
+        row.append(direction, copy, totals);
+        return row;
       });
       $('#stock-movements').replaceChildren(...items);
       $('#stock-empty').hidden = items.length > 0;
     }
+    const panel = $(requests ? '.layout' : catalogView ? '#crud-catalog' : '#stock-ledger');
+    panel.classList.remove('module-enter');
+    requestAnimationFrame(() => panel.classList.add('module-enter'));
     if (durable) notify('');
   }
 
   $('#app-title').textContent = model.nombre;
   root.dataset.presentation = board ? 'tablero' : 'bandeja';
-  if (board) $('#app-cases-title').textContent = 'Tablero por estado';
+  $('#app-cases-title').textContent = board ? 'Tablero por estado' : 'Lista de casos';
+  $('#app-cases-help').textContent = board ? 'Los casos se agrupan por su estado.' : 'Cada caso muestra su estado al lado.';
   document.title = model.nombre;
   $('#app-description').textContent = model.objetivo;
   if (!link && !crud) renderForm($('#app-form'));
@@ -508,6 +594,7 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
   };
   if (link) showModule('requests');
   else render();
-})(model, validators, catalogValidators);</script>
+})(model, validators, catalogValidators);
+</script>
 </body>
 </html>
