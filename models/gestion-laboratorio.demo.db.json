@@ -1,4 +1,7 @@
 {
+  "schemaVersion": 1,
+  "modelId": "gestion-laboratorio",
+  "entity": "Prestamo",
   "records": [
     {
       "id": "demo-ana",

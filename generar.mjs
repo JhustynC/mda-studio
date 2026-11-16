@@ -14,12 +14,11 @@ async function main() {
   const [modelPath, outputPath, ...extra] = process.argv.slice(2);
   if (extra.length) throw new Error('Uso: node generar.mjs [modelo.cim.json] [directorio de salida]');
   const output = outputPath ? resolve(outputPath) : join(here, 'generado');
-  const [source, advanced, stock, lab, labData, metamodel, html, css, studioHtml, studioCss, studioJs, diagramCss, themeCss, editor] = await Promise.all([
+  const [source, advanced, stock, lab, metamodel, html, css, studioHtml, studioCss, studioJs, diagramCss, themeCss, editor] = await Promise.all([
     modelPath ? readFile(resolve(modelPath), 'utf8') : read('models/prestamos.cim.json'),
     read('models/compras.cim.json'),
     read('models/inventario.cim.json'),
     read('models/laboratorio.cim.json'),
-    read('models/laboratorio.demo.json').then(JSON.parse),
     read('models/metamodelo.json').then(JSON.parse),
     read('src/generated.html'), read('src/generated.css'),
     read('src/studio.html'), read('src/studio.css'), read('src/studio.js'),
@@ -34,11 +33,10 @@ async function main() {
   const templates = { html, css };
   const compile = createCompiler(metamodel, application);
   const labSource = lab.replace(/\r\n?/g, '\n').trim();
-  const demoData = source.replace(/\r\n?/g, '\n').trim() === labSource ? labData : undefined;
-  const demo = compile(source, templates, undefined, undefined, demoData);
+  const demo = compile(source, templates);
   const purchases = compile(advanced, templates, 'example-compras', 'tablero');
   const inventory = compile(stock, templates, 'example-inventario');
-  const laboratory = compile(lab, templates, 'example-laboratorio', 'bandeja', labData);
+  const laboratory = compile(lab, templates, 'example-laboratorio');
   const script = [
     editor.outputFiles[0].text,
     'const TEMPLATES = ' + inline(templates) + ';',
@@ -46,7 +44,6 @@ async function main() {
     'const ADVANCED = ' + inline(advanced.trim()) + ';',
     'const INVENTORY = ' + inline(stock.trim()) + ';',
     'const LABORATORY = ' + inline(labSource) + ';',
-    'const LABORATORY_DATA = ' + inline(labData) + ';',
     'const METAMODEL = ' + inline(metamodel) + ';',
     'const compile = (' + createCompiler.toString() + ')(METAMODEL, ' + application.toString() + ');',
     studioJs,

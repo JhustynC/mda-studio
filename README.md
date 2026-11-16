@@ -6,7 +6,7 @@ Proyecto de interciclo de Nuevos Paradigmas de Programación. Genera aplicacione
 
 Clona el repositorio o descárgalo como ZIP y extráelo. Abre [generado/index.html](generado/index.html) con Edge o Chrome desde tu equipo. El HTML ya incluye el compilador y las plantillas, así que puedes probar el Studio sin instalar dependencias ni iniciar un servidor. Para ver la integración completa, abre [Gestión de laboratorio](generado/gestion-laboratorio.html). También puedes ejecutar los ejemplos de [Inventario](generado/inventario.html), [Préstamos](generado/prestamos-lab.html) y [Compras](generado/compras-institucionales.html).
 
-Dentro del Studio, abre **Proyectos → Gestión de laboratorio → Validar y ver PIM → Ver PSM → Generar aplicación**. Con el ejemplo incluido verás **4 artículos, 5 solicitudes y 3 movimientos de inventario** al iniciar la demostración.
+Dentro del Studio, abre **Proyectos → Gestión de laboratorio → Validar y ver PIM → Ver PSM → Generar aplicación**. La vista previa inicia vacía. Puedes cargar los registros de prueba desde **Gestionar datos → Restaurar copia JSON** con la [copia de Gestión de laboratorio](models/gestion-laboratorio.demo.db.json).
 
 Para regenerar desde PowerShell en la carpeta del proyecto, usa Node.js 22 o posterior. Instala las dependencias de compilación con `npm ci` la primera vez. El HTML que se entrega ya incluye CodeMirror y se puede abrir sin conexión.
 
@@ -118,10 +118,13 @@ Los datos pertenecen al navegador que abre el HTML. La vista previa del Studio c
 
 Abre **Gestión de laboratorio** desde Proyectos o la [aplicación generada](generado/gestion-laboratorio.html). El [CIM](models/laboratorio.cim.json) vincula `Prestamo.equipo` con el catálogo de `Producto`. En `integracion` se declaran la clave del catálogo, el campo de existencias, la cantidad y las transiciones de entrada y salida. El [PIM](generado/gestion-laboratorio.pim.json) conserva esa relación y las operaciones. El [PSM](generado/gestion-laboratorio.psm.json) la convierte en un selector de inventario. En [Trazabilidad](generado/gestion-laboratorio.traza.json) puedes seguir los cambios de stock hasta las transiciones.
 
-Los **4 artículos**, **5 solicitudes** y **3 movimientos** de inicio forman parte del repositorio, en [laboratorio.demo.json](models/laboratorio.demo.json). El generador incorpora esos datos al HTML. Un compañero que clone o descargue el proyecto puede verlos sin importar archivos.
+La copia [gestion-laboratorio.demo.db.json](models/gestion-laboratorio.demo.db.json) contiene **4 artículos**, **5 solicitudes** y **3 movimientos** ficticios. Es independiente del CIM, del PIM y del PSM.
 
-- **Vista previa del Studio.** Inicia con los datos precargados al generar el ejemplo incluido. Los cambios de esa vista pertenecen a la sesión de vista previa. Si editas el CIM del ejemplo, la nueva vista empieza con inventario y solicitudes vacíos. Puedes recuperar el ejemplo con **Archivos y trazabilidad → Restaurar ejemplo**. Descarga primero tu CIM si quieres conservar el borrador.
-- **HTML autónomo.** En un navegador sin datos guardados para ese archivo, abre con los datos del repositorio. En aperturas siguientes recupera los cambios guardados localmente. Desde **Gestionar datos → Guardar copia JSON** puedes compartir esos cambios con otra persona.
+1. Genera **Gestión de laboratorio** desde el Studio o abre su HTML autónomo.
+2. Al final de la aplicación, abre **Gestionar datos → Restaurar copia JSON** y selecciona ese archivo.
+3. Revisa **Solicitudes**, **Inventario** y **Movimientos** para ver los registros restaurados.
+
+Una nueva vista previa empieza vacía. El HTML autónomo empieza vacío en un navegador sin registros para esa aplicación y recupera tus cambios en las siguientes aperturas. Restaurar una copia sustituye los registros de la sesión abierta. Usa **Guardar copia JSON** antes de restaurar si necesitas conservarlos.
 
 En **Solicitudes**, abre el caso de Diego Rojas como Estudiante y devuelve los dos microscopios. En **Inventario**, el artículo con código `MIC-DEMO-01` pasa de 4 a 6 unidades, y en **Movimientos** aparece la nueva entrada. Como Responsable, puedes intentar entregar el kit del caso aprobado de Mateo Silva para comprobar el aviso de existencias insuficientes.
 
@@ -148,9 +151,9 @@ El compilador comprueba que las transiciones de entrada y salida estén correcta
 
 1. Abre **Gestión de laboratorio**. En el CIM muestra los actores y las ramas de aprobación y rechazo en **Diagrama**.
 2. En **PIM → Campos y tipos** localiza `cantidad` y su tipo `EInt`. En **PSM → Mapeo** muestra el control `number`. En **Archivos y trazabilidad → Trazabilidad** busca `cantidad` para conectar ambas vistas.
-3. Pulsa **Generar aplicación**. Como **Estudiante**, selecciona un artículo y prueba el límite de `CantidadValida` con seis unidades. Luego registra una solicitud válida de dos unidades, cinco días y el motivo **Práctica de óptica**.
+3. Pulsa **Generar aplicación** y restaura la [copia de demostración](models/gestion-laboratorio.demo.db.json). Como **Estudiante**, selecciona un artículo y prueba el límite de `CantidadValida` con seis unidades. Luego registra una solicitud válida de dos unidades, cinco días y el motivo **Práctica de óptica**.
 4. Como **Responsable**, aprueba el caso y registra la entrega. Vuelve a **Estudiante** para registrar su devolución. Comprueba el historial y los saldos en **Movimientos**.
-5. Vuelve al CIM y añade un campo `curso` de tipo `Texto`. Genera de nuevo y comprueba el cambio en el formulario. Descarga el HTML desde **Archivos y trazabilidad** o usa **Abrir en otra pestaña**. Si editas el CIM original del ejemplo, crea un artículo en el inventario de la nueva vista previa para hacer otra solicitud.
+5. Vuelve al CIM y añade un campo `curso` de tipo `Texto`. Genera de nuevo y comprueba el cambio en el formulario. Descarga el HTML desde **Archivos y trazabilidad** o usa **Abrir en otra pestaña**. En la nueva vista previa, restaura la copia de demostración o crea un artículo activo en el inventario para hacer otra solicitud.
 
 El Studio usa una vista previa aislada cuyos casos se mantienen durante esa ejecución. El HTML autónomo guarda casos en el almacenamiento del navegador cuando está disponible. El selector de rol simula actores para la exposición. El alcance es un proceso por modelo en una aplicación web local, sin cuentas de usuario ni base de datos compartida.
 

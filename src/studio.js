@@ -972,8 +972,7 @@
       const presentation = $('input[name=presentation]:checked')?.value ?? 'bandeja';
       if (source.value !== draft || (result?.cim.tipo !== 'crud' && result?.psm.presentacion !== presentation)) {
         const projectId = active.id === initialProject.id ? undefined : active.id;
-        const initialData = projectId === laboratoryProject.id && source.value.trim() === LABORATORY ? LABORATORY_DATA : undefined;
-        result = compile(source.value, assets, projectId, presentation, initialData);
+        result = compile(source.value, assets, projectId, presentation);
         draft = source.value;
       }
       $('#error').hidden = true;

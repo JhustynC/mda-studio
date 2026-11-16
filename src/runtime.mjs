@@ -1,19 +1,19 @@
-export function application(model, validators, catalogValidators, sqlSchemaDdl = '', initialData = null) {
+export function application(model, validators, catalogValidators, sqlSchemaDdl = '') {
   const root = document.querySelector('#application');
   const $ = selector => root.querySelector(selector);
   const crud = model.tipo === 'crud';
   const link = model.integracion;
   const catalog = link?.catalogo ?? model;
   let catalogView = crud;
-  let products = initialData?.products ?? [];
-  let movements = initialData?.movements ?? [];
+  let products = [];
+  let movements = [];
   const stateNames = new Map((model.estados ?? []).map(state => [state.id, state.nombre]));
   const board = model.presentacion === 'tablero';
   let role = model.formulario?.actor;
   let editing = null;
   const controls = new Map();
   let selected = null;
-  let records = initialData?.records ?? [];
+  let records = [];
   let durable = true;
   let fileHandle = null;
   let idbDatabase = null;
