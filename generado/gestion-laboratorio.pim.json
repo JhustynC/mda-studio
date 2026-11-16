@@ -73,6 +73,7 @@
       "soloLectura": true,
       "valoresEnum": [
         "solicitado",
+        "en-correccion",
         "aprobado",
         "entregado",
         "devuelto",
@@ -163,6 +164,10 @@
       "nombre": "En revisión"
     },
     {
+      "id": "en-correccion",
+      "nombre": "En corrección"
+    },
+    {
       "id": "aprobado",
       "nombre": "Aprobado"
     },
@@ -188,6 +193,28 @@
       "actor": "responsable",
       "desde": "solicitado",
       "hasta": "aprobado"
+    },
+    {
+      "id": "pedir-correccion",
+      "nombre": "Pedir corrección",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "en-correccion",
+      "comentario": true
+    },
+    {
+      "id": "corregir",
+      "nombre": "Corregir y reenviar",
+      "actor": "estudiante",
+      "desde": "en-correccion",
+      "hasta": "solicitado",
+      "edita": [
+        "solicitante",
+        "equipo",
+        "cantidad",
+        "dias",
+        "motivo"
+      ]
     },
     {
       "id": "rechazar",
@@ -257,6 +284,57 @@
       "efectos": [
         "Cambia estado: solicitado → aprobado",
         "Anexa evento auditado por rol responsable"
+      ]
+    },
+    {
+      "id": "pedir-correccion",
+      "nombre": "Pedir corrección",
+      "visibilidad": "public",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "en-correccion",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol",
+        "comentario: EString"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "CantidadValida",
+        "PlazoValido"
+      ],
+      "efectos": [
+        "Cambia estado: solicitado → en-correccion",
+        "Anexa evento auditado por rol responsable",
+        "Registra un comentario obligatorio en el historial"
+      ]
+    },
+    {
+      "id": "corregir",
+      "nombre": "Corregir y reenviar",
+      "visibilidad": "public",
+      "actor": "estudiante",
+      "desde": "en-correccion",
+      "hasta": "solicitado",
+      "parametros": [
+        "idCaso: EString",
+        "actor: Rol",
+        "solicitante: EString",
+        "equipo: EString",
+        "cantidad: EInt",
+        "dias: EInt",
+        "motivo: EString"
+      ],
+      "retorno": "EBoolean",
+      "guardas": [
+        "CantidadValida",
+        "PlazoValido",
+        "MotivoCorregido"
+      ],
+      "efectos": [
+        "Cambia estado: en-correccion → solicitado",
+        "Anexa evento auditado por rol estudiante",
+        "Actualiza campos: solicitante, equipo, cantidad, dias, motivo"
       ]
     },
     {
@@ -410,6 +488,21 @@
         }
       ],
       "fuente": "context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8"
+    },
+    {
+      "id": "MotivoCorregido",
+      "clase": "Prestamo",
+      "tipo": "pre",
+      "operacion": "corregir",
+      "expresion": [
+        {
+          "campo": "motivo",
+          "acceso": "size",
+          "operador": ">=",
+          "valor": 8
+        }
+      ],
+      "fuente": "context Prestamo::corregir() pre MotivoCorregido: self.motivo.size() >= 8"
     }
   ],
   "integracion": {
@@ -695,6 +788,7 @@
     "clave": "sku",
     "existencias": "stock",
     "cantidad": "cantidad",
+    "activo": "activo",
     "movimientos": [
       {
         "transicion": "entregar",

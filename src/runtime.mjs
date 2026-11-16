@@ -189,6 +189,7 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
 
     const mainTable = sqlIdent(model.entidad);
     const mainCols = ['id', ...(crud ? [] : ['estado_actual']), ...model.campos.map(c => sqlIdent(c.id))];
+    const hasComments = !crud && model.acciones.some(action => action.comentario);
     lines.push('', '-- Registros principales: ' + model.entidad + ' (' + records.length + ')');
     for (const rec of records) {
       const vals = [
@@ -199,9 +200,12 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
       lines.push('INSERT INTO ' + mainTable + ' (' + mainCols.join(', ') + ') VALUES (' + vals.join(', ') + ');');
       if (!crud && Array.isArray(rec.history)) {
         for (const ev of rec.history) {
+          const values = [rec.id, ev.action, ev.role, ev.at];
+          const commentCol = hasComments ? ', comentario' : '';
+          if (hasComments) values.push(ev.comment);
           lines.push(
-            'INSERT INTO ' + mainTable + '_historial (caso_id, accion, rol_actor, fecha_hora) VALUES (' +
-            [sqlLiteral(rec.id), sqlLiteral(ev.action), sqlLiteral(ev.role), sqlLiteral(ev.at)].join(', ') + ');',
+            'INSERT INTO ' + mainTable + '_historial (caso_id, accion, rol_actor, fecha_hora' + commentCol + ') VALUES (' +
+            values.map(sqlLiteral).join(', ') + ');',
           );
         }
       }
@@ -244,54 +248,93 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     }).map(rule => rule.fuente.split(': ').at(-1) + ' (' + rule.id + ')');
   }
 
+  function productIsActive(product) {
+    return !link?.activo || product.values[link.activo] === true;
+  }
+
+  function appendField(form, field) {
+    const label = element('label', field.nombre);
+    const reference = link && !catalogView && field.id === link.referencia;
+    const input = element(reference || field.control === 'select' ? 'select' : 'input');
+    input.name = field.id;
+    input.required = field.requerido;
+    if (reference || field.control === 'select') {
+      const options = reference ? products.filter(productIsActive).map(product => ({ id: product.id, nombre: describe(product, catalog.campos) + ' · ' +
+        product.values[link.clave] + ' (' + product.values[link.existencias] + ' disponibles)' })) : field.opciones;
+      const emptyLabel = reference && link.activo && !options.length ? 'No hay productos activos' : 'Selecciona una opción';
+      const empty = element('option', emptyLabel);
+      empty.value = '';
+      input.append(empty);
+      for (const choice of options) {
+        const option = element('option', choice.nombre);
+        option.value = choice.id;
+        input.append(option);
+      }
+    } else {
+      input.type = field.control;
+    }
+    if (Array.isArray(field.atributosHtml)) {
+      for (const attr of field.atributosHtml) {
+        const m = /^(min|max|minlength|maxlength)="(-?\d+)"$/.exec(attr);
+        if (m) input.setAttribute(m[1], m[2]);
+      }
+    }
+    if (field.control === 'number') {
+      input.step = '1';
+      input.inputMode = 'numeric';
+      input.placeholder = '0';
+    } else if (field.control === 'text') {
+      input.placeholder = field.nombre;
+      if (!input.hasAttribute('maxlength')) input.maxLength = 300;
+    }
+    if (field.control === 'checkbox') {
+      label.className = 'checkbox-field';
+      label.prepend(input);
+    } else label.append(input);
+    form.append(label);
+    return input;
+  }
+
+  function fillField(input, field, value) {
+    if (field.control === 'checkbox') input.checked = value === true;
+    else input.value = value ?? '';
+  }
+
+  function readValues(fields, inputs) {
+    const values = Object.create(null);
+    for (const field of fields) {
+      const input = inputs.get(field.id);
+      if (field.control === 'checkbox') {
+        if (field.requerido && !input.checked) throw new Error('Marca ' + field.nombre + '.');
+        values[field.id] = input.checked;
+        continue;
+      }
+      const value = input.value.trim();
+      if (field.requerido && !value) throw new Error('Completa ' + field.nombre + '.');
+      if (field.control === 'number' && value && !Number.isSafeInteger(Number(value))) {
+        throw new Error(field.nombre + ' debe ser un entero válido.');
+      }
+      if (field.opciones && value && !field.opciones.some(choice => choice.id === value)) {
+        throw new Error('Selecciona una opción válida para ' + field.nombre + '.');
+      }
+      values[field.id] = value && field.control === 'number' ? Number(value) : value || null;
+    }
+    return values;
+  }
+
+  function linkedValuesError(values) {
+    const product = products.find(item => item.id === values[link.referencia]);
+    if (!product) return 'Selecciona un producto del inventario.';
+    if (!productIsActive(product)) return 'El producto está inactivo. Selecciona otro producto del inventario.';
+    if (values[link.cantidad] <= 0) return 'La cantidad del préstamo debe ser mayor que cero.';
+    return null;
+  }
+
   function renderForm(form) {
     const fields = catalogView ? catalog.campos : model.campos;
     form.replaceChildren();
     controls.clear();
-    for (const field of fields) {
-      const label = element('label', field.nombre);
-      const reference = link && !catalogView && field.id === link.referencia;
-      const input = element(reference || field.control === 'select' ? 'select' : 'input');
-      controls.set(field.id, input);
-      input.name = field.id;
-      input.required = field.requerido;
-      if (reference || field.control === 'select') {
-        const empty = element('option', 'Selecciona una opción');
-        empty.value = '';
-        input.append(empty);
-        const options = reference ? products.map(product => ({ id: product.id, nombre: describe(product, catalog.campos) + ' · ' +
-          product.values[link.clave] + ' (' + product.values[link.existencias] + ' disponibles)' })) : field.opciones;
-        for (const choice of options) {
-          const option = element('option', choice.nombre);
-          option.value = choice.id;
-          input.append(option);
-        }
-      } else {
-        input.type = field.control;
-      }
-      if (Array.isArray(field.atributosHtml)) {
-        for (const attr of field.atributosHtml) {
-          const m = /^(min|max|minlength|maxlength)="(-?\d+)"$/.exec(attr);
-          if (m) input.setAttribute(m[1], m[2]);
-        }
-      }
-      if (field.control === 'number') {
-        input.step = '1';
-        input.inputMode = 'numeric';
-        input.placeholder = '0';
-      } else if (field.control === 'text') {
-        input.placeholder = field.nombre;
-        if (!input.hasAttribute('maxlength')) input.maxLength = 300;
-      }
-      if (field.control === 'checkbox') {
-        label.className = 'checkbox-field';
-        label.prepend(input);
-        form.append(label);
-        continue;
-      }
-      label.append(input);
-      form.append(label);
-    }
+    for (const field of fields) controls.set(field.id, appendField(form, field));
     const submit = element('button', catalogView ? 'Crear registro' : 'Crear caso', 'primary');
     submit.id = 'app-submit';
     submit.type = 'submit';
@@ -307,29 +350,14 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     form.onsubmit = event => {
       event.preventDefault();
       if (!catalogView && role !== model.formulario.actor) return;
-      const values = Object.create(null);
-      for (const field of fields) {
-        const input = controls.get(field.id);
-        if (field.control === 'checkbox') {
-          if (field.requerido && !input.checked) return notify('Marca ' + field.nombre + '.', true);
-          values[field.id] = input.checked;
-          continue;
-        }
-        const inputValue = input.value.trim();
-        if (field.requerido && !inputValue) return notify('Completa ' + field.nombre + '.', true);
-        if (field.control === 'number' && inputValue && !Number.isSafeInteger(Number(inputValue))) {
-          return notify(field.nombre + ' debe ser un entero válido.', true);
-        }
-        if (field.opciones && inputValue && !field.opciones.some(choice => choice.id === inputValue)) {
-          return notify('Selecciona una opción válida para ' + field.nombre + '.', true);
-        }
-        values[field.id] = inputValue && field.control === 'number' ? Number(inputValue) : inputValue || null;
-      }
+      let values;
+      try { values = readValues(fields, controls); }
+      catch (error) { return notify(error.message, true); }
       const errors = catalogView && link ? violations(values, null, catalog, catalogValidators) : violations(values, null);
       if (errors.length) return notify('Restricción OCL incumplida: ' + errors.join(' · '), true);
       if (catalogView) return saveRecord(values);
-      if (link && !products.some(product => product.id === values[link.referencia])) return notify('Selecciona un producto del inventario.', true);
-      if (link && values[link.cantidad] <= 0) return notify('La cantidad del préstamo debe ser mayor que cero.', true);
+      const problem = link && linkedValuesError(values);
+      if (problem) return notify(problem, true);
       const now = new Date().toISOString();
       const record = {
         id: newId(),
@@ -360,8 +388,7 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     if (!record) return;
     for (const field of catalog.campos) {
       const input = controls.get(field.id);
-      if (field.control === 'checkbox') input.checked = record.values[field.id] === true;
-      else input.value = record.values[field.id] ?? '';
+      fillField(input, field, record.values[field.id]);
     }
     controls.values().next().value?.focus();
   }
@@ -436,42 +463,93 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     $('#crud-empty').textContent = query ? 'No hay coincidencias.' : 'Todavía no hay registros.';
   }
 
-  function transition(record, action) {
-    const latest = records.find(item => item.id === record.id);
-    if (action.actor !== role || latest?.state !== action.desde) return;
-    const errors = violations(latest.values, action.id);
-    if (errors.length) return notify('Restricción OCL incumplida: ' + errors.join(' · '), true);
-    const next = {
-      ...latest, state: action.hasta,
-      history: [...latest.history, { action: action.nombre, role, at: new Date().toISOString() }],
+  function openAction(record, action) {
+    const dialog = $('#case-action');
+    const form = $('#case-action-form');
+    const body = $('#case-action-fields');
+    const error = $('#case-action-error');
+    const fields = model.campos.filter(field => action.edita?.includes(field.id));
+    const inputs = new Map();
+    body.replaceChildren();
+    error.textContent = '';
+    $('#case-action-title').textContent = action.nombre;
+    $('#case-action-context').textContent = describe(record);
+    $('#case-action-submit').textContent = action.nombre;
+    const correction = record.history.at(-1)?.comment;
+    if (fields.length && correction) {
+      body.append(element('p', correction, 'action-comment'));
+    }
+    for (const field of fields) {
+      const input = appendField(body, field);
+      fillField(input, field, record.values[field.id]);
+      inputs.set(field.id, input);
+    }
+    let comment;
+    if (action.comentario) {
+      const label = element('label', 'Comentario obligatorio', 'comment-field');
+      comment = element('textarea');
+      comment.required = true;
+      comment.maxLength = 500;
+      comment.rows = 3;
+      label.append(comment);
+      body.append(label);
+    }
+    form.onsubmit = event => {
+      event.preventDefault();
+      error.textContent = '';
+      let changes;
+      try { changes = readValues(fields, inputs); }
+      catch (invalid) { error.textContent = invalid.message; return; }
+      const message = comment?.value.trim();
+      if (comment && !message) { error.textContent = 'Escribe el comentario antes de continuar.'; return; }
+      if (transition(record, action, changes, message, text => { error.textContent = text; })) {
+        dialog.close();
+        $('#app-detail').focus();
+      }
     };
-    const nextRecords = records.map(item => item.id === next.id ? next : item);
-    const effect = link?.movimientos.find(entry => entry.transicion === action.id);
-    const saved = effect ? persistMovement(nextRecords, latest, effect) : persist(nextRecords);
-    if (saved === undefined) return;
-    render();
-    notify(action.nombre + ' → ' + stateNames.get(next.state) + '.' + saved);
+    dialog.showModal();
+    (inputs.values().next().value ?? comment)?.focus();
   }
 
-  function persistMovement(nextRecords, request, effect) {
+  function transition(record, action, changes, comment, fail = message => notify(message, true)) {
+    const latest = records.find(item => item.id === record.id);
+    if (action.actor !== role || latest?.state !== action.desde) return fail('La acción ya no está disponible para este caso.');
+    const values = changes ? { ...latest.values, ...changes } : latest.values;
+    if (link && action.edita) {
+      const problem = linkedValuesError(values);
+      if (problem) return fail(problem);
+    }
+    const errors = violations(values, action.id);
+    if (errors.length) return fail('Restricción OCL incumplida: ' + errors.join(' · '));
+    const event = { action: action.nombre, role, at: new Date().toISOString() };
+    if (comment) event.comment = comment;
+    const next = { ...latest, values, state: action.hasta, history: [...latest.history, event] };
+    const nextRecords = records.map(item => item.id === next.id ? next : item);
+    const effect = link?.movimientos.find(entry => entry.transicion === action.id);
+    const saved = effect ? persistMovement(nextRecords, next, effect, event.at, fail) : persist(nextRecords);
+    if (saved === undefined) return false;
+    render();
+    notify(action.nombre + ' → ' + stateNames.get(next.state) + '.' + saved);
+    return true;
+  }
+
+  function persistMovement(nextRecords, request, effect, at, fail) {
     const product = products.find(item => item.id === request.values[link.referencia]);
     const quantity = request.values[link.cantidad];
     if (!product || !Number.isSafeInteger(quantity) || quantity <= 0) {
-      notify('La solicitud no tiene un producto y cantidad válidos.', true);
-      return;
+      return fail('La solicitud no tiene un producto y cantidad válidos.');
     }
     const units = effect.tipo === 'salida' ? -quantity : quantity;
     const stock = product.values[link.existencias] + units;
     if (!Number.isSafeInteger(stock) || stock < 0) {
-      notify('No se puede aplicar el movimiento. Existencias disponibles: ' + product.values[link.existencias] + '.', true);
-      return;
+      return fail('No se puede aplicar el movimiento. Existencias disponibles: ' + product.values[link.existencias] + '.');
     }
     const values = { ...product.values, [link.existencias]: stock };
     const errors = violations(values, null, catalog, catalogValidators);
-    if (errors.length) { notify('Restricción de inventario: ' + errors.join(' · '), true); return; }
+    if (errors.length) return fail('Restricción de inventario: ' + errors.join(' · '));
     const nextProducts = products.map(item => item.id === product.id ? { ...item, values } : item);
     const movement = { request: request.id, requester: describe(request), sku: values[link.clave], name: describe(product, catalog.campos),
-      units, stock, action: effect.transicion, at: new Date().toISOString() };
+      units, stock, action: effect.transicion, at };
     return persist(nextRecords, nextProducts, [movement, ...movements]);
   }
 
@@ -493,18 +571,32 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     const actions = model.acciones.filter(action => action.desde === record.state && action.actor === role);
     const bar = element('div', undefined, 'action-bar');
     for (const action of actions) {
-      const button = element('button', action.nombre, 'primary');
-      button.onclick = () => transition(record, action);
+      const button = element('button', action.nombre, action.comentario ? '' : 'primary');
+      button.onclick = () => {
+        if (action.edita || action.comentario) openAction(record, action);
+        else if (transition(record, action)) detail.focus();
+      };
       bar.append(button);
     }
     if (!actions.length) bar.append(element('p', 'No hay acciones pendientes para este rol.', 'muted'));
-    detail.append(bar, element('h4', 'Historial'));
+    detail.append(bar, element('h4', 'Historial de la solicitud'));
     const history = element('ol');
     for (const event of record.history) {
       const actor = model.roles.find(item => item.id === event.role);
-      history.append(element('li', event.action + ' · ' + (actor?.nombre ?? event.role) + ' · ' + showDate(event.at)));
+      const item = element('li', event.action + ' · ' + (actor?.nombre ?? event.role) + ' · ' + showDate(event.at));
+      if (event.comment) item.append(element('p', event.comment, 'history-comment'));
+      history.append(item);
     }
     detail.append(history);
+    if (link) {
+      detail.append(element('h4', 'Movimientos de este caso'));
+      const matching = movements.filter(item => item.request === record.id);
+      if (matching.length) {
+        const list = element('ul', undefined, 'case-movements');
+        list.append(...matching.map(renderMovement));
+        detail.append(list);
+      } else detail.append(element('p', 'Aquí aparecerán las entradas y salidas de inventario de esta solicitud.', 'muted'));
+    }
   }
 
   function caseButton(record) {
@@ -557,6 +649,22 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     }
   }
 
+  function renderMovement(item) {
+    const action = model.acciones.find(edge => edge.id === item.action)?.nombre ?? item.action;
+    const row = element('li', undefined, 'movement');
+    row.dataset.direction = item.units > 0 ? 'in' : 'out';
+    const direction = element('span', item.units > 0 ? '↙' : '↗', 'movement-direction');
+    direction.setAttribute('aria-hidden', 'true');
+    const copy = element('div', undefined, 'movement-copy');
+    copy.append(element('strong', action + ' · ' + item.name),
+      element('span', [item.sku, item.requester, showDate(item.at)].filter(Boolean).join(' · ')));
+    const totals = element('div', undefined, 'movement-totals');
+    totals.append(element('strong', (item.units > 0 ? '+' : '') + item.units + ' unidades'),
+      element('span', 'Disponibles: ' + item.stock));
+    row.append(direction, copy, totals);
+    return row;
+  }
+
   function showModule(module) {
     catalogView = module === 'catalog';
     const requests = module === 'requests';
@@ -578,21 +686,7 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
       $('#app-form-title').textContent = 'Nuevo registro';
       renderCrud();
     } else {
-      const items = movements.map(item => {
-        const action = model.acciones.find(edge => edge.id === item.action)?.nombre ?? item.action;
-        const row = element('li', undefined, 'movement');
-        row.dataset.direction = item.units > 0 ? 'in' : 'out';
-        const direction = element('span', item.units > 0 ? '↙' : '↗', 'movement-direction');
-        direction.setAttribute('aria-hidden', 'true');
-        const copy = element('div', undefined, 'movement-copy');
-        copy.append(element('strong', action + ' · ' + item.name),
-          element('span', [item.sku, item.requester, showDate(item.at)].filter(Boolean).join(' · ')));
-        const totals = element('div', undefined, 'movement-totals');
-        totals.append(element('strong', (item.units > 0 ? '+' : '') + item.units + ' unidades'),
-          element('span', 'Disponibles: ' + item.stock));
-        row.append(direction, copy, totals);
-        return row;
-      });
+      const items = movements.map(renderMovement);
       $('#stock-movements').replaceChildren(...items);
       $('#stock-empty').hidden = items.length > 0;
     }
@@ -601,6 +695,8 @@ export function application(model, validators, catalogValidators, sqlSchemaDdl =
     requestAnimationFrame(() => panel.classList.add('module-enter'));
     if (durable) notify('');
   }
+
+  $('#case-action-cancel').onclick = () => $('#case-action').close();
 
   const dataDialog = $('#db-dialog');
   $('#open-data-tools').onclick = () => {

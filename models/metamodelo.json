@@ -55,7 +55,9 @@
     "nombre": "text",
     "actor": "id",
     "desde": "id",
-    "hasta": "id"
+    "hasta": "id",
+    "edita?": ["id"],
+    "comentario?": "bool"
   },
   "PIM": {
     "id": "id",
@@ -302,6 +304,7 @@
     "clave": "id",
     "existencias": "id",
     "cantidad": "id",
+    "activo?": "id",
     "movimientos": [
       "Movimiento"
     ]
@@ -312,6 +315,7 @@
     "clave": "id",
     "existencias": "id",
     "cantidad": "id",
+    "activo?": "id",
     "movimientos": [
       "Movimiento"
     ]
@@ -322,6 +326,7 @@
     "clave": "id",
     "existencias": "id",
     "cantidad": "id",
+    "activo?": "id",
     "movimientos": [
       "Movimiento"
     ]

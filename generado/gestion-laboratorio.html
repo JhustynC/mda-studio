@@ -78,8 +78,8 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
 .crud-table td{border-color:var(--app-line)}.crud-table tbody tr:nth-child(even){background:var(--app-stripe)}
 .crud-table td:first-child{font-weight:650}.crud-table td[data-stock]{font-variant-numeric:tabular-nums;color:var(--app-accent);font-weight:750}
 #crud-empty,#stock-empty,.app-empty{padding:13px 12px;border:1px dashed var(--app-line);border-radius:8px;background:var(--app-stripe);color:var(--app-sub);line-height:1.5}
-#stock-movements{list-style:none;padding:0;display:grid;gap:0}
-#stock-movements .movement{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;border-bottom:1px solid var(--app-line);padding:12px 4px}
+:is(#stock-movements,.case-movements){list-style:none;padding:0;display:grid;gap:0;margin:0}
+:is(#stock-movements,.case-movements) .movement{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;border-bottom:1px solid var(--app-line);padding:12px 4px}
 .movement:last-child{border-bottom:0!important}.movement-direction{display:grid;place-items:center;width:33px;height:33px;border-radius:50%;font-size:16px;font-weight:750;background:var(--app-tint);color:var(--app-accent)}
 .movement-copy{display:grid;gap:3px;min-width:0}.movement-copy strong{font-size:14px;color:var(--ink,#182342)}.movement-copy span,.movement-totals span{font-size:11px;color:var(--app-sub)}.movement-totals{display:grid;text-align:right;gap:3px}.movement-totals strong{font-size:15px;color:var(--app-accent)}
 :root:not([data-theme="dark"]) .primary{background:#3153a5;border-color:#3153a5;color:#fff}
@@ -104,6 +104,20 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
 .data-sql{margin-top:15px;padding-top:12px;border-top:1px solid var(--app-line)}
 .data-sql summary{cursor:pointer;font-size:13px;font-weight:650}
 .data-sql .db-code{max-height:40vh}
+
+#case-action{width:min(540px,calc(100% - 24px));max-height:calc(100dvh - 24px);padding:20px;border:1px solid var(--app-line);border-radius:12px;background:var(--app-panel);color:inherit;overflow-wrap:anywhere}
+#case-action::backdrop{background:#132e2b66}
+#case-action-form{display:grid;grid-template-columns:1fr;gap:10px;margin-top:13px}
+#case-action-fields{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
+#case-action-fields :is(.action-comment,.comment-field){grid-column:1/-1}
+#case-action-fields textarea{font:inherit;color:inherit;background:var(--app-stripe);border:1px solid var(--app-line);border-radius:6px;padding:8px 10px;width:100%;resize:vertical}
+#case-action-form .action-bar{justify-content:end}
+#case-action-error{color:#8f352a;font-size:13px;font-weight:650}
+#case-action-error:empty{display:none}
+:root[data-theme="dark"] #case-action-error{color:var(--dark-danger)}
+.history-comment,.action-comment{margin:4px 0 6px;padding:7px 9px;border-left:3px solid var(--app-accent);background:var(--app-tint);color:inherit;white-space:pre-wrap;font-size:13px}
+.ledger-help{margin-bottom:10px}
+@media(max-width:435px){#case-action-fields{grid-template-columns:1fr}.case-movements .movement-direction{display:none}#app-detail .case-movements .movement{grid-template-columns:minmax(0,1fr) auto}}
 </style>
 </head>
 <body>
@@ -134,8 +148,21 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
     <p id="crud-empty" class="muted"></p>
   </section>
   <section id="stock-ledger" aria-labelledby="stock-title" hidden><h2 id="stock-title">Movimientos de inventario</h2>
+    <p class="muted ledger-help">Aquí se registran las entradas y salidas de existencias. El historial de cada solicitud muestra las revisiones y correcciones.</p>
     <p id="stock-empty" class="muted">Todavía no hay entregas ni devoluciones registradas.</p><ol id="stock-movements"></ol>
   </section>
+  <dialog id="case-action" aria-labelledby="case-action-title" aria-describedby="case-action-context">
+    <h2 id="case-action-title"></h2>
+    <p id="case-action-context" class="muted"></p>
+    <form id="case-action-form">
+      <div id="case-action-fields"></div>
+      <p id="case-action-error" role="alert"></p>
+      <div class="action-bar">
+        <button id="case-action-cancel" type="button">Cancelar</button>
+        <button id="case-action-submit" type="submit" class="primary"></button>
+      </div>
+    </form>
+  </dialog>
   <dialog id="crud-delete" aria-labelledby="crud-delete-title">
     <h2 id="crud-delete-title">¿Eliminar el registro?</h2><p id="crud-delete-name"></p>
     <div class="action-bar"><button id="crud-delete-cancel" type="button" autofocus>Cancelar</button><button id="crud-delete-confirm" type="button" class="danger">Confirmar eliminación</button></div>
@@ -171,12 +198,13 @@ form .checkbox-field{display:flex;align-items:center;align-self:center;gap:8px}f
       document.documentElement.dataset.theme = theme;
     }
   });
-  const model = {"id":"gestion-laboratorio","nombre":"Gestión de laboratorio","objetivo":"Administra equipos y tramita préstamos con existencias compartidas.","entidad":"Prestamo","plataforma":"HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL","presentacion":"bandeja","arquitectura":{"patronUi":"Bandeja Maestro-Detalle (Master-Detail Inbox)","disposicion":"Layout de dos columnas 50/50: captura y lista cronológica a la izquierda; ficha técnica, acciones por rol e historial a la derecha.","contenedores":["Cabecera con selector de rol de demostración (Estudiante, Responsable)","Columna izquierda: Formulario de captura (Nueva solicitud) + Bandeja vertical de casos con badge de estado","Columna derecha: Inspector maestro-detalle, disparadores de transición y línea de tiempo auditada","Módulo integrado de Catálogo (Producto) y Kardex de Movimientos","Gestión de datos y exportación"],"adaptadorDatos":"IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.","seguridad":"Simulación de roles en cliente para 2 actores y 3 validadores OCL compilados a ES2022"},"almacen":{"tipo":"IndexedDB + localStorage","clave":"mda.casos.proyecto.example-laboratorio.gestion-laboratorio"},"esquemaSql":{"motor":"SQLite 3","tablas":[{"nombre":"producto","descripcion":"Tabla de catálogo CRUD para Producto","columnas":[{"nombre":"id","tipo":"VARCHAR(64)","restricciones":"PRIMARY KEY NOT NULL"},{"nombre":"nombre","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"sku","tipo":"VARCHAR(300)","restricciones":"NOT NULL UNIQUE"},{"nombre":"categoria","tipo":"VARCHAR(64)","restricciones":"NOT NULL CHECK (categoria IN ('equipos', 'consumibles', 'repuestos'))"},{"nombre":"stock","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"ubicacion","tipo":"VARCHAR(300)","restricciones":"NULL"},{"nombre":"reposicion","tipo":"DATE","restricciones":"NULL"},{"nombre":"activo","tipo":"BOOLEAN","restricciones":"NULL"}],"checks":["CONSTRAINT chk_stocknonegativo CHECK (stock >= 0)"]},{"nombre":"prestamo","descripcion":"Tabla principal de casos de proceso para Prestamo","columnas":[{"nombre":"id","tipo":"VARCHAR(64)","restricciones":"PRIMARY KEY NOT NULL"},{"nombre":"estado_actual","tipo":"VARCHAR(48)","restricciones":"NOT NULL DEFAULT 'solicitado'"},{"nombre":"solicitante","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"equipo","tipo":"VARCHAR(300)","restricciones":"NOT NULL REFERENCES producto(id)"},{"nombre":"cantidad","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"dias","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"motivo","tipo":"VARCHAR(300)","restricciones":"NOT NULL"}],"checks":["CONSTRAINT chk_prestamo_estado CHECK (estado_actual IN ('solicitado', 'aprobado', 'entregado', 'devuelto', 'rechazado'))","CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad \u003c= 5)","CONSTRAINT chk_plazovalido CHECK (dias >= 1 AND dias \u003c= 30)"]},{"nombre":"prestamo_historial","descripcion":"Bitácora inmutable de auditoría de transiciones por rol","columnas":[{"nombre":"id_evento","tipo":"INTEGER","restricciones":"PRIMARY KEY AUTOINCREMENT"},{"nombre":"caso_id","tipo":"VARCHAR(64)","restricciones":"NOT NULL REFERENCES prestamo(id) ON DELETE CASCADE"},{"nombre":"accion","tipo":"VARCHAR(120)","restricciones":"NOT NULL"},{"nombre":"rol_actor","tipo":"VARCHAR(64)","restricciones":"NOT NULL"},{"nombre":"fecha_hora","tipo":"TIMESTAMP","restricciones":"NOT NULL DEFAULT CURRENT_TIMESTAMP"}],"checks":[]},{"nombre":"prestamo_movimientos_stock","descripcion":"Kardex de entradas y salidas vinculadas entre Prestamo y Producto","columnas":[{"nombre":"id_movimiento","tipo":"INTEGER","restricciones":"PRIMARY KEY AUTOINCREMENT"},{"nombre":"caso_id","tipo":"VARCHAR(64)","restricciones":"NOT NULL REFERENCES prestamo(id)"},{"nombre":"producto_sku","tipo":"VARCHAR(120)","restricciones":"NOT NULL REFERENCES producto(sku)"},{"nombre":"transicion","tipo":"VARCHAR(64)","restricciones":"NOT NULL"},{"nombre":"unidades","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"saldo_resultante","tipo":"INTEGER","restricciones":"NOT NULL CHECK (saldo_resultante >= 0)"},{"nombre":"fecha_hora","tipo":"TIMESTAMP","restricciones":"NOT NULL DEFAULT CURRENT_TIMESTAMP"}],"checks":[]}]},"roles":[{"id":"estudiante","nombre":"Estudiante"},{"id":"responsable","nombre":"Responsable"}],"campos":[{"id":"solicitante","nombre":"Solicitante","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"equipo","nombre":"Equipo del inventario","control":"select","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required"]},{"id":"cantidad","nombre":"Cantidad","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"5\""]},{"id":"dias","nombre":"Días de préstamo","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"30\""]},{"id":"motivo","nombre":"Motivo","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]}],"formulario":{"actor":"estudiante","estado":"solicitado","nombre":"Nueva solicitud"},"estados":[{"id":"solicitado","nombre":"En revisión"},{"id":"aprobado","nombre":"Aprobado"},{"id":"entregado","nombre":"Entregado"},{"id":"devuelto","nombre":"Devuelto","final":true},{"id":"rechazado","nombre":"Rechazado","final":true}],"acciones":[{"id":"aprobar","nombre":"Aprobar","actor":"responsable","desde":"solicitado","hasta":"aprobado"},{"id":"rechazar","nombre":"Rechazar","actor":"responsable","desde":"solicitado","hasta":"rechazado"},{"id":"entregar","nombre":"Registrar entrega","actor":"responsable","desde":"aprobado","hasta":"entregado"},{"id":"devolver","nombre":"Registrar devolución","actor":"estudiante","desde":"entregado","hasta":"devuelto"}],"validadores":[{"id":"CantidadValida","clase":"Prestamo","tipo":"inv","operacion":null,"expresion":[{"campo":"cantidad","acceso":"value","operador":">=","valor":1},{"campo":"cantidad","acceso":"value","operador":"\u003c=","conector":"and","valor":5}],"fuente":"context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 5"},{"id":"PlazoValido","clase":"Prestamo","tipo":"inv","operacion":null,"expresion":[{"campo":"dias","acceso":"value","operador":">=","valor":1},{"campo":"dias","acceso":"value","operador":"\u003c=","conector":"and","valor":30}],"fuente":"context Prestamo inv PlazoValido: self.dias >= 1 and self.dias \u003c= 30"},{"id":"MotivoSuficiente","clase":"Prestamo","tipo":"pre","operacion":"aprobar","expresion":[{"campo":"motivo","acceso":"size","operador":">=","valor":8}],"fuente":"context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8"}],"integracion":{"catalogo":{"id":"inventario","nombre":"Inventario compartido","objetivo":"Consulta y actualiza el catálogo de productos y sus existencias.","entidad":"Producto","plataforma":"HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL","tipo":"crud","presentacion":"tabla","arquitectura":{"patronUi":"Data Grid CRUD Tabular (Formulario + Tabla Filtrable)","disposicion":"Formulario de captura multi-columna superior + Tabla de registros con búsqueda instantánea y diálogo de confirmación de borrado.","contenedores":["Formulario de Alta/Edición (7 controles)","Barra de búsqueda en tiempo real","Tabla de datos con columnas: Producto, Código SKU, Categoría, Stock disponible, Ubicación, Fecha de reposición, Producto activo + Acciones","Gestión de datos y exportación"],"adaptadorDatos":"IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.","seguridad":"Validación de unicidad (sku) e invariantes OCL en cliente antes de confirmar transacción"},"almacen":{"tipo":"IndexedDB + localStorage","clave":"mda.registros.proyecto.example-laboratorio.inventario"},"esquemaSql":{"motor":"SQLite 3","tablas":[{"nombre":"producto","descripcion":"Tabla de catálogo CRUD para Producto","columnas":[{"nombre":"id","tipo":"VARCHAR(64)","restricciones":"PRIMARY KEY NOT NULL"},{"nombre":"nombre","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"sku","tipo":"VARCHAR(300)","restricciones":"NOT NULL UNIQUE"},{"nombre":"categoria","tipo":"VARCHAR(64)","restricciones":"NOT NULL CHECK (categoria IN ('equipos', 'consumibles', 'repuestos'))"},{"nombre":"stock","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"ubicacion","tipo":"VARCHAR(300)","restricciones":"NULL"},{"nombre":"reposicion","tipo":"DATE","restricciones":"NULL"},{"nombre":"activo","tipo":"BOOLEAN","restricciones":"NULL"}],"checks":["CONSTRAINT chk_stocknonegativo CHECK (stock >= 0)"]}]},"campos":[{"id":"nombre","nombre":"Producto","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"sku","nombre":"Código SKU","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"categoria","nombre":"Categoría","control":"select","tipoSql":"VARCHAR(64)","requerido":true,"atributosHtml":["required"],"opciones":[{"id":"equipos","nombre":"Equipos"},{"id":"consumibles","nombre":"Consumibles"},{"id":"repuestos","nombre":"Repuestos"}]},{"id":"stock","nombre":"Stock disponible","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"0\""]},{"id":"ubicacion","nombre":"Ubicación","control":"text","tipoSql":"VARCHAR(300)","requerido":false,"atributosHtml":["maxlength=\"300\""]},{"id":"reposicion","nombre":"Fecha de reposición","control":"date","tipoSql":"DATE","requerido":false,"atributosHtml":[]},{"id":"activo","nombre":"Producto activo","control":"checkbox","tipoSql":"BOOLEAN","requerido":false,"atributosHtml":[]}],"unicos":["sku"],"acciones":["crear","consultar","editar","eliminar"],"validadores":[{"id":"StockNoNegativo","clase":"Producto","tipo":"inv","operacion":null,"expresion":[{"campo":"stock","acceso":"value","operador":">=","valor":0}],"fuente":"context Producto inv StockNoNegativo: self.stock >= 0"}]},"referencia":"equipo","clave":"sku","existencias":"stock","cantidad":"cantidad","movimientos":[{"transicion":"entregar","tipo":"salida"},{"transicion":"devolver","tipo":"entrada"}]}};
-const sqlSchemaDdl = "-- Esquema Relacional SQL (PSM) generado automáticamente por MDA Studio\n-- Aplicación: Gestión de laboratorio (gestion-laboratorio)\n-- Plataforma destino: HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL\n\n-- Tabla de catálogo CRUD para Producto\nCREATE TABLE IF NOT EXISTS producto (\n  id VARCHAR(64) PRIMARY KEY NOT NULL,\n  nombre VARCHAR(300) NOT NULL,\n  sku VARCHAR(300) NOT NULL UNIQUE,\n  categoria VARCHAR(64) NOT NULL CHECK (categoria IN ('equipos', 'consumibles', 'repuestos')),\n  stock INTEGER NOT NULL,\n  ubicacion VARCHAR(300) NULL,\n  reposicion DATE NULL,\n  activo BOOLEAN NULL,\n  CONSTRAINT chk_stocknonegativo CHECK (stock >= 0)\n);\n\n-- Tabla principal de casos de proceso para Prestamo\nCREATE TABLE IF NOT EXISTS prestamo (\n  id VARCHAR(64) PRIMARY KEY NOT NULL,\n  estado_actual VARCHAR(48) NOT NULL DEFAULT 'solicitado',\n  solicitante VARCHAR(300) NOT NULL,\n  equipo VARCHAR(300) NOT NULL REFERENCES producto(id),\n  cantidad INTEGER NOT NULL,\n  dias INTEGER NOT NULL,\n  motivo VARCHAR(300) NOT NULL,\n  CONSTRAINT chk_prestamo_estado CHECK (estado_actual IN ('solicitado', 'aprobado', 'entregado', 'devuelto', 'rechazado')),\n  CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad \u003c= 5),\n  CONSTRAINT chk_plazovalido CHECK (dias >= 1 AND dias \u003c= 30)\n);\n\n-- Bitácora inmutable de auditoría de transiciones por rol\nCREATE TABLE IF NOT EXISTS prestamo_historial (\n  id_evento INTEGER PRIMARY KEY AUTOINCREMENT,\n  caso_id VARCHAR(64) NOT NULL REFERENCES prestamo(id) ON DELETE CASCADE,\n  accion VARCHAR(120) NOT NULL,\n  rol_actor VARCHAR(64) NOT NULL,\n  fecha_hora TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n);\n\n-- Kardex de entradas y salidas vinculadas entre Prestamo y Producto\nCREATE TABLE IF NOT EXISTS prestamo_movimientos_stock (\n  id_movimiento INTEGER PRIMARY KEY AUTOINCREMENT,\n  caso_id VARCHAR(64) NOT NULL REFERENCES prestamo(id),\n  producto_sku VARCHAR(120) NOT NULL REFERENCES producto(sku),\n  transicion VARCHAR(64) NOT NULL,\n  unidades INTEGER NOT NULL,\n  saldo_resultante INTEGER NOT NULL CHECK (saldo_resultante >= 0),\n  fecha_hora TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n);\n";
+  const model = {"id":"gestion-laboratorio","nombre":"Gestión de laboratorio","objetivo":"Administra equipos y tramita préstamos con existencias compartidas.","entidad":"Prestamo","plataforma":"HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL","presentacion":"bandeja","arquitectura":{"patronUi":"Bandeja Maestro-Detalle (Master-Detail Inbox)","disposicion":"Layout de dos columnas 50/50: captura y lista cronológica a la izquierda; ficha técnica, acciones por rol e historial a la derecha.","contenedores":["Cabecera con selector de rol de demostración (Estudiante, Responsable)","Columna izquierda: Formulario de captura (Nueva solicitud) + Bandeja vertical de casos con badge de estado","Columna derecha: Inspector maestro-detalle, disparadores de transición y línea de tiempo auditada","Módulo integrado de Catálogo (Producto) y Kardex de Movimientos","Gestión de datos y exportación"],"adaptadorDatos":"IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.","seguridad":"Simulación de roles en cliente para 2 actores y 4 validadores OCL compilados a ES2022"},"almacen":{"tipo":"IndexedDB + localStorage","clave":"mda.casos.proyecto.example-laboratorio.gestion-laboratorio"},"esquemaSql":{"motor":"SQLite 3","tablas":[{"nombre":"producto","descripcion":"Tabla de catálogo CRUD para Producto","columnas":[{"nombre":"id","tipo":"VARCHAR(64)","restricciones":"PRIMARY KEY NOT NULL"},{"nombre":"nombre","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"sku","tipo":"VARCHAR(300)","restricciones":"NOT NULL UNIQUE"},{"nombre":"categoria","tipo":"VARCHAR(64)","restricciones":"NOT NULL CHECK (categoria IN ('equipos', 'consumibles', 'repuestos'))"},{"nombre":"stock","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"ubicacion","tipo":"VARCHAR(300)","restricciones":"NULL"},{"nombre":"reposicion","tipo":"DATE","restricciones":"NULL"},{"nombre":"activo","tipo":"BOOLEAN","restricciones":"NULL"}],"checks":["CONSTRAINT chk_stocknonegativo CHECK (stock >= 0)"]},{"nombre":"prestamo","descripcion":"Tabla principal de casos de proceso para Prestamo","columnas":[{"nombre":"id","tipo":"VARCHAR(64)","restricciones":"PRIMARY KEY NOT NULL"},{"nombre":"estado_actual","tipo":"VARCHAR(48)","restricciones":"NOT NULL DEFAULT 'solicitado'"},{"nombre":"solicitante","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"equipo","tipo":"VARCHAR(300)","restricciones":"NOT NULL REFERENCES producto(id)"},{"nombre":"cantidad","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"dias","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"motivo","tipo":"VARCHAR(300)","restricciones":"NOT NULL"}],"checks":["CONSTRAINT chk_prestamo_estado CHECK (estado_actual IN ('solicitado', 'en-correccion', 'aprobado', 'entregado', 'devuelto', 'rechazado'))","CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad \u003c= 5)","CONSTRAINT chk_plazovalido CHECK (dias >= 1 AND dias \u003c= 30)"]},{"nombre":"prestamo_historial","descripcion":"Bitácora inmutable de auditoría de transiciones por rol","columnas":[{"nombre":"id_evento","tipo":"INTEGER","restricciones":"PRIMARY KEY AUTOINCREMENT"},{"nombre":"caso_id","tipo":"VARCHAR(64)","restricciones":"NOT NULL REFERENCES prestamo(id) ON DELETE CASCADE"},{"nombre":"accion","tipo":"VARCHAR(120)","restricciones":"NOT NULL"},{"nombre":"rol_actor","tipo":"VARCHAR(64)","restricciones":"NOT NULL"},{"nombre":"comentario","tipo":"VARCHAR(500)","restricciones":"NULL"},{"nombre":"fecha_hora","tipo":"TIMESTAMP","restricciones":"NOT NULL DEFAULT CURRENT_TIMESTAMP"}],"checks":[]},{"nombre":"prestamo_movimientos_stock","descripcion":"Kardex de entradas y salidas vinculadas entre Prestamo y Producto","columnas":[{"nombre":"id_movimiento","tipo":"INTEGER","restricciones":"PRIMARY KEY AUTOINCREMENT"},{"nombre":"caso_id","tipo":"VARCHAR(64)","restricciones":"NOT NULL REFERENCES prestamo(id)"},{"nombre":"producto_sku","tipo":"VARCHAR(120)","restricciones":"NOT NULL REFERENCES producto(sku)"},{"nombre":"transicion","tipo":"VARCHAR(64)","restricciones":"NOT NULL"},{"nombre":"unidades","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"saldo_resultante","tipo":"INTEGER","restricciones":"NOT NULL CHECK (saldo_resultante >= 0)"},{"nombre":"fecha_hora","tipo":"TIMESTAMP","restricciones":"NOT NULL DEFAULT CURRENT_TIMESTAMP"}],"checks":[]}]},"roles":[{"id":"estudiante","nombre":"Estudiante"},{"id":"responsable","nombre":"Responsable"}],"campos":[{"id":"solicitante","nombre":"Solicitante","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"equipo","nombre":"Equipo del inventario","control":"select","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required"]},{"id":"cantidad","nombre":"Cantidad","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"5\""]},{"id":"dias","nombre":"Días de préstamo","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"1\"","max=\"30\""]},{"id":"motivo","nombre":"Motivo","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]}],"formulario":{"actor":"estudiante","estado":"solicitado","nombre":"Nueva solicitud"},"estados":[{"id":"solicitado","nombre":"En revisión"},{"id":"en-correccion","nombre":"En corrección"},{"id":"aprobado","nombre":"Aprobado"},{"id":"entregado","nombre":"Entregado"},{"id":"devuelto","nombre":"Devuelto","final":true},{"id":"rechazado","nombre":"Rechazado","final":true}],"acciones":[{"id":"aprobar","nombre":"Aprobar","actor":"responsable","desde":"solicitado","hasta":"aprobado"},{"id":"pedir-correccion","nombre":"Pedir corrección","actor":"responsable","desde":"solicitado","hasta":"en-correccion","comentario":true},{"id":"corregir","nombre":"Corregir y reenviar","actor":"estudiante","desde":"en-correccion","hasta":"solicitado","edita":["solicitante","equipo","cantidad","dias","motivo"]},{"id":"rechazar","nombre":"Rechazar","actor":"responsable","desde":"solicitado","hasta":"rechazado"},{"id":"entregar","nombre":"Registrar entrega","actor":"responsable","desde":"aprobado","hasta":"entregado"},{"id":"devolver","nombre":"Registrar devolución","actor":"estudiante","desde":"entregado","hasta":"devuelto"}],"validadores":[{"id":"CantidadValida","clase":"Prestamo","tipo":"inv","operacion":null,"expresion":[{"campo":"cantidad","acceso":"value","operador":">=","valor":1},{"campo":"cantidad","acceso":"value","operador":"\u003c=","conector":"and","valor":5}],"fuente":"context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad \u003c= 5"},{"id":"PlazoValido","clase":"Prestamo","tipo":"inv","operacion":null,"expresion":[{"campo":"dias","acceso":"value","operador":">=","valor":1},{"campo":"dias","acceso":"value","operador":"\u003c=","conector":"and","valor":30}],"fuente":"context Prestamo inv PlazoValido: self.dias >= 1 and self.dias \u003c= 30"},{"id":"MotivoSuficiente","clase":"Prestamo","tipo":"pre","operacion":"aprobar","expresion":[{"campo":"motivo","acceso":"size","operador":">=","valor":8}],"fuente":"context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8"},{"id":"MotivoCorregido","clase":"Prestamo","tipo":"pre","operacion":"corregir","expresion":[{"campo":"motivo","acceso":"size","operador":">=","valor":8}],"fuente":"context Prestamo::corregir() pre MotivoCorregido: self.motivo.size() >= 8"}],"integracion":{"catalogo":{"id":"inventario","nombre":"Inventario compartido","objetivo":"Consulta y actualiza el catálogo de productos y sus existencias.","entidad":"Producto","plataforma":"HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL","tipo":"crud","presentacion":"tabla","arquitectura":{"patronUi":"Data Grid CRUD Tabular (Formulario + Tabla Filtrable)","disposicion":"Formulario de captura multi-columna superior + Tabla de registros con búsqueda instantánea y diálogo de confirmación de borrado.","contenedores":["Formulario de Alta/Edición (7 controles)","Barra de búsqueda en tiempo real","Tabla de datos con columnas: Producto, Código SKU, Categoría, Stock disponible, Ubicación, Fecha de reposición, Producto activo + Acciones","Gestión de datos y exportación"],"adaptadorDatos":"IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.","seguridad":"Validación de unicidad (sku) e invariantes OCL en cliente antes de confirmar transacción"},"almacen":{"tipo":"IndexedDB + localStorage","clave":"mda.registros.proyecto.example-laboratorio.inventario"},"esquemaSql":{"motor":"SQLite 3","tablas":[{"nombre":"producto","descripcion":"Tabla de catálogo CRUD para Producto","columnas":[{"nombre":"id","tipo":"VARCHAR(64)","restricciones":"PRIMARY KEY NOT NULL"},{"nombre":"nombre","tipo":"VARCHAR(300)","restricciones":"NOT NULL"},{"nombre":"sku","tipo":"VARCHAR(300)","restricciones":"NOT NULL UNIQUE"},{"nombre":"categoria","tipo":"VARCHAR(64)","restricciones":"NOT NULL CHECK (categoria IN ('equipos', 'consumibles', 'repuestos'))"},{"nombre":"stock","tipo":"INTEGER","restricciones":"NOT NULL"},{"nombre":"ubicacion","tipo":"VARCHAR(300)","restricciones":"NULL"},{"nombre":"reposicion","tipo":"DATE","restricciones":"NULL"},{"nombre":"activo","tipo":"BOOLEAN","restricciones":"NULL"}],"checks":["CONSTRAINT chk_stocknonegativo CHECK (stock >= 0)"]}]},"campos":[{"id":"nombre","nombre":"Producto","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"sku","nombre":"Código SKU","control":"text","tipoSql":"VARCHAR(300)","requerido":true,"atributosHtml":["required","maxlength=\"300\""]},{"id":"categoria","nombre":"Categoría","control":"select","tipoSql":"VARCHAR(64)","requerido":true,"atributosHtml":["required"],"opciones":[{"id":"equipos","nombre":"Equipos"},{"id":"consumibles","nombre":"Consumibles"},{"id":"repuestos","nombre":"Repuestos"}]},{"id":"stock","nombre":"Stock disponible","control":"number","tipoSql":"INTEGER","requerido":true,"atributosHtml":["required","step=\"1\"","inputmode=\"numeric\"","min=\"0\""]},{"id":"ubicacion","nombre":"Ubicación","control":"text","tipoSql":"VARCHAR(300)","requerido":false,"atributosHtml":["maxlength=\"300\""]},{"id":"reposicion","nombre":"Fecha de reposición","control":"date","tipoSql":"DATE","requerido":false,"atributosHtml":[]},{"id":"activo","nombre":"Producto activo","control":"checkbox","tipoSql":"BOOLEAN","requerido":false,"atributosHtml":[]}],"unicos":["sku"],"acciones":["crear","consultar","editar","eliminar"],"validadores":[{"id":"StockNoNegativo","clase":"Producto","tipo":"inv","operacion":null,"expresion":[{"campo":"stock","acceso":"value","operador":">=","valor":0}],"fuente":"context Producto inv StockNoNegativo: self.stock >= 0"}]},"referencia":"equipo","clave":"sku","existencias":"stock","cantidad":"cantidad","activo":"activo","movimientos":[{"transicion":"entregar","tipo":"salida"},{"transicion":"devolver","tipo":"entrada"}]}};
+const sqlSchemaDdl = "-- Esquema Relacional SQL (PSM) generado automáticamente por MDA Studio\n-- Aplicación: Gestión de laboratorio (gestion-laboratorio)\n-- Plataforma destino: HTML5 / JavaScript ES2022 / IndexedDB + File System Access API + SQL DDL\n\n-- Tabla de catálogo CRUD para Producto\nCREATE TABLE IF NOT EXISTS producto (\n  id VARCHAR(64) PRIMARY KEY NOT NULL,\n  nombre VARCHAR(300) NOT NULL,\n  sku VARCHAR(300) NOT NULL UNIQUE,\n  categoria VARCHAR(64) NOT NULL CHECK (categoria IN ('equipos', 'consumibles', 'repuestos')),\n  stock INTEGER NOT NULL,\n  ubicacion VARCHAR(300) NULL,\n  reposicion DATE NULL,\n  activo BOOLEAN NULL,\n  CONSTRAINT chk_stocknonegativo CHECK (stock >= 0)\n);\n\n-- Tabla principal de casos de proceso para Prestamo\nCREATE TABLE IF NOT EXISTS prestamo (\n  id VARCHAR(64) PRIMARY KEY NOT NULL,\n  estado_actual VARCHAR(48) NOT NULL DEFAULT 'solicitado',\n  solicitante VARCHAR(300) NOT NULL,\n  equipo VARCHAR(300) NOT NULL REFERENCES producto(id),\n  cantidad INTEGER NOT NULL,\n  dias INTEGER NOT NULL,\n  motivo VARCHAR(300) NOT NULL,\n  CONSTRAINT chk_prestamo_estado CHECK (estado_actual IN ('solicitado', 'en-correccion', 'aprobado', 'entregado', 'devuelto', 'rechazado')),\n  CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad \u003c= 5),\n  CONSTRAINT chk_plazovalido CHECK (dias >= 1 AND dias \u003c= 30)\n);\n\n-- Bitácora inmutable de auditoría de transiciones por rol\nCREATE TABLE IF NOT EXISTS prestamo_historial (\n  id_evento INTEGER PRIMARY KEY AUTOINCREMENT,\n  caso_id VARCHAR(64) NOT NULL REFERENCES prestamo(id) ON DELETE CASCADE,\n  accion VARCHAR(120) NOT NULL,\n  rol_actor VARCHAR(64) NOT NULL,\n  comentario VARCHAR(500) NULL,\n  fecha_hora TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n);\n\n-- Kardex de entradas y salidas vinculadas entre Prestamo y Producto\nCREATE TABLE IF NOT EXISTS prestamo_movimientos_stock (\n  id_movimiento INTEGER PRIMARY KEY AUTOINCREMENT,\n  caso_id VARCHAR(64) NOT NULL REFERENCES prestamo(id),\n  producto_sku VARCHAR(120) NOT NULL REFERENCES producto(sku),\n  transicion VARCHAR(64) NOT NULL,\n  unidades INTEGER NOT NULL,\n  saldo_resultante INTEGER NOT NULL CHECK (saldo_resultante >= 0),\n  fecha_hora TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n);\n";
 const validators = {
   "CantidadValida": (values) => ((values["cantidad"] != null && values["cantidad"] >= 1) && (values["cantidad"] != null && values["cantidad"] <= 5)),
   "PlazoValido": (values) => ((values["dias"] != null && values["dias"] >= 1) && (values["dias"] != null && values["dias"] <= 30)),
-  "MotivoSuficiente": (values) => (values["motivo"] != null && Array.from(String(values["motivo"] ?? "")).length >= 8)
+  "MotivoSuficiente": (values) => (values["motivo"] != null && Array.from(String(values["motivo"] ?? "")).length >= 8),
+  "MotivoCorregido": (values) => (values["motivo"] != null && Array.from(String(values["motivo"] ?? "")).length >= 8)
 };
 const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != null && values["stock"] >= 0)};
 (function application(model, validators, catalogValidators, sqlSchemaDdl = '', initialData = null) {
@@ -370,6 +398,7 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
 
     const mainTable = sqlIdent(model.entidad);
     const mainCols = ['id', ...(crud ? [] : ['estado_actual']), ...model.campos.map(c => sqlIdent(c.id))];
+    const hasComments = !crud && model.acciones.some(action => action.comentario);
     lines.push('', '-- Registros principales: ' + model.entidad + ' (' + records.length + ')');
     for (const rec of records) {
       const vals = [
@@ -380,9 +409,12 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
       lines.push('INSERT INTO ' + mainTable + ' (' + mainCols.join(', ') + ') VALUES (' + vals.join(', ') + ');');
       if (!crud && Array.isArray(rec.history)) {
         for (const ev of rec.history) {
+          const values = [rec.id, ev.action, ev.role, ev.at];
+          const commentCol = hasComments ? ', comentario' : '';
+          if (hasComments) values.push(ev.comment);
           lines.push(
-            'INSERT INTO ' + mainTable + '_historial (caso_id, accion, rol_actor, fecha_hora) VALUES (' +
-            [sqlLiteral(rec.id), sqlLiteral(ev.action), sqlLiteral(ev.role), sqlLiteral(ev.at)].join(', ') + ');',
+            'INSERT INTO ' + mainTable + '_historial (caso_id, accion, rol_actor, fecha_hora' + commentCol + ') VALUES (' +
+            values.map(sqlLiteral).join(', ') + ');',
           );
         }
       }
@@ -425,54 +457,93 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     }).map(rule => rule.fuente.split(': ').at(-1) + ' (' + rule.id + ')');
   }
 
+  function productIsActive(product) {
+    return !link?.activo || product.values[link.activo] === true;
+  }
+
+  function appendField(form, field) {
+    const label = element('label', field.nombre);
+    const reference = link && !catalogView && field.id === link.referencia;
+    const input = element(reference || field.control === 'select' ? 'select' : 'input');
+    input.name = field.id;
+    input.required = field.requerido;
+    if (reference || field.control === 'select') {
+      const options = reference ? products.filter(productIsActive).map(product => ({ id: product.id, nombre: describe(product, catalog.campos) + ' · ' +
+        product.values[link.clave] + ' (' + product.values[link.existencias] + ' disponibles)' })) : field.opciones;
+      const emptyLabel = reference && link.activo && !options.length ? 'No hay productos activos' : 'Selecciona una opción';
+      const empty = element('option', emptyLabel);
+      empty.value = '';
+      input.append(empty);
+      for (const choice of options) {
+        const option = element('option', choice.nombre);
+        option.value = choice.id;
+        input.append(option);
+      }
+    } else {
+      input.type = field.control;
+    }
+    if (Array.isArray(field.atributosHtml)) {
+      for (const attr of field.atributosHtml) {
+        const m = /^(min|max|minlength|maxlength)="(-?\d+)"$/.exec(attr);
+        if (m) input.setAttribute(m[1], m[2]);
+      }
+    }
+    if (field.control === 'number') {
+      input.step = '1';
+      input.inputMode = 'numeric';
+      input.placeholder = '0';
+    } else if (field.control === 'text') {
+      input.placeholder = field.nombre;
+      if (!input.hasAttribute('maxlength')) input.maxLength = 300;
+    }
+    if (field.control === 'checkbox') {
+      label.className = 'checkbox-field';
+      label.prepend(input);
+    } else label.append(input);
+    form.append(label);
+    return input;
+  }
+
+  function fillField(input, field, value) {
+    if (field.control === 'checkbox') input.checked = value === true;
+    else input.value = value ?? '';
+  }
+
+  function readValues(fields, inputs) {
+    const values = Object.create(null);
+    for (const field of fields) {
+      const input = inputs.get(field.id);
+      if (field.control === 'checkbox') {
+        if (field.requerido && !input.checked) throw new Error('Marca ' + field.nombre + '.');
+        values[field.id] = input.checked;
+        continue;
+      }
+      const value = input.value.trim();
+      if (field.requerido && !value) throw new Error('Completa ' + field.nombre + '.');
+      if (field.control === 'number' && value && !Number.isSafeInteger(Number(value))) {
+        throw new Error(field.nombre + ' debe ser un entero válido.');
+      }
+      if (field.opciones && value && !field.opciones.some(choice => choice.id === value)) {
+        throw new Error('Selecciona una opción válida para ' + field.nombre + '.');
+      }
+      values[field.id] = value && field.control === 'number' ? Number(value) : value || null;
+    }
+    return values;
+  }
+
+  function linkedValuesError(values) {
+    const product = products.find(item => item.id === values[link.referencia]);
+    if (!product) return 'Selecciona un producto del inventario.';
+    if (!productIsActive(product)) return 'El producto está inactivo. Selecciona otro producto del inventario.';
+    if (values[link.cantidad] <= 0) return 'La cantidad del préstamo debe ser mayor que cero.';
+    return null;
+  }
+
   function renderForm(form) {
     const fields = catalogView ? catalog.campos : model.campos;
     form.replaceChildren();
     controls.clear();
-    for (const field of fields) {
-      const label = element('label', field.nombre);
-      const reference = link && !catalogView && field.id === link.referencia;
-      const input = element(reference || field.control === 'select' ? 'select' : 'input');
-      controls.set(field.id, input);
-      input.name = field.id;
-      input.required = field.requerido;
-      if (reference || field.control === 'select') {
-        const empty = element('option', 'Selecciona una opción');
-        empty.value = '';
-        input.append(empty);
-        const options = reference ? products.map(product => ({ id: product.id, nombre: describe(product, catalog.campos) + ' · ' +
-          product.values[link.clave] + ' (' + product.values[link.existencias] + ' disponibles)' })) : field.opciones;
-        for (const choice of options) {
-          const option = element('option', choice.nombre);
-          option.value = choice.id;
-          input.append(option);
-        }
-      } else {
-        input.type = field.control;
-      }
-      if (Array.isArray(field.atributosHtml)) {
-        for (const attr of field.atributosHtml) {
-          const m = /^(min|max|minlength|maxlength)="(-?\d+)"$/.exec(attr);
-          if (m) input.setAttribute(m[1], m[2]);
-        }
-      }
-      if (field.control === 'number') {
-        input.step = '1';
-        input.inputMode = 'numeric';
-        input.placeholder = '0';
-      } else if (field.control === 'text') {
-        input.placeholder = field.nombre;
-        if (!input.hasAttribute('maxlength')) input.maxLength = 300;
-      }
-      if (field.control === 'checkbox') {
-        label.className = 'checkbox-field';
-        label.prepend(input);
-        form.append(label);
-        continue;
-      }
-      label.append(input);
-      form.append(label);
-    }
+    for (const field of fields) controls.set(field.id, appendField(form, field));
     const submit = element('button', catalogView ? 'Crear registro' : 'Crear caso', 'primary');
     submit.id = 'app-submit';
     submit.type = 'submit';
@@ -488,29 +559,14 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     form.onsubmit = event => {
       event.preventDefault();
       if (!catalogView && role !== model.formulario.actor) return;
-      const values = Object.create(null);
-      for (const field of fields) {
-        const input = controls.get(field.id);
-        if (field.control === 'checkbox') {
-          if (field.requerido && !input.checked) return notify('Marca ' + field.nombre + '.', true);
-          values[field.id] = input.checked;
-          continue;
-        }
-        const inputValue = input.value.trim();
-        if (field.requerido && !inputValue) return notify('Completa ' + field.nombre + '.', true);
-        if (field.control === 'number' && inputValue && !Number.isSafeInteger(Number(inputValue))) {
-          return notify(field.nombre + ' debe ser un entero válido.', true);
-        }
-        if (field.opciones && inputValue && !field.opciones.some(choice => choice.id === inputValue)) {
-          return notify('Selecciona una opción válida para ' + field.nombre + '.', true);
-        }
-        values[field.id] = inputValue && field.control === 'number' ? Number(inputValue) : inputValue || null;
-      }
+      let values;
+      try { values = readValues(fields, controls); }
+      catch (error) { return notify(error.message, true); }
       const errors = catalogView && link ? violations(values, null, catalog, catalogValidators) : violations(values, null);
       if (errors.length) return notify('Restricción OCL incumplida: ' + errors.join(' · '), true);
       if (catalogView) return saveRecord(values);
-      if (link && !products.some(product => product.id === values[link.referencia])) return notify('Selecciona un producto del inventario.', true);
-      if (link && values[link.cantidad] <= 0) return notify('La cantidad del préstamo debe ser mayor que cero.', true);
+      const problem = link && linkedValuesError(values);
+      if (problem) return notify(problem, true);
       const now = new Date().toISOString();
       const record = {
         id: newId(),
@@ -541,8 +597,7 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     if (!record) return;
     for (const field of catalog.campos) {
       const input = controls.get(field.id);
-      if (field.control === 'checkbox') input.checked = record.values[field.id] === true;
-      else input.value = record.values[field.id] ?? '';
+      fillField(input, field, record.values[field.id]);
     }
     controls.values().next().value?.focus();
   }
@@ -617,42 +672,93 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     $('#crud-empty').textContent = query ? 'No hay coincidencias.' : 'Todavía no hay registros.';
   }
 
-  function transition(record, action) {
-    const latest = records.find(item => item.id === record.id);
-    if (action.actor !== role || latest?.state !== action.desde) return;
-    const errors = violations(latest.values, action.id);
-    if (errors.length) return notify('Restricción OCL incumplida: ' + errors.join(' · '), true);
-    const next = {
-      ...latest, state: action.hasta,
-      history: [...latest.history, { action: action.nombre, role, at: new Date().toISOString() }],
+  function openAction(record, action) {
+    const dialog = $('#case-action');
+    const form = $('#case-action-form');
+    const body = $('#case-action-fields');
+    const error = $('#case-action-error');
+    const fields = model.campos.filter(field => action.edita?.includes(field.id));
+    const inputs = new Map();
+    body.replaceChildren();
+    error.textContent = '';
+    $('#case-action-title').textContent = action.nombre;
+    $('#case-action-context').textContent = describe(record);
+    $('#case-action-submit').textContent = action.nombre;
+    const correction = record.history.at(-1)?.comment;
+    if (fields.length && correction) {
+      body.append(element('p', correction, 'action-comment'));
+    }
+    for (const field of fields) {
+      const input = appendField(body, field);
+      fillField(input, field, record.values[field.id]);
+      inputs.set(field.id, input);
+    }
+    let comment;
+    if (action.comentario) {
+      const label = element('label', 'Comentario obligatorio', 'comment-field');
+      comment = element('textarea');
+      comment.required = true;
+      comment.maxLength = 500;
+      comment.rows = 3;
+      label.append(comment);
+      body.append(label);
+    }
+    form.onsubmit = event => {
+      event.preventDefault();
+      error.textContent = '';
+      let changes;
+      try { changes = readValues(fields, inputs); }
+      catch (invalid) { error.textContent = invalid.message; return; }
+      const message = comment?.value.trim();
+      if (comment && !message) { error.textContent = 'Escribe el comentario antes de continuar.'; return; }
+      if (transition(record, action, changes, message, text => { error.textContent = text; })) {
+        dialog.close();
+        $('#app-detail').focus();
+      }
     };
-    const nextRecords = records.map(item => item.id === next.id ? next : item);
-    const effect = link?.movimientos.find(entry => entry.transicion === action.id);
-    const saved = effect ? persistMovement(nextRecords, latest, effect) : persist(nextRecords);
-    if (saved === undefined) return;
-    render();
-    notify(action.nombre + ' → ' + stateNames.get(next.state) + '.' + saved);
+    dialog.showModal();
+    (inputs.values().next().value ?? comment)?.focus();
   }
 
-  function persistMovement(nextRecords, request, effect) {
+  function transition(record, action, changes, comment, fail = message => notify(message, true)) {
+    const latest = records.find(item => item.id === record.id);
+    if (action.actor !== role || latest?.state !== action.desde) return fail('La acción ya no está disponible para este caso.');
+    const values = changes ? { ...latest.values, ...changes } : latest.values;
+    if (link && action.edita) {
+      const problem = linkedValuesError(values);
+      if (problem) return fail(problem);
+    }
+    const errors = violations(values, action.id);
+    if (errors.length) return fail('Restricción OCL incumplida: ' + errors.join(' · '));
+    const event = { action: action.nombre, role, at: new Date().toISOString() };
+    if (comment) event.comment = comment;
+    const next = { ...latest, values, state: action.hasta, history: [...latest.history, event] };
+    const nextRecords = records.map(item => item.id === next.id ? next : item);
+    const effect = link?.movimientos.find(entry => entry.transicion === action.id);
+    const saved = effect ? persistMovement(nextRecords, next, effect, event.at, fail) : persist(nextRecords);
+    if (saved === undefined) return false;
+    render();
+    notify(action.nombre + ' → ' + stateNames.get(next.state) + '.' + saved);
+    return true;
+  }
+
+  function persistMovement(nextRecords, request, effect, at, fail) {
     const product = products.find(item => item.id === request.values[link.referencia]);
     const quantity = request.values[link.cantidad];
     if (!product || !Number.isSafeInteger(quantity) || quantity <= 0) {
-      notify('La solicitud no tiene un producto y cantidad válidos.', true);
-      return;
+      return fail('La solicitud no tiene un producto y cantidad válidos.');
     }
     const units = effect.tipo === 'salida' ? -quantity : quantity;
     const stock = product.values[link.existencias] + units;
     if (!Number.isSafeInteger(stock) || stock < 0) {
-      notify('No se puede aplicar el movimiento. Existencias disponibles: ' + product.values[link.existencias] + '.', true);
-      return;
+      return fail('No se puede aplicar el movimiento. Existencias disponibles: ' + product.values[link.existencias] + '.');
     }
     const values = { ...product.values, [link.existencias]: stock };
     const errors = violations(values, null, catalog, catalogValidators);
-    if (errors.length) { notify('Restricción de inventario: ' + errors.join(' · '), true); return; }
+    if (errors.length) return fail('Restricción de inventario: ' + errors.join(' · '));
     const nextProducts = products.map(item => item.id === product.id ? { ...item, values } : item);
     const movement = { request: request.id, requester: describe(request), sku: values[link.clave], name: describe(product, catalog.campos),
-      units, stock, action: effect.transicion, at: new Date().toISOString() };
+      units, stock, action: effect.transicion, at };
     return persist(nextRecords, nextProducts, [movement, ...movements]);
   }
 
@@ -674,18 +780,32 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     const actions = model.acciones.filter(action => action.desde === record.state && action.actor === role);
     const bar = element('div', undefined, 'action-bar');
     for (const action of actions) {
-      const button = element('button', action.nombre, 'primary');
-      button.onclick = () => transition(record, action);
+      const button = element('button', action.nombre, action.comentario ? '' : 'primary');
+      button.onclick = () => {
+        if (action.edita || action.comentario) openAction(record, action);
+        else if (transition(record, action)) detail.focus();
+      };
       bar.append(button);
     }
     if (!actions.length) bar.append(element('p', 'No hay acciones pendientes para este rol.', 'muted'));
-    detail.append(bar, element('h4', 'Historial'));
+    detail.append(bar, element('h4', 'Historial de la solicitud'));
     const history = element('ol');
     for (const event of record.history) {
       const actor = model.roles.find(item => item.id === event.role);
-      history.append(element('li', event.action + ' · ' + (actor?.nombre ?? event.role) + ' · ' + showDate(event.at)));
+      const item = element('li', event.action + ' · ' + (actor?.nombre ?? event.role) + ' · ' + showDate(event.at));
+      if (event.comment) item.append(element('p', event.comment, 'history-comment'));
+      history.append(item);
     }
     detail.append(history);
+    if (link) {
+      detail.append(element('h4', 'Movimientos de este caso'));
+      const matching = movements.filter(item => item.request === record.id);
+      if (matching.length) {
+        const list = element('ul', undefined, 'case-movements');
+        list.append(...matching.map(renderMovement));
+        detail.append(list);
+      } else detail.append(element('p', 'Aquí aparecerán las entradas y salidas de inventario de esta solicitud.', 'muted'));
+    }
   }
 
   function caseButton(record) {
@@ -738,6 +858,22 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     }
   }
 
+  function renderMovement(item) {
+    const action = model.acciones.find(edge => edge.id === item.action)?.nombre ?? item.action;
+    const row = element('li', undefined, 'movement');
+    row.dataset.direction = item.units > 0 ? 'in' : 'out';
+    const direction = element('span', item.units > 0 ? '↙' : '↗', 'movement-direction');
+    direction.setAttribute('aria-hidden', 'true');
+    const copy = element('div', undefined, 'movement-copy');
+    copy.append(element('strong', action + ' · ' + item.name),
+      element('span', [item.sku, item.requester, showDate(item.at)].filter(Boolean).join(' · ')));
+    const totals = element('div', undefined, 'movement-totals');
+    totals.append(element('strong', (item.units > 0 ? '+' : '') + item.units + ' unidades'),
+      element('span', 'Disponibles: ' + item.stock));
+    row.append(direction, copy, totals);
+    return row;
+  }
+
   function showModule(module) {
     catalogView = module === 'catalog';
     const requests = module === 'requests';
@@ -759,21 +895,7 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
       $('#app-form-title').textContent = 'Nuevo registro';
       renderCrud();
     } else {
-      const items = movements.map(item => {
-        const action = model.acciones.find(edge => edge.id === item.action)?.nombre ?? item.action;
-        const row = element('li', undefined, 'movement');
-        row.dataset.direction = item.units > 0 ? 'in' : 'out';
-        const direction = element('span', item.units > 0 ? '↙' : '↗', 'movement-direction');
-        direction.setAttribute('aria-hidden', 'true');
-        const copy = element('div', undefined, 'movement-copy');
-        copy.append(element('strong', action + ' · ' + item.name),
-          element('span', [item.sku, item.requester, showDate(item.at)].filter(Boolean).join(' · ')));
-        const totals = element('div', undefined, 'movement-totals');
-        totals.append(element('strong', (item.units > 0 ? '+' : '') + item.units + ' unidades'),
-          element('span', 'Disponibles: ' + item.stock));
-        row.append(direction, copy, totals);
-        return row;
-      });
+      const items = movements.map(renderMovement);
       $('#stock-movements').replaceChildren(...items);
       $('#stock-empty').hidden = items.length > 0;
     }
@@ -782,6 +904,8 @@ const catalogValidators = {"StockNoNegativo": (values) => (values["stock"] != nu
     requestAnimationFrame(() => panel.classList.add('module-enter'));
     if (durable) notify('');
   }
+
+  $('#case-action-cancel').onclick = () => $('#case-action').close();
 
   const dataDialog = $('#db-dialog');
   $('#open-data-tools').onclick = () => {

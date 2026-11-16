@@ -57,6 +57,10 @@
       "nombre": "En revisión"
     },
     {
+      "id": "en-correccion",
+      "nombre": "En corrección"
+    },
+    {
       "id": "aprobado",
       "nombre": "Aprobado"
     },
@@ -84,6 +88,22 @@
       "hasta": "aprobado"
     },
     {
+      "id": "pedir-correccion",
+      "nombre": "Pedir corrección",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "en-correccion",
+      "comentario": true
+    },
+    {
+      "id": "corregir",
+      "nombre": "Corregir y reenviar",
+      "actor": "estudiante",
+      "desde": "en-correccion",
+      "hasta": "solicitado",
+      "edita": ["solicitante", "equipo", "cantidad", "dias", "motivo"]
+    },
+    {
       "id": "rechazar",
       "nombre": "Rechazar",
       "actor": "responsable",
@@ -108,7 +128,8 @@
   "ocl": [
     "context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad <= 5",
     "context Prestamo inv PlazoValido: self.dias >= 1 and self.dias <= 30",
-    "context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8"
+    "context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8",
+    "context Prestamo::corregir() pre MotivoCorregido: self.motivo.size() >= 8"
   ],
   "integracion": {
     "catalogo": {
@@ -184,6 +205,7 @@
     "clave": "sku",
     "existencias": "stock",
     "cantidad": "cantidad",
+    "activo": "activo",
     "movimientos": [
       {
         "transicion": "entregar",

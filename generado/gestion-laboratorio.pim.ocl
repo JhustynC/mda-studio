@@ -5,6 +5,7 @@ package org::mda::studio::gestion_laboratorio
   context Prestamo inv CantidadValida: self.cantidad >= 1 and self.cantidad <= 5
   context Prestamo inv PlazoValido: self.dias >= 1 and self.dias <= 30
   context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8
+  context Prestamo::corregir() pre MotivoCorregido: self.motivo.size() >= 8
 
   -- Restricciones del catálogo integrado (Producto)
   context Producto inv StockNoNegativo: self.stock >= 0

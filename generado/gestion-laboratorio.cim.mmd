@@ -2,11 +2,14 @@ stateDiagram-v2
   direction LR
   [*] --> solicitado : Nueva solicitud (Estudiante)
   state "En revisión" as solicitado
+  state "En corrección" as en-correccion
   state "Aprobado" as aprobado
   state "Entregado" as entregado
   state "Devuelto" as devuelto
   state "Rechazado" as rechazado
   solicitado --> aprobado : Aprobar [Responsable]
+  solicitado --> en-correccion : Pedir corrección [Responsable]
+  en-correccion --> solicitado : Corregir y reenviar [Estudiante]
   solicitado --> rechazado : Rechazar [Responsable]
   aprobado --> entregado : Registrar entrega [Responsable]
   entregado --> devuelto : Registrar devolución [Estudiante]

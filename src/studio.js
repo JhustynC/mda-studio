@@ -63,6 +63,10 @@
   const advancedProject = { id: 'example-compras', name: JSON.parse(ADVANCED).nombre, source: ADVANCED };
   const inventoryProject = { id: 'example-inventario', name: JSON.parse(INVENTORY).nombre, source: INVENTORY };
   const laboratoryProject = { id: 'example-laboratorio', name: JSON.parse(LABORATORY).nombre, source: LABORATORY };
+  const previousLaboratoryModels = new Set([
+    '54eac67615e3a664aca25faecc73e2bd0d8812fc6b3cac40a6e864e070c92fd0', // Ejemplo anterior a las solicitudes de corrección.
+    '0c01e8bbcf518fc9283cc4d1f78e0c8655bd45cf7f4d615da2e47ac6819956f8', // Ejemplo con corrección y sin filtro de equipos activos.
+  ]);
   const examples = new Map([
     [initialProject.id, DEMO],
     [advancedProject.id, ADVANCED],
@@ -469,19 +473,42 @@
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 
-  function restoreProjects() {
+  async function isPreviousLaboratoryModel(text) {
+    if (text === LABORATORY || !globalThis.crypto?.subtle) return false;
+    try {
+      const model = JSON.parse(text.replace(/^\uFEFF/, ''));
+      const canonical = JSON.stringify(model, (_, value) => value && typeof value === 'object' && !Array.isArray(value)
+        ? Object.fromEntries(Object.keys(value).sort().map(key => [key, value[key]])) : value);
+      const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonical));
+      return previousLaboratoryModels.has(Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join(''));
+    } catch {
+      return false;
+    }
+  }
+
+  function storeProject(project) {
+    const stored = examples.get(project.id) === project.source ? { ...project, source: null } : project;
+    localStorage.setItem(storagePrefix + 'project.' + project.id, JSON.stringify(stored));
+  }
+
+  async function restoreProjects() {
     try {
       for (const key of Object.keys(localStorage)) {
         if (!key.startsWith(storagePrefix + 'project.')) continue;
         try {
           const project = JSON.parse(localStorage.getItem(key));
-          if (project && key === storagePrefix + 'project.' + project.id &&
-              typeof project.name === 'string' && typeof project.source === 'string') {
-            projects.set(project.id, project);
-          }
+          if (!project || key !== storagePrefix + 'project.' + project.id || typeof project.name !== 'string') continue;
+          const source = project.source === null ? examples.get(project.id) : project.source;
+          if (typeof source === 'string') projects.set(project.id, { ...project, source });
         } catch (error) {
           if (!(error instanceof SyntaxError)) throw error;
         }
+      }
+      const lab = projects.get(laboratoryProject.id);
+      if (await isPreviousLaboratoryModel(lab.source)) {
+        const upgraded = { ...lab, source: LABORATORY };
+        projects.set(upgraded.id, upgraded);
+        storeProject(upgraded);
       }
       active = projects.get(localStorage.getItem(storagePrefix + 'active')) ?? initialProject;
     } catch {
@@ -492,7 +519,7 @@
   function persistProject(saveSource) {
     if (canSave) {
       try {
-        if (saveSource) localStorage.setItem(storagePrefix + 'project.' + active.id, JSON.stringify(active));
+        if (saveSource) storeProject(active);
         localStorage.setItem(storagePrefix + 'active', active.id);
       } catch {
         canSave = false;
@@ -1145,7 +1172,8 @@
   $('#trace-download').disabled = true;
   $('#trace-download-csv').disabled = true;
   $('#project-search').oninput = renderProjects;
-  restoreProjects();
-  persistProject(false);
-  showLibrary();
+  restoreProjects().then(() => {
+    persistProject(false);
+    showLibrary();
+  });
 })();

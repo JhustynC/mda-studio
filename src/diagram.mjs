@@ -483,6 +483,8 @@ export function createDiagram(root, { read, validate, change, editJson }) {
       if (kind === 'transiciones') {
         formField('desde', 'Estado de origen', item.desde ?? '', { list: model.estados, placeholder: 'Selecciona un origen' });
         formField('hasta', 'Estado de destino', item.hasta ?? '', { list: model.estados, placeholder: 'Selecciona un destino' });
+        formField('edita', 'Campos editables (identificadores separados por comas)', item.edita?.join(', '), { optional: true });
+        formField('comentario', 'Pedir un comentario y guardarlo en el historial', item.comentario, { checkbox: true });
       }
       if (kind === 'datos') {
         const type = formField('tipo', 'Tipo de dato de negocio', item.tipo ?? 'Texto', { list: types.map(id => ({ id, nombre: id === 'Seleccion' ? 'Selección (lista de opciones)' : id })) });
@@ -539,6 +541,7 @@ export function createDiagram(root, { read, validate, change, editJson }) {
         if (kind === 'actores' && edge.actor === oldId) edge.actor = newId;
         if (kind === 'estados' && edge.desde === oldId) edge.desde = newId;
         if (kind === 'estados' && edge.hasta === oldId) edge.hasta = newId;
+        if (kind === 'datos' && edge.edita) edge.edita = edge.edita.map(id => id === oldId ? newId : id);
       }
     }
     if (next.integracion) {
@@ -595,7 +598,12 @@ export function createDiagram(root, { read, validate, change, editJson }) {
           item.id = get('id');
           if (next[kind].some((other, i) => i !== index && other.id === item.id)) throw new Error('Ese identificador ya existe.');
           if (kind === 'estados') item.final = data.has('final');
-          if (kind === 'transiciones') Object.assign(item, { actor: get('actor'), desde: get('desde'), hasta: get('hasta') });
+          if (kind === 'transiciones') {
+            Object.assign(item, { actor: get('actor'), desde: get('desde'), hasta: get('hasta') });
+            const editable = get('edita');
+            if (editable) item.edita = editable.split(',').map(id => id.trim());
+            if (data.has('comentario')) item.comentario = true;
+          }
           if (kind === 'datos') {
             Object.assign(item, { tipo: get('tipo'), requerido: data.has('requerido') });
             if (item.tipo === 'Seleccion') item.opciones = fieldOptions(get('opciones'));

@@ -321,6 +321,8 @@ export function createCompiler(METAMODEL, application) {
       const efectos = [
         'Cambia estado: ' + op.desde + ' → ' + op.hasta,
         'Anexa evento auditado por rol ' + op.actor,
+        ...(op.edita ? ['Actualiza campos: ' + op.edita.join(', ')] : []),
+        ...(op.comentario ? ['Registra un comentario obligatorio en el historial'] : []),
       ];
       if (mov) {
         efectos.push((mov.tipo === 'salida' ? 'Descuenta ' : 'Repone ') + 'stock en ' + integracion.catalogo.entidad + '.' + integracion.existencias);
@@ -332,7 +334,11 @@ export function createCompiler(METAMODEL, application) {
         actor: op.actor,
         desde: op.desde,
         hasta: op.hasta,
-        parametros: ['idCaso: EString', 'actor: Rol'],
+        parametros: [
+          'idCaso: EString', 'actor: Rol',
+          ...(op.edita ?? []).map(id => id + ': ' + ecoreTypes[cim.datos.find(field => field.id === id).tipo]),
+          ...(op.comentario ? ['comentario: EString'] : []),
+        ],
         retorno: 'EBoolean',
         guardas: opRules,
         efectos,
@@ -389,6 +395,13 @@ export function createCompiler(METAMODEL, application) {
       if (!actors.has(operation.actor)) issues.push(operation.id + ': actor desconocido.');
       if (!states.has(operation.desde) || !states.has(operation.hasta)) issues.push(operation.id + ': estado desconocido.');
       if (states.get(operation.desde)?.final) issues.push(operation.id + ': un estado final no admite transiciones.');
+      if (operation.edita) {
+        if (!operation.edita.length) issues.push(operation.id + ': declara al menos un campo editable o elimina edita.');
+        if (new Set(operation.edita).size !== operation.edita.length) issues.push(operation.id + ': hay campos editables repetidos.');
+        for (const id of operation.edita) {
+          if (!fields.has(id)) issues.push(operation.id + ': campo editable desconocido: ' + id + '.');
+        }
+      }
     }
     const finalStates = cim.estados.filter(state => state.final).map(state => state.id);
     if (!finalStates.length) issues.push('Debe existir al menos un estado final.');
@@ -468,7 +481,7 @@ export function createCompiler(METAMODEL, application) {
   }
 
   function integrate(cim, fields, operations) {
-    const { catalogo: source, referencia, clave, existencias, cantidad, movimientos } = cim.integracion;
+    const { catalogo: source, referencia, clave, existencias, cantidad, activo, movimientos } = cim.integracion;
     const catalogo = toCrudPim(source);
     const stock = catalogo.propiedades.find(field => field.id === existencias);
     const key = catalogo.propiedades.find(field => field.id === clave);
@@ -480,6 +493,9 @@ export function createCompiler(METAMODEL, application) {
       throw new Error('Existencias y cantidad deben ser campos obligatorios de tipo Entero.');
     }
     const issues = [];
+    if (activo && catalogo.propiedades.find(field => field.id === activo)?.tipo !== 'Booleano') {
+      issues.push('El campo de actividad ' + activo + ' debe existir en el catálogo y ser de tipo Booleano.');
+    }
     const effects = indexBy(movimientos, 'transicion', 'Movimiento', issues);
     if (!movimientos.some(effect => effect.tipo === 'salida') || !movimientos.some(effect => effect.tipo === 'entrada')) {
       issues.push('Declara al menos una salida y una entrada de inventario.');
@@ -497,6 +513,9 @@ export function createCompiler(METAMODEL, application) {
       for (const edge of operations.values()) {
         if (edge.desde !== state) continue;
         const effect = effects.get(edge.id)?.tipo;
+        if ((outstanding || effect) && edge.edita?.some(id => id === referencia || id === cantidad)) {
+          throw new Error(edge.id + ': equipo y cantidad solo pueden editarse fuera de movimientos y sin unidades pendientes de devolver.');
+        }
         const next = outstanding + (effect === 'salida' ? 1 : effect === 'entrada' ? -1 : 0);
         if (next < 0 || next > 1) throw new Error('Movimiento de inventario fuera de secuencia en ' + edge.id + '.');
         queue.push([edge.hasta, next]);
@@ -621,6 +640,8 @@ export function createCompiler(METAMODEL, application) {
           { nombre: 'caso_id', tipo: 'VARCHAR(64)', restricciones: 'NOT NULL REFERENCES ' + mainTable + '(id) ON DELETE CASCADE' },
           { nombre: 'accion', tipo: 'VARCHAR(120)', restricciones: 'NOT NULL' },
           { nombre: 'rol_actor', tipo: 'VARCHAR(64)', restricciones: 'NOT NULL' },
+          ...(pim.operaciones.some(operation => operation.comentario)
+            ? [{ nombre: 'comentario', tipo: 'VARCHAR(500)', restricciones: 'NULL' }] : []),
           { nombre: 'fecha_hora', tipo: 'TIMESTAMP', restricciones: 'NOT NULL DEFAULT CURRENT_TIMESTAMP' },
         ],
         checks: [],
@@ -1045,7 +1066,8 @@ export function createCompiler(METAMODEL, application) {
         cim: 'transiciones.' + operation.id + ' (' + operation.actor + ')',
         pim: cim.entidad + '::' + operation.id + '() : EBoolean',
         psm: 'acciones.' + operation.id + ' [' + operation.desde + ' → ' + operation.hasta + ']',
-        app: 'Botón de rol ' + operation.actor + ' (' + operation.desde + ' → ' + operation.hasta + ')',
+        app: 'Botón de rol ' + operation.actor + ' (' + operation.desde + ' → ' + operation.hasta + ')' +
+          (operation.edita ? ' + formulario de corrección' : '') + (operation.comentario ? ' + comentario obligatorio' : ''),
       })),
       ...(crud ? pim.unicos.map(id => ({
         cim: 'unicos.' + id,
@@ -1073,6 +1095,12 @@ export function createCompiler(METAMODEL, application) {
         pim: cim.entidad + '.' + link.referencia + ' (0..*) → (1..1) ' + link.catalogo.entidad + '.' + link.clave,
         psm: 'FOREIGN KEY (' + sqlIdent(link.referencia) + ') REFERENCES ' + sqlIdent(link.catalogo.entidad),
         app: 'Selector de inventario compartido + Integridad referencial',
+      });
+      if (link.activo) trace.push({
+        cim: 'integracion.activo (' + link.activo + ')',
+        pim: link.catalogo.entidad + '.' + link.activo + ' : EBoolean',
+        psm: 'integracion.activo',
+        app: 'Filtra las opciones del selector y valida que el producto esté activo al guardar la solicitud',
       });
       for (const movement of link.movimientos) trace.push({
         cim: 'integracion.movimientos.' + movement.transicion,

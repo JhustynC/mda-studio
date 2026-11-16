@@ -36,6 +36,18 @@
     "app": "Botón de rol responsable (solicitado → aprobado)"
   },
   {
+    "cim": "transiciones.pedir-correccion (responsable)",
+    "pim": "Prestamo::pedir-correccion() : EBoolean",
+    "psm": "acciones.pedir-correccion [solicitado → en-correccion]",
+    "app": "Botón de rol responsable (solicitado → en-correccion) + comentario obligatorio"
+  },
+  {
+    "cim": "transiciones.corregir (estudiante)",
+    "pim": "Prestamo::corregir() : EBoolean",
+    "psm": "acciones.corregir [en-correccion → solicitado]",
+    "app": "Botón de rol estudiante (en-correccion → solicitado) + formulario de corrección"
+  },
+  {
     "cim": "transiciones.rechazar (responsable)",
     "pim": "Prestamo::rechazar() : EBoolean",
     "psm": "acciones.rechazar [solicitado → rechazado]",
@@ -70,6 +82,12 @@
     "pim": "pre MotivoSuficiente (OCL AST)",
     "psm": "validadores.MotivoSuficiente",
     "app": "validators[\"MotivoSuficiente\"]"
+  },
+  {
+    "cim": "ocl.MotivoCorregido",
+    "pim": "pre MotivoCorregido (OCL AST)",
+    "psm": "validadores.MotivoCorregido",
+    "app": "validators[\"MotivoCorregido\"]"
   },
   {
     "cim": "integracion.catalogo.datos.nombre",
@@ -118,6 +136,12 @@
     "pim": "Prestamo.equipo (0..*) → (1..1) Producto.sku",
     "psm": "FOREIGN KEY (equipo) REFERENCES producto",
     "app": "Selector de inventario compartido + Integridad referencial"
+  },
+  {
+    "cim": "integracion.activo (activo)",
+    "pim": "Producto.activo : EBoolean",
+    "psm": "integracion.activo",
+    "app": "Filtra las opciones del selector y valida que el producto esté activo al guardar la solicitud"
   },
   {
     "cim": "integracion.movimientos.entregar",

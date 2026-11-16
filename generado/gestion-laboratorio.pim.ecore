@@ -8,12 +8,13 @@
     nsPrefix="gestion_laboratorio">
   <eClassifiers xsi:type="ecore:EClass" name="Prestamo">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="CantidadValida PlazoValido MotivoSuficiente"/>
+      <details key="constraints" value="CantidadValida PlazoValido MotivoSuficiente MotivoCorregido"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
       <details key="CantidadValida" value="context Prestamo inv CantidadValida: self.cantidad &gt;= 1 and self.cantidad &lt;= 5"/>
       <details key="PlazoValido" value="context Prestamo inv PlazoValido: self.dias &gt;= 1 and self.dias &lt;= 30"/>
       <details key="MotivoSuficiente" value="context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() &gt;= 8"/>
+      <details key="MotivoCorregido" value="context Prestamo::corregir() pre MotivoCorregido: self.motivo.size() &gt;= 8"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" upperBound="1" iD="true" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="estado-actual" lowerBound="1" upperBound="1" eType="#//Prestamo_estado-actual"/>
@@ -31,6 +32,16 @@
     <eOperations name="aprobar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
       <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
         <details key="guards" value="CantidadValida, PlazoValido, MotivoSuficiente"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="pedir-correccion" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="CantidadValida, PlazoValido"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="corregir" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="guards" value="CantidadValida, PlazoValido, MotivoCorregido"/>
       </eAnnotations>
     </eOperations>
     <eOperations name="rechazar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
@@ -51,10 +62,11 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Prestamo_estado-actual">
     <eLiterals name="solicitado" value="0" literal="solicitado"/>
-    <eLiterals name="aprobado" value="1" literal="aprobado"/>
-    <eLiterals name="entregado" value="2" literal="entregado"/>
-    <eLiterals name="devuelto" value="3" literal="devuelto"/>
-    <eLiterals name="rechazado" value="4" literal="rechazado"/>
+    <eLiterals name="en-correccion" value="1" literal="en-correccion"/>
+    <eLiterals name="aprobado" value="2" literal="aprobado"/>
+    <eLiterals name="entregado" value="3" literal="entregado"/>
+    <eLiterals name="devuelto" value="4" literal="devuelto"/>
+    <eLiterals name="rechazado" value="5" literal="rechazado"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Producto">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">

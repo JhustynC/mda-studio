@@ -42,8 +42,21 @@
     <p id="crud-empty" class="muted"></p>
   </section>
   <section id="stock-ledger" aria-labelledby="stock-title" hidden><h2 id="stock-title">Movimientos de inventario</h2>
+    <p class="muted ledger-help">Aquí se registran las entradas y salidas de existencias. El historial de cada solicitud muestra las revisiones y correcciones.</p>
     <p id="stock-empty" class="muted">Todavía no hay entregas ni devoluciones registradas.</p><ol id="stock-movements"></ol>
   </section>
+  <dialog id="case-action" aria-labelledby="case-action-title" aria-describedby="case-action-context">
+    <h2 id="case-action-title"></h2>
+    <p id="case-action-context" class="muted"></p>
+    <form id="case-action-form">
+      <div id="case-action-fields"></div>
+      <p id="case-action-error" role="alert"></p>
+      <div class="action-bar">
+        <button id="case-action-cancel" type="button">Cancelar</button>
+        <button id="case-action-submit" type="submit" class="primary"></button>
+      </div>
+    </form>
+  </dialog>
   <dialog id="crud-delete" aria-labelledby="crud-delete-title">
     <h2 id="crud-delete-title">¿Eliminar el registro?</h2><p id="crud-delete-name"></p>
     <div class="action-bar"><button id="crud-delete-cancel" type="button" autofocus>Cancelar</button><button id="crud-delete-confirm" type="button" class="danger">Confirmar eliminación</button></div>

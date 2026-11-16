@@ -16,7 +16,7 @@
       "Gestión de datos y exportación"
     ],
     "adaptadorDatos": "IndexedDB y localStorage en el navegador. Copias JSON y exportación SQL.",
-    "seguridad": "Simulación de roles en cliente para 2 actores y 3 validadores OCL compilados a ES2022"
+    "seguridad": "Simulación de roles en cliente para 2 actores y 4 validadores OCL compilados a ES2022"
   },
   "almacen": {
     "tipo": "IndexedDB + localStorage",
@@ -115,7 +115,7 @@
           }
         ],
         "checks": [
-          "CONSTRAINT chk_prestamo_estado CHECK (estado_actual IN ('solicitado', 'aprobado', 'entregado', 'devuelto', 'rechazado'))",
+          "CONSTRAINT chk_prestamo_estado CHECK (estado_actual IN ('solicitado', 'en-correccion', 'aprobado', 'entregado', 'devuelto', 'rechazado'))",
           "CONSTRAINT chk_cantidadvalida CHECK (cantidad >= 1 AND cantidad <= 5)",
           "CONSTRAINT chk_plazovalido CHECK (dias >= 1 AND dias <= 30)"
         ]
@@ -143,6 +143,11 @@
             "nombre": "rol_actor",
             "tipo": "VARCHAR(64)",
             "restricciones": "NOT NULL"
+          },
+          {
+            "nombre": "comentario",
+            "tipo": "VARCHAR(500)",
+            "restricciones": "NULL"
           },
           {
             "nombre": "fecha_hora",
@@ -279,6 +284,10 @@
       "nombre": "En revisión"
     },
     {
+      "id": "en-correccion",
+      "nombre": "En corrección"
+    },
+    {
       "id": "aprobado",
       "nombre": "Aprobado"
     },
@@ -304,6 +313,28 @@
       "actor": "responsable",
       "desde": "solicitado",
       "hasta": "aprobado"
+    },
+    {
+      "id": "pedir-correccion",
+      "nombre": "Pedir corrección",
+      "actor": "responsable",
+      "desde": "solicitado",
+      "hasta": "en-correccion",
+      "comentario": true
+    },
+    {
+      "id": "corregir",
+      "nombre": "Corregir y reenviar",
+      "actor": "estudiante",
+      "desde": "en-correccion",
+      "hasta": "solicitado",
+      "edita": [
+        "solicitante",
+        "equipo",
+        "cantidad",
+        "dias",
+        "motivo"
+      ]
     },
     {
       "id": "rechazar",
@@ -386,6 +417,21 @@
         }
       ],
       "fuente": "context Prestamo::aprobar() pre MotivoSuficiente: self.motivo.size() >= 8"
+    },
+    {
+      "id": "MotivoCorregido",
+      "clase": "Prestamo",
+      "tipo": "pre",
+      "operacion": "corregir",
+      "expresion": [
+        {
+          "campo": "motivo",
+          "acceso": "size",
+          "operador": ">=",
+          "valor": 8
+        }
+      ],
+      "fuente": "context Prestamo::corregir() pre MotivoCorregido: self.motivo.size() >= 8"
     }
   ],
   "integracion": {
@@ -585,6 +631,7 @@
     "clave": "sku",
     "existencias": "stock",
     "cantidad": "cantidad",
+    "activo": "activo",
     "movimientos": [
       {
         "transicion": "entregar",

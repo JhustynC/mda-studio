@@ -6,6 +6,8 @@ Proyecto de interciclo de Nuevos Paradigmas de Programación. Genera aplicacione
 
 Clona el repositorio o descárgalo como ZIP y extráelo. Abre [generado/index.html](generado/index.html) con Edge o Chrome desde tu equipo. El HTML ya incluye el compilador y las plantillas, así que puedes probar el Studio sin instalar dependencias ni iniciar un servidor. Para ver la integración completa, abre [Gestión de laboratorio](generado/gestion-laboratorio.html). También puedes ejecutar los ejemplos de [Inventario](generado/inventario.html), [Préstamos](generado/prestamos-lab.html) y [Compras](generado/compras-institucionales.html).
 
+Dentro del Studio, abre **Proyectos → Gestión de laboratorio → Validar y ver PIM → Ver PSM → Generar aplicación**. Con el ejemplo incluido verás **4 artículos, 5 solicitudes y 3 movimientos de inventario** al iniciar la demostración.
+
 Para regenerar desde PowerShell en la carpeta del proyecto, usa Node.js 22 o posterior. Instala las dependencias de compilación con `npm ci` la primera vez. El HTML que se entrega ya incluye CodeMirror y se puede abrir sin conexión.
 
 ~~~powershell
@@ -34,7 +36,11 @@ En **Nuevo proyecto** puedes partir de tres estructuras editables.
 
 Las plantillas generan un CIM inicial con el nombre que ingreses y la aplicación arranca con tus tablas vacías. Los ejemplos se abren desde sus propias tarjetas. Para reutilizar un flujo como el de laboratorio en otro contexto, elige **Proceso con catálogo**, adapta los roles y pasos y configura el catálogo en `integracion.catalogo` dentro del JSON. Después de generar la aplicación puedes registrar tus artículos en **Inventario**.
 
-El Studio guarda cada borrador en el navegador, incluso mientras el JSON está incompleto. Para trasladar el proyecto, descarga su CIM, crea un proyecto en el otro navegador y usa **Archivos y trazabilidad → Importar CIM (.json)**. El CIM lleva la definición del negocio. Los casos y registros de la aplicación se trasladan con una [copia JSON de sus datos](#persistencia-de-la-aplicación-web).
+El Studio guarda cada borrador en el navegador, incluso mientras el JSON está incompleto. Cuando solo cambias la presentación de un ejemplo incluido, el Studio conserva esa preferencia y usa el CIM de la versión instalada. Las copias anteriores de Gestión de laboratorio se actualizan automáticamente cuando coinciden con un modelo de ejemplo anterior.
+
+Si editaste el CIM del ejemplo, puedes descargar el borrador y usar **Archivos y trazabilidad → Restaurar ejemplo** para volver al modelo incluido.
+
+Para trasladar el proyecto, descarga su CIM, crea un proyecto en el otro navegador y usa **Archivos y trazabilidad → Importar CIM (.json)**. El CIM lleva la definición del negocio. Los casos y registros de la aplicación se trasladan con una [copia JSON de sus datos](#persistencia-de-la-aplicación-web).
 
 ## Recorrer el flujo MDA
 
@@ -94,7 +100,8 @@ Podemos añadir un segundo destino de generación que transforme el mismo PIM en
 
 - Un CIM de proceso declara `version`, `id`, `nombre`, `objetivo`, `entidad`, `actores`, `datos`, `inicio`, `estados`, `transiciones` y `ocl`. Un catálogo usa `tipo: "crud"`, `datos` y, opcionalmente, `unicos`, además de su identificación y sus reglas.
 - Los tipos de campo son `Texto`, `Entero`, `Fecha`, `Seleccion` y `Booleano`. En `Seleccion`, declara `opciones` con `id` y `nombre`. Las fechas se representan como `AAAA-MM-DD`. Cada transición indica el actor, el estado de origen y el estado de destino.
-- Para vincular un catálogo, declara `integracion.catalogo`, el campo de solicitud `referencia`, la `clave` única del catálogo, `existencias`, `cantidad` y `movimientos`. Cada movimiento apunta a una transición y declara `salida` o `entrada`.
+- Una transición puede declarar una lista de campos en `edita` para generar un formulario con los valores del caso. Con `comentario: true` exige una nota y la guarda en el historial.
+- Para vincular un catálogo, declara `integracion.catalogo`, el campo de solicitud `referencia`, la `clave` única del catálogo, `existencias`, `cantidad` y `movimientos`. Cada movimiento apunta a una transición y declara `salida` o `entrada`. Si el catálogo tiene un campo booleano para marcar productos activos, decláralo en `integracion.activo` para limitar el selector y validar la solicitud al guardar.
 - El compilador admite un subconjunto de OCL con invariantes `context Clase inv Nombre: ...` y condiciones de operación `context Clase::operacion() pre Nombre: ...` y `post`. Admite comparaciones con literales o entre campos del mismo tipo, `size()` en texto o fecha y los conectores `and`, `or` e `implies`. La aplicación evalúa las invariantes al guardar y las reglas de una transición sobre los datos del caso antes de confirmar el cambio.
 
 Abre la **Guía de inicio** para consultar ejemplos de reglas y **Metamodelo base** para ver qué estructuras comprueba el compilador.
@@ -111,16 +118,32 @@ Los datos pertenecen al navegador que abre el HTML. La vista previa del Studio c
 
 Abre **Gestión de laboratorio** desde Proyectos o la [aplicación generada](generado/gestion-laboratorio.html). El [CIM](models/laboratorio.cim.json) vincula `Prestamo.equipo` con el catálogo de `Producto`. En `integracion` se declaran la clave del catálogo, el campo de existencias, la cantidad y las transiciones de entrada y salida. El [PIM](generado/gestion-laboratorio.pim.json) conserva esa relación y las operaciones. El [PSM](generado/gestion-laboratorio.psm.json) la convierte en un selector de inventario. En [Trazabilidad](generado/gestion-laboratorio.traza.json) puedes seguir los cambios de stock hasta las transiciones.
 
-La demostración abre con cuatro artículos, cinco solicitudes en distintos estados y tres movimientos precargados desde [laboratorio.demo.json](models/laboratorio.demo.json). En **Solicitudes**, abre el caso de Diego Rojas como Estudiante y devuelve los dos microscopios. En **Inventario**, el artículo con código `MIC-DEMO-01` pasa de 4 a 6 unidades, y en **Movimientos** aparece la nueva entrada. Como Responsable, puedes intentar entregar el kit del caso aprobado de Mateo Silva para comprobar el aviso de existencias insuficientes.
+Los **4 artículos**, **5 solicitudes** y **3 movimientos** de inicio forman parte del repositorio, en [laboratorio.demo.json](models/laboratorio.demo.json). El generador incorpora esos datos al HTML. Un compañero que clone o descargue el proyecto puede verlos sin importar archivos.
+
+- **Vista previa del Studio.** Inicia con los datos precargados al generar el ejemplo incluido. Los cambios de esa vista pertenecen a la sesión de vista previa. Si editas el CIM del ejemplo, la nueva vista empieza con inventario y solicitudes vacíos. Puedes recuperar el ejemplo con **Archivos y trazabilidad → Restaurar ejemplo**. Descarga primero tu CIM si quieres conservar el borrador.
+- **HTML autónomo.** En un navegador sin datos guardados para ese archivo, abre con los datos del repositorio. En aperturas siguientes recupera los cambios guardados localmente. Desde **Gestionar datos → Guardar copia JSON** puedes compartir esos cambios con otra persona.
+
+En **Solicitudes**, abre el caso de Diego Rojas como Estudiante y devuelve los dos microscopios. En **Inventario**, el artículo con código `MIC-DEMO-01` pasa de 4 a 6 unidades, y en **Movimientos** aparece la nueva entrada. Como Responsable, puedes intentar entregar el kit del caso aprobado de Mateo Silva para comprobar el aviso de existencias insuficientes.
+
+En **Inventario**, marca **Producto activo** para que el equipo aparezca al crear o reenviar una solicitud. Un producto desactivado sigue visible en **Inventario** y en el historial de los casos que ya lo usaron.
+
+### Corrección de solicitudes
+
+1. Como **Responsable**, selecciona una solicitud **En revisión** y elige **Pedir corrección**. Indica qué dato debe corregirse.
+2. Cambia a **Estudiante** y abre ese mismo caso. Usa **Corregir y reenviar**, actualiza los datos y confirma. El motivo debe tener al menos ocho caracteres.
+3. La solicitud vuelve a **En revisión** con sus datos actualizados y conserva el comentario y el reenvío en su historial. El responsable puede aprobarla, rechazarla o pedir otra corrección.
+
+El **Historial de la solicitud** registra acciones y comentarios. **Movimientos de este caso** muestra sus propias entradas y salidas. La pestaña **Movimientos** reúne el registro de inventario de todas las solicitudes. El stock cambia al confirmar la entrega o devolución.
 
 Para probar el caso de dos solicitudes que compiten por las mismas unidades:
 
-1. En **Inventario**, crea un microscopio con SKU `MIC-01`, categoría Equipos y stock de **3**.
+1. En **Inventario**, crea un microscopio con SKU `MIC-01`, categoría Equipos y stock de **3**. Marca **Producto activo**.
 2. En **Solicitudes**, como **Estudiante**, registra dos préstamos de **2** unidades para ese microscopio, uno a nombre de Ana y otro de Luis. Usa **3 días** y el motivo **Práctica de laboratorio** en ambos. Cambia a **Responsable** y aprueba los dos casos.
 3. Entrega el primero. El inventario queda en **1**. Intenta entregar el segundo. La aplicación indica que solo queda una unidad y mantiene el caso **Aprobado**. El stock se descuenta al entregar.
 4. Devuelve el primero como **Estudiante**. El inventario vuelve a **3** y en **Movimientos** puedes consultar el descuento y la reposición. En el Studio abre **Archivos y trazabilidad → Trazabilidad** y elige **Integración** para ver cómo se generaron el selector y ambos movimientos.
 
 El compilador comprueba que las transiciones de entrada y salida estén correctamente ordenadas y que ningún camino termine con unidades pendientes de devolver. La aplicación guarda solicitudes, productos y movimientos juntos en el almacenamiento local de un navegador.
+
 ## Guion para exponer
 
 1. Abre **Gestión de laboratorio**. En el CIM muestra los actores y las ramas de aprobación y rechazo en **Diagrama**.
